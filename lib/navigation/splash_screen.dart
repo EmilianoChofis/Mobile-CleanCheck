@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/core/theme/color_schemes.dart';
+import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -32,15 +33,9 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // Logo con color blanco
-              Image.asset(
-                'assets/images/logo.png',
-                color: surfaceColor,
-              ),
+              const CcLogoWidget(),
               const SizedBox(height: 32.0),
-              LinearProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(surfaceColor),
-              ),
+              LinearProgressIndicator(color: surfaceColor),
             ],
           ),
         ),
