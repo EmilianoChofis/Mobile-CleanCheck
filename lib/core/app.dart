@@ -14,8 +14,11 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       themeMode: ThemeMode.system,
       routes: {
+        //auth routes
         '/': (context) => const SplashScreen(),
-        '/login': (context) => const Login(),
+        '/login': (context) => const LoginScreen(),
+        '/forgot-password': (context) => const ForgotPasswordScreen(),
+        '/change-password': (context) => const ChangePasswordScreen(),
       },
     );
   }

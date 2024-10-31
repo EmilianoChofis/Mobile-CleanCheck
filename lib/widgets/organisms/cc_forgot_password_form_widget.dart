@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
-class CcLoginFormWidget extends StatefulWidget {
-  const CcLoginFormWidget({super.key});
+class CcForgotPasswordFormWidget extends StatefulWidget {
+  const CcForgotPasswordFormWidget({super.key});
 
   @override
-  State<CcLoginFormWidget> createState() => _CcLoginFormWidgetState();
+  State<CcForgotPasswordFormWidget> createState() =>
+      _CcForgotPasswordFormWidgetState();
 }
 
-class _CcLoginFormWidgetState extends State<CcLoginFormWidget> {
+class _CcForgotPasswordFormWidgetState
+    extends State<CcForgotPasswordFormWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +23,13 @@ class _CcLoginFormWidgetState extends State<CcLoginFormWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Iniciar sesión",
+            "Recuperar contraseña",
             style: TextThemes.lightTextTheme.headlineSmall,
+          ),
+          const SizedBox(height: 24.0),
+          Text(
+            "Introduce el correo asociado a tu cuenta para recibir instrucciones de recuperación.",
+            style: TextThemes.lightTextTheme.bodyLarge,
           ),
           const SizedBox(height: 40.0),
           CcTextFormFieldWidget(
@@ -37,41 +43,30 @@ class _CcLoginFormWidgetState extends State<CcLoginFormWidget> {
                 return "Ingresa tu correo electrónico";
               }
 
-              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                  .hasMatch(value)) {
                 return "Ingresa un correo electrónico válido";
               }
 
               return null;
             },
           ),
-          const SizedBox(height: 40.0),
-          CcTextFormFieldPasswordWidget(
-            controller: _passwordController,
-            label: "Contraseña",
-            hint: "Ingresa tu contraseña",
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Ingresa tu contraseña";
-              }
-              return null;
-            },
-          ),
           const SizedBox(height: 48.0),
           CcParamsButtonWidget(
             buttonType: ButtonType.elevated,
-            label: "Iniciar sesión",
-            prefixIcon: const Icon(Icons.login_outlined),
+            label: "Enviar correo",
+            suffixIcon: const Icon(Icons.chevron_right),
             onPressed: () {
-              if (_formKey.currentState!.validate()) {}
+              if (_formKey.currentState!.validate()) {
+                Navigator.pushNamed(context, '/change-password');
+              }
             },
           ),
           const SizedBox(height: 8.0),
           CcParamsButtonWidget(
             buttonType: ButtonType.text,
-            label: "¿Olvidaste tu contraseña?",
-            onPressed: () {
-              Navigator.pushNamed(context, "/forgot-password");
-            },
+            label: "Iniciar sesión",
+            onPressed: () => Navigator.pop(context),
           ),
         ],
       ),

@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class CcAuthTemplate extends StatefulWidget {
+  final Widget contentForm;
+
+  const CcAuthTemplate({required this.contentForm, super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<CcAuthTemplate> createState() => _CcAuthTemplateState();
 }
 
-class _LoginState extends State<Login> {
+class _CcAuthTemplateState extends State<CcAuthTemplate> {
   final primaryColor = ColorSchemes.primary;
   final surfaceColor = ColorSchemes.white;
 
@@ -25,7 +27,7 @@ class _LoginState extends State<Login> {
             const SizedBox(height: 32.0),
             Container(
               width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.7,
+              height: MediaQuery.of(context).size.height * 0.8,
               decoration: BoxDecoration(
                 color: surfaceColor,
                 borderRadius: const BorderRadius.only(
@@ -38,17 +40,7 @@ class _LoginState extends State<Login> {
                   vertical: 24.0,
                   horizontal: 16.0,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Iniciar sesión",
-                      style: TextThemes.lightTextTheme.headlineSmall,
-                    ),
-                    const SizedBox(height: 40.0),
-                    const CcLoginFormWidget(),
-                  ],
-                ),
+                child: widget.contentForm,
               ),
             ),
           ],
