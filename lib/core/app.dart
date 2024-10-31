@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_clean_check/core/theme/app_theme.dart';
+import 'package:mobile_clean_check/navigation/navigations.dart';
+import 'package:mobile_clean_check/modules/auth/auth.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -8,17 +11,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Mobile CleanCheck',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Mobile CleanCheck'),
-        ),
-        body: const Center(
-          child: Text('Welcome to Mobile CleanCheck'),
-        ),
-      ),
+      theme: AppTheme.lightTheme,
+      themeMode: ThemeMode.system,
+      routes: {
+        '/': (context) => const SplashScreen(),
+        '/login': (context) => const Login(),
+      },
     );
   }
 }
