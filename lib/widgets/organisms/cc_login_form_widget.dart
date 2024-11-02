@@ -62,7 +62,9 @@ class _CcLoginFormWidgetState extends State<CcLoginFormWidget> {
             label: "Iniciar sesión",
             prefixIcon: const Icon(Icons.login_outlined),
             onPressed: () {
-              if (_formKey.currentState!.validate()) {}
+              if (_formKey.currentState!.validate()) {
+                //Logica de inicio de sesion
+              }
             },
           ),
           const SizedBox(height: 8.0),

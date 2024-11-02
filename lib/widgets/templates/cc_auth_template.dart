@@ -27,7 +27,7 @@ class _CcAuthTemplateState extends State<CcAuthTemplate> {
             const SizedBox(height: 32.0),
             Container(
               width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.8,
+              height: MediaQuery.of(context).size.height,
               decoration: BoxDecoration(
                 color: surfaceColor,
                 borderRadius: const BorderRadius.only(
