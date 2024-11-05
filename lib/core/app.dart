@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/core/theme/app_theme.dart';
 import 'package:mobile_clean_check/navigation/navigations.dart';
-import 'package:mobile_clean_check/modules/auth/auth.dart';
+import 'package:mobile_clean_check/modules/modules.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -19,6 +19,18 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/forgot-password': (context) => const ForgotPasswordScreen(),
         '/change-password': (context) => const ChangePasswordScreen(),
+
+        //user routes
+        '/home': (context) => const BottomNavigation(role: 'maid'),
+
+        //maid routes
+
+        //receptionist routes
+
+
+        //manager routes
+
+
       },
     );
   }

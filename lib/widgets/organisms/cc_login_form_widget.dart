@@ -64,6 +64,7 @@ class _CcLoginFormWidgetState extends State<CcLoginFormWidget> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 //Logica de inicio de sesion
+                Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => false);
               }
             },
           ),
