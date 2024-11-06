@@ -1,6 +1,7 @@
 // Atom widgets
 export 'package:mobile_clean_check/widgets/atoms/cc_bnb_active_icon_widget.dart';
 export 'package:mobile_clean_check/widgets/atoms/cc_logo_widget.dart';
+export 'package:mobile_clean_check/widgets/atoms/cc_snack_bar_widget.dart';
 
 // Molecule widgets
 export 'package:mobile_clean_check/widgets/molecules/cc_app_bar_widget.dart';
