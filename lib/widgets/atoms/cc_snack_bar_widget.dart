@@ -1,33 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_clean_check/core/theme/color_schemes.dart';
 
-class CcSnackBarWidget extends StatelessWidget {
-  final String message;
-  final SnackBarType snackBarType;
-
-  const CcSnackBarWidget({
-    required this.message,
-    required this.snackBarType,
-    super.key,
-  });
-
-  Color _getSnackBarColor() {
-    switch (snackBarType) {
-      case SnackBarType.error:
-        return Colors.red;
-      case SnackBarType.success:
-        return Colors.green;
-      case SnackBarType.warning:
-        return Colors.orange;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SnackBar(
+class CcSnackBarWidget {
+  static void show(
+      BuildContext context, {
+        required String message,
+        required SnackBarType snackBarType,
+      }) {
+    final snackBar = SnackBar(
       content: Text(message),
       behavior: SnackBarBehavior.floating,
-      backgroundColor: _getSnackBarColor(),
+      backgroundColor: _getSnackBarColor(snackBarType),
     );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  static Color _getSnackBarColor(SnackBarType snackBarType) {
+    switch (snackBarType) {
+      case SnackBarType.error:
+        return ColorSchemes.error;
+      case SnackBarType.success:
+        return ColorSchemes.success;
+      case SnackBarType.warning:
+        return ColorSchemes.warning;
+    }
   }
 }
 

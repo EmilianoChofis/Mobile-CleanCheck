@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
-class MaidHomeScreen extends StatelessWidget {
-  const MaidHomeScreen({super.key});
+class ReceptionistHomeScreen extends StatelessWidget {
+  const ReceptionistHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       appBar: CcAppBarWidget(title: "Inicio"),
       body: Center(
-        child: Text("Maid Home Screen"),
+        child: Text("Recepcionist Home Screen"),
       ),
     );
   }

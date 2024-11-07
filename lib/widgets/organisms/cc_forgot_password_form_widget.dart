@@ -52,10 +52,11 @@ class _CcForgotPasswordFormWidgetState
             },
           ),
           const SizedBox(height: 48.0),
-          CcParamsButtonWidget(
+          CcButtonWidget(
             buttonType: ButtonType.elevated,
             label: "Enviar correo",
             suffixIcon: const Icon(Icons.chevron_right),
+            isLoading: false,
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 Navigator.pushNamed(context, '/change-password');
@@ -63,8 +64,9 @@ class _CcForgotPasswordFormWidgetState
             },
           ),
           const SizedBox(height: 8.0),
-          CcParamsButtonWidget(
+          CcButtonWidget(
             buttonType: ButtonType.text,
+            isLoading: false,
             label: "Iniciar sesión",
             onPressed: () => Navigator.pop(context),
           ),

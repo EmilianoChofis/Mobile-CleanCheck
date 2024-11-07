@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile_clean_check/core/theme/color_schemes.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
@@ -16,9 +17,19 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final role = prefs.getString('role');
+      final token = prefs.getString('token');
+
       if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (token != null && role != null) {
+            Navigator.pushReplacementNamed(context, "/home");
+          } else {
+            Navigator.pushReplacementNamed(context, "/login");
+          }
+        });
       }
     });
   }

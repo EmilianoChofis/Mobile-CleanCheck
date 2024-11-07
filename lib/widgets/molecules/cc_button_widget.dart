@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_clean_check/widgets/atoms/cc_loader_widget.dart';
 
-class CcParamsButtonWidget extends StatelessWidget {
+class CcButtonWidget extends StatelessWidget {
   final String label;
   final Icon? suffixIcon;
   final Icon? prefixIcon;
-  final void Function()? onPressed;
+  final bool isLoading;
+  final VoidCallback? onPressed;
   final ButtonType buttonType;
 
-  const CcParamsButtonWidget({
+  const CcButtonWidget({
     required this.label,
     this.suffixIcon,
     this.prefixIcon,
+    required this.isLoading,
     required this.onPressed,
     required this.buttonType,
     super.key,
@@ -26,18 +29,18 @@ class CcParamsButtonWidget extends StatelessWidget {
     switch (buttonType) {
       case ButtonType.elevated:
         return ElevatedButton(
-          onPressed: onPressed,
-          child: _buildButtonContent(),
+          onPressed: isLoading ? null : onPressed,
+          child: isLoading ? const CcLoaderWidget() : _buildButtonContent(),
         );
       case ButtonType.outlined:
         return OutlinedButton(
-          onPressed: onPressed,
-          child: _buildButtonContent(),
+          onPressed: isLoading ? null : onPressed,
+          child: isLoading ? const CcLoaderWidget() : _buildButtonContent(),
         );
       case ButtonType.text:
         return TextButton(
-          onPressed: onPressed,
-          child: _buildButtonContent(),
+          onPressed: isLoading ? null : onPressed,
+          child: isLoading ? const CcLoaderWidget() : _buildButtonContent(),
         );
     }
   }

@@ -15,14 +15,15 @@ class AuthRepository {
 
       return ApiResponse.fromJson(
         response.data,
-        (data) => AuthModel.fromJson(data),
+        (json) => AuthResponse.fromJson(json),
       );
     } on DioException catch (e) {
       return ApiResponse(
         data: null,
         error: true,
-        statusCode: e.response!.statusCode ?? 500,
-        message: e.response?.data['message'],
+        statusCode: e.response?.statusCode ?? 500,
+        message: e.response?.data['message'] ??
+            'Ha ocurrido un error. Inténtalo de nuevo.',
       );
     }
   }

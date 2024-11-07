@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
-import 'package:mobile_clean_check/data/models/auth_model.dart';
+import 'package:mobile_clean_check/data/models/models.dart';
 
 class CcLoginFormWidget extends StatefulWidget {
   const CcLoginFormWidget({super.key});
@@ -22,10 +22,16 @@ class _CcLoginFormWidgetState extends State<CcLoginFormWidget> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => false);
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            "/home",
+                (route) => false,
+          );
         } else if (state is AuthError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
+          CcSnackBarWidget.show(
+            context,
+            message: state.message,
+            snackBarType: SnackBarType.error,
           );
         }
       },
@@ -72,23 +78,21 @@ class _CcLoginFormWidgetState extends State<CcLoginFormWidget> {
                 },
               ),
               const SizedBox(height: 48.0),
-              CcParamsButtonWidget(
+              CcButtonWidget(
                 buttonType: ButtonType.elevated,
                 label: "Iniciar sesión",
                 prefixIcon: const Icon(Icons.login_outlined),
+                isLoading: state is AuthLoading,
                 onPressed: _login,
               ),
               const SizedBox(height: 8.0),
-              CcParamsButtonWidget(
+              CcButtonWidget(
                 buttonType: ButtonType.text,
                 label: "¿Olvidaste tu contraseña?",
+                isLoading: false,
                 onPressed: () =>
                     Navigator.pushNamed(context, "/forgot-password"),
               ),
-              if (state is AuthLoading) ...[
-                const SizedBox(height: 16.0),
-                const Center(child: CircularProgressIndicator()),
-              ],
             ],
           ),
         );
