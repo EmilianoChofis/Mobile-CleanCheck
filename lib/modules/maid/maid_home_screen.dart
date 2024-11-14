@@ -8,8 +8,9 @@ class MaidHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       appBar: CcAppBarWidget(title: "Inicio"),
-      body: Center(
-        child: Text("Maid Home Screen"),
+      body: HomeTemplate(
+        actions: Text("data"),
+        content: Text("data"),
       ),
     );
   }

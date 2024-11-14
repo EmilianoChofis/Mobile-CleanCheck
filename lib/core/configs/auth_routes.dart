@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<String?> getRole() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('role');
+  return prefs.getString('role') ?? 'Maid';
 }
 
 Widget buildRoute(Widget screen, Future<String?> roleFuture) {
