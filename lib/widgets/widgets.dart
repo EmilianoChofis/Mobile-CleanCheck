@@ -18,4 +18,4 @@ export 'package:mobile_clean_check/widgets/organisms/cc_login_form_widget.dart';
 
 // Template widgets
 export 'package:mobile_clean_check/widgets/templates/cc_auth_template.dart';
-export 'package:mobile_clean_check/widgets/templates/home_template.dart';
+export 'package:mobile_clean_check/widgets/templates/cc_home_template.dart';

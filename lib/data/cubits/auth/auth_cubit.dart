@@ -18,9 +18,11 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthError(response.message));
     } else {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      List<String> name = response.data!.user.name.split(' ');
+
+      await prefs.setString('user', name[0]);
       await prefs.setString('token', response.data!.token);
-      //TODO revisar el nombre en el json
-      await prefs.setString('user', response.data!.user.name);
       await prefs.setString('role', response.data!.user.role.id);
 
       emit(AuthAuthenticated(response.data!));
