@@ -5,7 +5,7 @@ import 'package:mobile_clean_check/core/theme/themes.dart';
 class CcItemListWidget extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String subtitle;
+  final Widget subtitle;
   final VoidCallback onTap;
 
   const CcItemListWidget({
@@ -17,7 +17,6 @@ class CcItemListWidget extends StatelessWidget {
   });
 
   final primaryColor = ColorSchemes.primary;
-  final secondaryColor = ColorSchemes.secondary;
   final black = ColorSchemes.black;
   final white = ColorSchemes.white;
 
@@ -28,7 +27,7 @@ class CcItemListWidget extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: white,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(16.0),
           boxShadow: [
             BoxShadow(
               color: black.withOpacity(0.16),
@@ -40,14 +39,8 @@ class CcItemListWidget extends StatelessWidget {
         ),
         child: Card(
           elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
           child: ListTile(
-            leading: CcWorkingZonesIcon(
-              icon: icon,
-              iconType: IconType.enabled,
-            ),
+            leading: CcWorkingZonesIcon(icon: icon, iconType: IconType.enabled),
             title: Text(
               title,
               style: TextStyle(
@@ -55,12 +48,7 @@ class CcItemListWidget extends StatelessWidget {
                 color: primaryColor,
               ),
             ),
-            subtitle: Text(
-              subtitle,
-              style: TextStyle(
-                color: secondaryColor,
-              ),
-            ),
+            subtitle: subtitle,
           ),
         ),
       ),

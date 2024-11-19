@@ -21,7 +21,7 @@ class CcBannerWidget extends StatelessWidget {
       elevation: 0,
       child: ListTile(
         leading: Icon(icon),
-        title: Text(text),
+        title: Text(text, style: const TextStyle(fontSize: 16.0)),
         iconColor: primaryColor,
         textColor: primaryColor,
         dense: true,

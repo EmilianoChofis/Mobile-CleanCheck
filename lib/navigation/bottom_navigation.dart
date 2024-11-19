@@ -16,10 +16,11 @@ class BottomNavigation extends StatefulWidget {
 
 class _BottomNavigationState extends State<BottomNavigation> {
   int _selectedIndex = 0;
-
   late List<Widget> screenOptions;
   late List<BottomNavigationBarItem> items;
   late bool error;
+
+  late final List<GlobalKey<NavigatorState>> navigatorKeys;
 
   @override
   void initState() {
@@ -29,6 +30,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
     screenOptions = config['screens'];
     if (!error) {
       items = config['items'];
+      navigatorKeys = List.generate(
+        items.length,
+            (_) => GlobalKey<NavigatorState>(),
+      );
     }
   }
 
@@ -38,19 +43,40 @@ class _BottomNavigationState extends State<BottomNavigation> {
       return screenOptions[0];
     }
 
-    return Scaffold(
-      body: screenOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        items: items,
-        currentIndex: _selectedIndex,
-        selectedItemColor: ColorSchemes.primary,
-        unselectedItemColor: ColorSchemes.secondary,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
-        selectedFontSize: 12.0,
-        onTap: _onItemTapped,
+    return PopScope(
+      child: Scaffold(
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: List.generate(
+            screenOptions.length,
+                (index) => Navigator(
+              key: navigatorKeys[index],
+              onGenerateRoute: (RouteSettings settings) {
+                return MaterialPageRoute(
+                  builder: (_) => screenOptions[index],
+                );
+              },
+            ),
+          ),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: items,
+          currentIndex: _selectedIndex,
+          selectedItemColor: ColorSchemes.primary,
+          unselectedItemColor: ColorSchemes.secondary,
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
+          selectedFontSize: 12.0,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }
 
-  void _onItemTapped(int index) => setState(() => _selectedIndex = index);
+  void _onItemTapped(int index) {
+    if (_selectedIndex == index) {
+      navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
+    } else {
+      setState(() => _selectedIndex = index);
+    }
+  }
 }

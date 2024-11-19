@@ -3,12 +3,10 @@ import 'package:mobile_clean_check/core/theme/color_schemes.dart';
 
 class CcAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final bool? centerTitle;
   final List<Widget>? actions;
 
   const CcAppBarWidget({
     required this.title,
-    this.centerTitle = true,
     this.actions,
     super.key,
   });
@@ -22,7 +20,7 @@ class CcAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       title: Text(title),
       foregroundColor: ColorSchemes.white,
       backgroundColor: ColorSchemes.primary,
-      centerTitle: centerTitle,
+      centerTitle: actions == null,
       actions: actions,
     );
   }
