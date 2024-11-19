@@ -37,17 +37,29 @@ class _CcItemListBuildingContentWidgetState
   }
 
   Widget _buildStaticText(String text) {
-    return Text(text, style: TextStyle(color: secondaryColor));
+    return Text(
+      text,
+      style: TextStyle(color: secondaryColor),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
+    );
   }
 
   Widget _buildDynamicText(String text) {
-    return Text(text, style: TextStyle(color: primaryColor));
+    return Text(
+      text,
+      style: TextStyle(color: primaryColor),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
+    );
   }
 
   Widget _buildRoomText(String text) {
     return Text(
       text,
       style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
     );
   }
 
@@ -56,7 +68,9 @@ class _CcItemListBuildingContentWidgetState
     return Row(
       children: [
         _buildStaticText(key),
-        isRoom ? _buildRoomText(value) : _buildDynamicText(value),
+        Expanded(
+          child: isRoom ? _buildRoomText(value) : _buildDynamicText(value),
+        ),
       ],
     );
   }
