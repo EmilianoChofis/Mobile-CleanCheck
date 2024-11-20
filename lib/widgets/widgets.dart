@@ -5,10 +5,10 @@ export 'package:mobile_clean_check/widgets/atoms/cc_divider_widget.dart';
 export 'package:mobile_clean_check/widgets/atoms/cc_floor_title_widget.dart';
 export 'package:mobile_clean_check/widgets/atoms/cc_loader_widget.dart';
 export 'package:mobile_clean_check/widgets/atoms/cc_logo_widget.dart';
-export 'package:mobile_clean_check/widgets/molecules/cc_pin_button_widget.dart';
 export 'package:mobile_clean_check/widgets/atoms/cc_room_name_widget.dart';
 export 'package:mobile_clean_check/widgets/atoms/cc_room_widget.dart';
 export 'package:mobile_clean_check/widgets/atoms/cc_snack_bar_widget.dart';
+export 'package:mobile_clean_check/widgets/atoms/cc_title_screen_widget.dart';
 export 'package:mobile_clean_check/widgets/atoms/cc_working_zones_icon.dart';
 
 // Molecule widgets
@@ -32,6 +32,8 @@ export 'package:mobile_clean_check/widgets/molecules/cc_working_zone_item_widget
 export 'package:mobile_clean_check/widgets/organisms/cc_change_password_form_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_forgot_password_form_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_login_form_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_pin_button_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_report_button_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_working_zone_maid_widget.dart';
 
 // Template widgets

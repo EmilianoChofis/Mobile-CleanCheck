@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
-import 'package:mobile_clean_check/core/theme/themes.dart';
 
 class MaidBuildingScreen extends StatefulWidget {
   const MaidBuildingScreen({super.key});
@@ -12,8 +11,6 @@ class MaidBuildingScreen extends StatefulWidget {
 class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
   final ValueNotifier<String?> selectedRoomNotifier =
       ValueNotifier<String?>(null);
-
-  final redColor = ColorSchemes.error;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +36,7 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
             },
           ),
         ),
+        title: 'Habitaciones',
         filters: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -71,14 +69,7 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
         ),
         actions: Row(
           children: [
-            CcButtonWidget(
-              buttonType: ButtonType.outlined,
-              prefixIcon: const Icon(Icons.warning_amber),
-              label: 'Reportar',
-              isLoading: false,
-              color: redColor,
-              onPressed: () {},
-            ),
+            const CcReportButtonWidget(),
             const SizedBox(width: 8.0),
             Expanded(
               child: CcButtonWidget(

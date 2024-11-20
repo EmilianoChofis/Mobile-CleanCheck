@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_clean_check/core/theme/themes.dart';
+import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcTitleContentTemplate extends StatelessWidget {
   final String title;
@@ -16,7 +16,7 @@ class CcTitleContentTemplate extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: TextThemes.lightTextTheme.headlineSmall),
+        CcTitleScreenWidget(title: title),
         const SizedBox(height: 8.0),
         content,
       ],
