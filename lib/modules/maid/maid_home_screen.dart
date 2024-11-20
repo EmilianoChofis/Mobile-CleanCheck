@@ -8,9 +8,44 @@ class MaidHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       appBar: CcAppBarWidget(title: "Inicio"),
-      body: CcHomeTemplate(
-        actions: Text("data"),
-        content: Text("data"),
+      body: SingleChildScrollView(
+        child: CcHeaderTemplate(
+          header: CcWelcomeHomeTemplate(
+            actions: CcWorkingZoneTemplate(
+                title: "Zonas de trabajo", actions: CcWorkingZoneMaidWidget()),
+          ),
+          content: CcTitleContentTemplate(
+            title: 'Lista de edificios',
+            content: CcListItemsWidget(
+              content: [
+                {
+                  'name': 'Edificio Palmira',
+                  'rooms': '20 habitaciones',
+                },
+                {
+                  'name': 'Edificio Ciprés',
+                  'rooms': '15 habitaciones',
+                },
+                {
+                  'name': 'Edificio Palmira',
+                  'rooms': '20 habitaciones',
+                },
+                {
+                  'name': 'Edificio Ciprés',
+                  'rooms': '15 habitaciones',
+                },
+                {
+                  'name': 'Edificio Palmira',
+                  'rooms': '20 habitaciones',
+                },
+                {
+                  'name': 'Edificio Ciprés',
+                  'rooms': '15 habitaciones',
+                },
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
