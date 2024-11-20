@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile_clean_check/core/theme/color_schemes.dart';
+import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,9 +17,19 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final role = prefs.getString('role');
+      final token = prefs.getString('token');
+
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/login');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (token != null && role != null) {
+            Navigator.pushReplacementNamed(context, "/home");
+          } else {
+            Navigator.pushReplacementNamed(context, "/login");
+          }
+        });
       }
     });
   }
@@ -32,15 +44,9 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // Logo con color blanco
-              Image.asset(
-                'assets/images/logo.png',
-                color: surfaceColor,
-              ),
+              const CcLogoWidget(),
               const SizedBox(height: 32.0),
-              LinearProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(surfaceColor),
-              ),
+              LinearProgressIndicator(color: surfaceColor),
             ],
           ),
         ),
