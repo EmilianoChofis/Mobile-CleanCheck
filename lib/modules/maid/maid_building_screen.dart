@@ -65,8 +65,6 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             CcFloorWidget(selectedRoomNotifier: selectedRoomNotifier),
-            CcFloorWidget(selectedRoomNotifier: selectedRoomNotifier),
-            CcFloorWidget(selectedRoomNotifier: selectedRoomNotifier),
           ],
         ),
         actions: Row(

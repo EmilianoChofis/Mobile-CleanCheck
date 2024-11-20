@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/navigation/navigation.dart';
-//import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<String?> getRole() async {
-  //SharedPreferences prefs = await SharedPreferences.getInstance();
-  //return prefs.getString('role');
-  return 'Maid';
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('role');
+  // return 'Maid';
 }
 
 Widget buildRoute(Widget screen, Future<String?> roleFuture) {
