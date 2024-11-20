@@ -1,11 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DioClient {
   static Dio? _dio;
 
-  static Dio get instance {
+  final apiUrl = dotenv.env['API_URL'].toString();
+
+  Dio get instance {
     _dio ??= Dio(BaseOptions(
-      baseUrl: 'http://192.168.106.94:8081/api-clean',
+      baseUrl: apiUrl,
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
     ));
