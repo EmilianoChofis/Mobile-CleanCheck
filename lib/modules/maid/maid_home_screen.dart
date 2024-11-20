@@ -9,7 +9,7 @@ class MaidHomeScreen extends StatelessWidget {
     return const Scaffold(
       appBar: CcAppBarWidget(title: "Inicio"),
       body: SingleChildScrollView(
-        child: CcHomeTemplate(
+        child: CcHeaderTemplate(
           header: CcWelcomeHomeTemplate(
             actions: CcWorkingZoneTemplate(
                 title: "Zonas de trabajo", actions: CcWorkingZoneMaidWidget()),

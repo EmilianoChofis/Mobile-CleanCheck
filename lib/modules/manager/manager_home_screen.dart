@@ -8,7 +8,7 @@ class ManagerHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       appBar: CcAppBarWidget(title: "Inicio"),
-      body: CcHomeTemplate(
+      body: CcHeaderTemplate(
         header: Padding(
           padding: EdgeInsets.symmetric(vertical: 16.0),
           child: Text("Replace this with the actions widget",

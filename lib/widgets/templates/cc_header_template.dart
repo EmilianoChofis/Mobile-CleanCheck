@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
 
-class CcHomeTemplate extends StatefulWidget {
+class CcHeaderTemplate extends StatelessWidget {
   final Widget header;
   final Widget content;
 
-  const CcHomeTemplate({
+  const CcHeaderTemplate({
     required this.header,
     required this.content,
     super.key,
   });
 
-  @override
-  State<CcHomeTemplate> createState() => _CcHomeTemplateState();
-}
-
-class _CcHomeTemplateState extends State<CcHomeTemplate> {
   final primaryColor = ColorSchemes.primary;
   final surfaceColor = ColorSchemes.white;
 
@@ -34,11 +29,11 @@ class _CcHomeTemplateState extends State<CcHomeTemplate> {
               bottomRight: Radius.circular(20.0),
             ),
           ),
-          child: widget.header,
+          child: header,
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: widget.content,
+          child: content,
         ),
       ],
     );
