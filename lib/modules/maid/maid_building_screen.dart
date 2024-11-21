@@ -61,25 +61,29 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            CcFloorWidget(selectedRoomNotifier: selectedRoomNotifier),
-            CcFloorWidget(selectedRoomNotifier: selectedRoomNotifier),
-            CcFloorWidget(selectedRoomNotifier: selectedRoomNotifier),
-          ],
+          children: [CcFloorWidget(selectedRoomNotifier: selectedRoomNotifier)],
         ),
-        actions: Row(
-          children: [
-            const CcReportButtonWidget(),
-            const SizedBox(width: 8.0),
-            Expanded(
-              child: CcButtonWidget(
-                buttonType: ButtonType.elevated,
-                label: 'Marcar como limpia',
-                isLoading: false,
-                onPressed: () {},
-              ),
-            ),
-          ],
+        actions: ValueListenableBuilder<String?>(
+          valueListenable: selectedRoomNotifier,
+          builder: (context, selectedRoom, _) {
+            if (selectedRoom != null) {
+              return Row(
+                children: [
+                  CcReportButtonWidget(
+                    selectedRoomNotifier: selectedRoomNotifier,
+                  ),
+                  const SizedBox(width: 8.0),
+                  Expanded(
+                    child: CcCleanButtonWidget(
+                      selectedRoomNotifier: selectedRoomNotifier,
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          },
         ),
       ),
     );

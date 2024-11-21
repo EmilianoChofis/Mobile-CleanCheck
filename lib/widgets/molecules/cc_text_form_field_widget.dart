@@ -8,6 +8,7 @@ class CcTextFormFieldWidget extends StatefulWidget {
   final String label;
   final String hint;
   final Icon icon;
+  final int? maxLines;
   final String? Function(String?)? validator;
 
   const CcTextFormFieldWidget({
@@ -16,6 +17,7 @@ class CcTextFormFieldWidget extends StatefulWidget {
     required this.label,
     required this.hint,
     required this.icon,
+    this.maxLines = 1,
     this.validator,
     super.key,
   });
@@ -42,6 +44,7 @@ class _CcTextFormFieldWidgetState extends State<CcTextFormFieldWidget> {
         TextFormField(
           controller: widget.controller,
           keyboardType: widget.keyboardType,
+          maxLines: widget.maxLines,
           decoration: InputDecoration(
             prefixIcon: widget.icon,
             hintText: widget.hint,

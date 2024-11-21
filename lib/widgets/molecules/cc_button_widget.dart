@@ -57,12 +57,15 @@ class CcButtonWidget extends StatelessWidget {
   Widget _buildButtonContent() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         if (prefixIcon != null) ...[
           Icon(prefixIcon!.icon, size: 14.0),
           const SizedBox(width: 8.0),
         ],
-        Text(label),
+        Flexible(
+          child: Text(label, overflow: TextOverflow.ellipsis, maxLines: 1),
+        ),
         if (suffixIcon != null) ...[
           const SizedBox(width: 8.0),
           Icon(suffixIcon!.icon, size: 14.0),

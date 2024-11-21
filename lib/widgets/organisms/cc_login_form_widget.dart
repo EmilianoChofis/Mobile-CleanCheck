@@ -57,7 +57,7 @@ class _CcLoginFormWidgetState extends State<CcLoginFormWidget> {
                     return "Ingresa tu correo electrónico";
                   }
 
-                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                  if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$')
                       .hasMatch(value)) {
                     return "Ingresa un correo electrónico válido";
                   }

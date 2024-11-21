@@ -3,7 +3,9 @@ import 'package:mobile_clean_check/widgets/widgets.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
 
 class CcReportButtonWidget extends StatefulWidget {
-  const CcReportButtonWidget({super.key});
+  final ValueNotifier<String?> selectedRoomNotifier;
+
+  const CcReportButtonWidget({required this.selectedRoomNotifier, super.key});
 
   @override
   State<CcReportButtonWidget> createState() => _CcReportButtonWidgetState();
@@ -13,10 +15,24 @@ class _CcReportButtonWidgetState extends State<CcReportButtonWidget> {
   final redColor = ColorSchemes.error;
   final secondaryColor = ColorSchemes.secondary;
 
-  Widget _buildText(String text) {
-    return Text(
-      text,
+  Widget _buildText() {
+    return Text.rich(
       style: TextStyle(color: secondaryColor),
+      const TextSpan(
+        children: [
+          TextSpan(
+            text:
+                "Los detalles de la habitación se enviarán al gerente, y estará como ",
+          ),
+          TextSpan(
+            text: "reportada",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          TextSpan(
+            text: " hasta que el gerente brinde una solución.",
+          ),
+        ],
+      ),
     );
   }
 
@@ -36,15 +52,13 @@ class _CcReportButtonWidgetState extends State<CcReportButtonWidget> {
               title: "Reportar incidencia",
               subtitle:
                   "Puedes reportar la habitación si presenta daños o no está en condiciones para ser rentada nuevamente.",
-              content: _buildText(
-                  "Los detalles de la habitación se enviarán al gerente, y estará como reportada hasta que el gerente brinde una solución."),
+              content: _buildText(),
               actions: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CcButtonWidget(
-                    buttonType: ButtonType.elevated,
-                    onPressed: _onSave,
-                    label: "Fijar habitaciones",
-                    isLoading: false,
+                  CcReportFormWidget(
+                    room: widget.selectedRoomNotifier.value!,
+                    onClosePreviousBottomSheet: () => Navigator.pop(context),
                   ),
                   const SizedBox(height: 8.0),
                   CcButtonWidget(
@@ -62,13 +76,7 @@ class _CcReportButtonWidgetState extends State<CcReportButtonWidget> {
     );
   }
 
-  void _onSave() {
-    Navigator.pop(context);
-  }
-
-  void _onCancel() {
-    Navigator.pop(context);
-  }
+  void _onCancel() => Navigator.pop(context);
 
   @override
   Widget build(BuildContext context) {

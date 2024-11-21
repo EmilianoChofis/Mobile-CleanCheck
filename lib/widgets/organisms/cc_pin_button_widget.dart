@@ -54,6 +54,7 @@ class _CcPinButtonWidgetState extends State<CcPinButtonWidget> {
                 },
               ),
               actions: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   CcButtonWidget(
                     buttonType: ButtonType.elevated,
@@ -82,9 +83,7 @@ class _CcPinButtonWidgetState extends State<CcPinButtonWidget> {
     Navigator.pop(context);
   }
 
-  void _onCancel() {
-    Navigator.pop(context);
-  }
+  void _onCancel() => Navigator.pop(context);
 
   @override
   Widget build(BuildContext context) {
