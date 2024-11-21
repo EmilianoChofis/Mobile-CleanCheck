@@ -58,7 +58,7 @@ final Map<String, Map<String, dynamic>> roleConfigurations = {
     'error': false,
     'screens': const [
       MaidHomeScreen(),
-      MaidHomeScreen(),
+      IncidencesScreen(),
       MaidHomeScreen(),
     ],
     'items': [

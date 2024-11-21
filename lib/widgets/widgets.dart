@@ -45,6 +45,7 @@ export 'package:mobile_clean_check/widgets/templates/cc_auth_template.dart';
 export 'package:mobile_clean_check/widgets/templates/cc_bottom_sheet_template.dart';
 export 'package:mobile_clean_check/widgets/templates/cc_building_rooms_template.dart';
 export 'package:mobile_clean_check/widgets/templates/cc_header_template.dart';
+export 'package:mobile_clean_check/widgets/templates/cc_list_screen_template.dart';
 export 'package:mobile_clean_check/widgets/templates/cc_title_content_template.dart';
 export 'package:mobile_clean_check/widgets/templates/cc_welcome_home_template.dart';
 export 'package:mobile_clean_check/widgets/templates/cc_working_zone_template.dart';

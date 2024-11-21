@@ -48,6 +48,25 @@ class _CcImagePickerWidgetState extends State<CcImagePickerWidget> {
     }
   }
 
+  void _showImageDialog(XFile image) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+            child: Image.file(
+              File(image.path),
+              fit: BoxFit.contain,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -89,33 +108,38 @@ class _CcImagePickerWidgetState extends State<CcImagePickerWidget> {
               scrollDirection: Axis.horizontal,
               itemCount: _images.length,
               itemBuilder: (context, index) {
-                return Stack(
-                  children: [
-                    Image.file(
-                      File(_images[index].path),
-                      fit: BoxFit.cover,
-                      width: 100.0,
-                      height: 130.0,
-                    ),
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      child: IconButton(
-                        icon: const Icon(Icons.remove_circle,
-                            color: Colors.red),
-                        onPressed: () {
-                          setState(() {
-                            _images.removeAt(index);
-                          });
-                          widget.onImagesChanged(_images.isNotEmpty);
-                        },
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Stack(
+                    children: [
+                      GestureDetector(
+                        onTap: () => _showImageDialog(_images[index]),
+                        child: Image.file(
+                          File(_images[index].path),
+                          fit: BoxFit.cover,
+                          width: 100.0,
+                          height: 130.0,
+                        ),
                       ),
-                    ),
-                  ],
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: IconButton(
+                          icon: const Icon(Icons.remove_circle, color: Colors.red),
+                          onPressed: () {
+                            setState(() {
+                              _images.removeAt(index);
+                            });
+                            widget.onImagesChanged(_images.isNotEmpty);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),
-          ),
+          )
         ],
         const SizedBox(height: 16.0),
       ],

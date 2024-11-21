@@ -12,3 +12,6 @@ export 'package:mobile_clean_check/modules/receptionist/receptionist_home_screen
 //main module
 export 'package:mobile_clean_check/modules/maid/maid_building_screen.dart';
 export 'package:mobile_clean_check/modules/maid/maid_home_screen.dart';
+
+//common module
+export 'package:mobile_clean_check/modules/common/incidences_screen.dart';
