@@ -39,7 +39,7 @@ class _CcFiltersWidgetState extends State<CcFiltersWidget> {
         selectedColor: grayColor,
         checkmarkColor: primaryColor,
         side: BorderSide(color: secondaryColor),
-        labelStyle: TextStyle(fontWeight: isSelected ? FontWeight.bold : null),
+        labelStyle: TextStyle(fontWeight: isSelected ? FontWeight.bold : FontWeight.w400),
         visualDensity: VisualDensity.compact,
         onSelected: (selected) => _onChipSelected(filter, isSelected),
       ),

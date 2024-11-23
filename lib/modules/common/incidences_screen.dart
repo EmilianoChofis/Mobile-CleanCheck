@@ -21,50 +21,66 @@ class _IncidencesScreenState extends State<IncidencesScreen> {
       ),
       body: CcListScreenTemplate(
         title: 'Lista de incidencias',
-        search: SearchBar(
-          controller: _searchController,
-          hintText: 'Buscar...',
-          trailing: const [Icon(Icons.search)],
-          padding: const WidgetStatePropertyAll<EdgeInsets>(
-            EdgeInsets.symmetric(horizontal: 16),
-          ),
-          elevation: WidgetStateProperty.all(0.0),
-          side: WidgetStateProperty.all(BorderSide(color: primaryColor)),
-        ),
-        filters: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: CcFiltersWidget(
-            filters: const [
-              'Todas',
-              'En proceso',
-              'Deshabilitadas',
-              'Disponibles',
-            ],
-            onSelected: (filter) => print(filter),
-          ),
-        ),
-        symbology: const CcSymbologyWidget(
-          grayLabel: 'Disponible',
-          yellowLabel: 'En proceso',
-          redLabel: 'Deshabilitada',
-        ),
-        content: const CcListItemsWidget(
-          content: [
-            {
-              'name': 'Edificio 1',
-              'rooms': 'Habitaciones: 10',
-            },
-            {
-              'name': 'Edificio 2',
-              'rooms': 'Habitaciones: 20',
-            },
-            {
-              'name': 'Edificio 3',
-              'rooms': 'Habitaciones: 30',
-            },
-          ],
-        ),
+        search: _buildSearchBar(),
+        filters: _buildFilters(),
+        symbology: _buildSymbology(),
+        content: _buildContent(),
       ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return CcSearchBarWidget(controller: _searchController);
+  }
+
+  Widget _buildFilters() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: CcFiltersWidget(
+        filters: const [
+          'Todas',
+          'En proceso',
+          'Deshabilitadas',
+          'Disponibles',
+        ],
+        onSelected: (filter) => print(filter),
+      ),
+    );
+  }
+
+  Widget _buildSymbology() {
+    return const CcSymbologyWidget(
+      grayLabel: 'Disponible',
+      yellowLabel: 'En proceso',
+      redLabel: 'Deshabilitada',
+    );
+  }
+
+  Widget _buildContent() {
+    return const CcListIncidencesWidget(
+      content: [
+        {
+          'room': 'P1H10',
+          'building': 'Rio Tiber',
+          'date': '10/10/2021',
+          'personal': 'Juan Perez',
+          'status': 'IconType.enabled',
+        },
+        {
+          'room': 'P1H11',
+          'building': 'Edificio Palmira',
+          'date': '10/10/2021',
+          'personal': 'Juan Perez',
+          'status': 'IconType.reported',
+        },
+        {
+          'room': 'P1H12',
+          'building': 'Edificio Alta Palmiraxddddddd',
+          'date': '10/10/2021',
+          'personal': 'Juan Perez',
+          'status': 'IconType.disabled',
+        },
+      ],
     );
   }
 }

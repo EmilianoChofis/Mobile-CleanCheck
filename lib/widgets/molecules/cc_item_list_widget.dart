@@ -5,15 +5,17 @@ import 'package:mobile_clean_check/core/theme/themes.dart';
 class CcItemListWidget extends StatelessWidget {
   final IconData icon;
   final String title;
-  final Widget subtitle;
+  final Widget content;
   final VoidCallback onTap;
+  final IconType iconType;
   final bool? isDisplay;
 
   const CcItemListWidget({
     required this.icon,
     required this.title,
-    required this.subtitle,
+    required this.content,
     required this.onTap,
+    required this.iconType,
     this.isDisplay = false,
     super.key,
   });
@@ -44,7 +46,7 @@ class CcItemListWidget extends StatelessWidget {
           elevation: 0,
           child: ListTile(
             contentPadding: isDisplay! ? const EdgeInsets.all(0) : null,
-            leading: CcWorkingZonesIcon(icon: icon, iconType: IconType.enabled),
+            leading: CcWorkingZonesIcon(icon: icon, iconType: iconType),
             title: Text(
               title,
               style: TextStyle(
@@ -52,7 +54,7 @@ class CcItemListWidget extends StatelessWidget {
                 color: primaryColor,
               ),
             ),
-            subtitle: subtitle,
+            subtitle: content,
           ),
         ),
       ),

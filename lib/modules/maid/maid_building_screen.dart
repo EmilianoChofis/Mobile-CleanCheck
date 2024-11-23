@@ -16,7 +16,7 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CcAppBarWidget(
-        title: "Registrar limpieza",
+        title: 'Registrar limpieza',
         actions: [CcPinButtonWidget()],
       ),
       body: CcBuildingRoomsTemplate(
@@ -26,8 +26,9 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
             valueListenable: selectedRoomNotifier,
             builder: (context, selectedRoom, _) {
               return CcItemListWidget(
-                title: "Edificio Palmira",
-                subtitle: CcItemListBuildingContentWidget(
+                iconType: IconType.enabled,
+                title: 'Edificio Palmira',
+                content: CcItemBuildingContentWidget(
                   room: selectedRoom ?? '...',
                 ),
                 icon: Icons.apartment,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/modules/modules.dart';
+import 'package:mobile_clean_check/widgets/molecules/cc_item_simple_content_widget.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcListItemsWidget extends StatelessWidget {
@@ -17,6 +18,7 @@ class CcListItemsWidget extends StatelessWidget {
         return Column(
           children: [
             CcItemListWidget(
+              iconType: IconType.enabled,
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -26,7 +28,7 @@ class CcListItemsWidget extends StatelessWidget {
               },
               icon: Icons.domain_outlined,
               title: item['name']!,
-              subtitle: CcItemListSimpleContentWidget(subtitle: item['rooms']!),
+              content: CcItemSimpleContentWidget(subtitle: item['rooms']!),
             ),
             const SizedBox(height: 16.0),
           ],

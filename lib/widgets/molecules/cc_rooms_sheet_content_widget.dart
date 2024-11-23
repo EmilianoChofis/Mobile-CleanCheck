@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
-import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcRoomsSheetContentWidget extends StatefulWidget {
   final List<String> items;
@@ -30,7 +29,7 @@ class _CcRoomsSheetContentWidgetState extends State<CcRoomsSheetContentWidget> {
       itemCount: widget.items.length * 2 - 1,
       itemBuilder: (context, index) {
         if (index.isOdd) {
-          return const CcDividerWidget();
+          return const Divider();
         } else {
           final itemIndex = index ~/ 2;
           final item = widget.items[itemIndex];

@@ -15,3 +15,4 @@ export 'package:mobile_clean_check/modules/maid/maid_home_screen.dart';
 
 //common module
 export 'package:mobile_clean_check/modules/common/incidences_screen.dart';
+export 'package:mobile_clean_check/modules/common/incidence_detail_screen.dart';

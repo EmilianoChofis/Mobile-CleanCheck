@@ -8,7 +8,7 @@ import 'package:mobile_clean_check/widgets/widgets.dart';
 class CcImagePickerWidget extends StatefulWidget {
   final String label;
   final String hint;
-  final Icon icon;
+  final IconData icon;
   final Function(bool) onImagesChanged;
 
   const CcImagePickerWidget({
@@ -24,14 +24,14 @@ class CcImagePickerWidget extends StatefulWidget {
 }
 
 class _CcImagePickerWidgetState extends State<CcImagePickerWidget> {
-  final primaryColor = ColorSchemes.primary;
+  final secondaryColor = ColorSchemes.secondary;
   final ImagePicker _picker = ImagePicker();
   final List<XFile> _images = [];
 
   Future<void> _pickImage() async {
     if (_images.length < 5) {
       final XFile? pickedImage =
-      await _picker.pickImage(source: ImageSource.camera);
+          await _picker.pickImage(source: ImageSource.camera);
 
       if (pickedImage != null) {
         setState(() {
@@ -54,9 +54,7 @@ class _CcImagePickerWidgetState extends State<CcImagePickerWidget> {
       builder: (BuildContext context) {
         return Dialog(
           child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).pop();
-            },
+            onTap: () => Navigator.of(context).pop(),
             child: Image.file(
               File(image.path),
               fit: BoxFit.contain,
@@ -85,17 +83,14 @@ class _CcImagePickerWidgetState extends State<CcImagePickerWidget> {
             width: double.infinity,
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              border: Border.all(color: primaryColor),
+              border: Border.all(color: secondaryColor),
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Row(
               children: [
-                widget.icon,
+                Icon(widget.icon, color: secondaryColor),
                 const SizedBox(width: 8.0),
-                Text(
-                  widget.hint,
-                  style: TextThemes.lightTextTheme.bodyMedium,
-                ),
+                Text(widget.hint, style: TextStyle(color: secondaryColor)),
               ],
             ),
           ),
@@ -125,11 +120,10 @@ class _CcImagePickerWidgetState extends State<CcImagePickerWidget> {
                         right: 0,
                         top: 0,
                         child: IconButton(
-                          icon: const Icon(Icons.remove_circle, color: Colors.red),
+                          icon: const Icon(Icons.remove_circle,
+                              color: Colors.red),
                           onPressed: () {
-                            setState(() {
-                              _images.removeAt(index);
-                            });
+                            setState(() => _images.removeAt(index));
                             widget.onImagesChanged(_images.isNotEmpty);
                           },
                         ),

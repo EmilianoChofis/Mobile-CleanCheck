@@ -11,14 +11,19 @@ class CcWorkingZonesIcon extends StatelessWidget {
     super.key,
   });
 
+  final secondaryColor = ColorSchemes.secondary;
+  final grayColor = ColorSchemes.disabled;
+  final redColor = ColorSchemes.error;
+  final yellowColor = ColorSchemes.warning;
+
   Color _getIconColor() {
     switch (iconType) {
-      case IconType.disabled:
-        return ColorSchemes.error;
-      case IconType.reported:
-        return ColorSchemes.warning;
       case IconType.enabled:
-        return ColorSchemes.disabled;
+        return grayColor;
+      case IconType.reported:
+        return yellowColor;
+      case IconType.disabled:
+        return redColor;
     }
   }
 
@@ -33,14 +38,14 @@ class CcWorkingZonesIcon extends StatelessWidget {
       ),
       child: Icon(
         icon,
-        color: ColorSchemes.secondary,
+        color: iconType == IconType.disabled ? grayColor : secondaryColor,
       ),
     );
   }
 }
 
 enum IconType {
-  disabled,
-  reported,
   enabled,
+  reported,
+  disabled,
 }

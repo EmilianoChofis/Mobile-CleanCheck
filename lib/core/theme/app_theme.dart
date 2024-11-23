@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_clean_check/core/theme/color_schemes.dart';
-import 'package:mobile_clean_check/core/theme/text_themes.dart';
+import 'package:mobile_clean_check/core/theme/themes.dart';
 
 class AppTheme {
   static ThemeData lightTheme = ThemeData(
@@ -13,6 +12,11 @@ class AppTheme {
       error: ColorSchemes.error,
       surface: ColorSchemes.white,
       onSurface: ColorSchemes.black,
+    ),
+    dividerTheme: const DividerThemeData(
+      color: ColorSchemes.disabled,
+      space: 0,
+      thickness: 1,
     ),
     inputDecorationTheme: const InputDecorationTheme(
       prefixIconColor: ColorSchemes.secondary,

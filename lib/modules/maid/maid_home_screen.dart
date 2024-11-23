@@ -23,24 +23,16 @@ class MaidHomeScreen extends StatelessWidget {
                   'rooms': '20 habitaciones',
                 },
                 {
-                  'name': 'Edificio Ciprés',
+                  'name': 'Edificio Alta Pamira',
                   'rooms': '15 habitaciones',
                 },
                 {
-                  'name': 'Edificio Palmira',
+                  'name': 'Edificio Baja Palmira',
                   'rooms': '20 habitaciones',
                 },
                 {
-                  'name': 'Edificio Ciprés',
-                  'rooms': '15 habitaciones',
-                },
-                {
-                  'name': 'Edificio Palmira',
-                  'rooms': '20 habitaciones',
-                },
-                {
-                  'name': 'Edificio Ciprés',
-                  'rooms': '15 habitaciones',
+                  'name': 'Rio Tiber',
+                  'rooms': '8 habitaciones',
                 },
               ],
             ),

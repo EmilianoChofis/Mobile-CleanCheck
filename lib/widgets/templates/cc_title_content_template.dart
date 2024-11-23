@@ -13,13 +13,16 @@ class CcTitleContentTemplate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CcTitleScreenWidget(title: title),
-        const SizedBox(height: 8.0),
-        content,
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CcTitleScreenWidget(title: title),
+          const SizedBox(height: 8.0),
+          content,
+        ],
+      ),
     );
   }
 }

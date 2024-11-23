@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
+import 'package:mobile_clean_check/core/theme/themes.dart';
 
 class CcFloorWidget extends StatelessWidget {
   final ValueNotifier<String?> selectedRoomNotifier;
 
   const CcFloorWidget({required this.selectedRoomNotifier, super.key});
+
+  final secondaryColor = ColorSchemes.secondary;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +27,11 @@ class CcFloorWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const CcFloorTitleWidget(floor: floor),
+          Text(
+            floor,
+            style:
+                TextStyle(color: secondaryColor, fontWeight: FontWeight.bold)
+          ),
           const SizedBox(height: 8.0),
           Wrap(
             spacing: 8,
@@ -51,7 +58,7 @@ class CcFloorWidget extends StatelessWidget {
             }).toList(),
           ),
           const SizedBox(height: 24.0),
-          const CcDividerWidget(),
+          const Divider(),
         ],
       ),
     );

@@ -37,9 +37,10 @@ class _CcCleanButtonWidgetState extends State<CcCleanButtonWidget> {
 
   Widget _buildBuildingItem(String room) {
     return CcItemListWidget(
+      iconType: IconType.enabled,
       icon: Icons.apartment,
       title: "Edificio",
-      subtitle: Text.rich(
+      content: Text.rich(
         style: TextStyle(color: primaryColor),
         TextSpan(
           text: "Habitación ",
@@ -70,7 +71,7 @@ class _CcCleanButtonWidgetState extends State<CcCleanButtonWidget> {
           builder: (context, setModalState) {
             return CcBottomSheetTemplate(
               title: "Marcar como limpia",
-              content: CcItemStatusWidget(
+              content: CcItemStatusContentWidget(
                 item: _buildBuildingItem(widget.selectedRoomNotifier.value!),
                 description:
                     _buildItemDescription(widget.selectedRoomNotifier.value!),

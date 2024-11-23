@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_clean_check/core/theme/themes.dart';
+import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcListScreenTemplate extends StatelessWidget {
   final String title;
@@ -30,10 +30,7 @@ class CcListScreenTemplate extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Text(
-                    title,
-                    style: TextThemes.lightTextTheme.headlineSmall,
-                  ),
+                  child: CcTitleScreenWidget(title: title),
                 ),
                 search,
                 filters,

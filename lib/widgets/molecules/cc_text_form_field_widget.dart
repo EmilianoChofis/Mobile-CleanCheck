@@ -9,6 +9,7 @@ class CcTextFormFieldWidget extends StatefulWidget {
   final String hint;
   final Icon icon;
   final int? maxLines;
+  final bool readOnly;
   final String? Function(String?)? validator;
 
   const CcTextFormFieldWidget({
@@ -18,6 +19,7 @@ class CcTextFormFieldWidget extends StatefulWidget {
     required this.hint,
     required this.icon,
     this.maxLines = 1,
+    this.readOnly = false,
     this.validator,
     super.key,
   });
@@ -49,6 +51,7 @@ class _CcTextFormFieldWidgetState extends State<CcTextFormFieldWidget> {
             prefixIcon: widget.icon,
             hintText: widget.hint,
           ),
+          readOnly: widget.readOnly,
           validator: widget.validator,
         ),
       ],

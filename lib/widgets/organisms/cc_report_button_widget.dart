@@ -56,7 +56,7 @@ class _CcReportButtonWidgetState extends State<CcReportButtonWidget> {
               actions: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CcReportFormWidget(
+                  CcGeneratedReportButtonWidget(
                     room: widget.selectedRoomNotifier.value!,
                     onClosePreviousBottomSheet: () => Navigator.pop(context),
                   ),

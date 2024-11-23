@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class CcItemStatusWidget extends StatelessWidget {
+class CcItemStatusContentWidget extends StatelessWidget {
   final Widget item;
   final Widget description;
 
-  const CcItemStatusWidget({
+  const CcItemStatusContentWidget({
     required this.item,
     required this.description,
     super.key,
