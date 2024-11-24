@@ -41,9 +41,7 @@ class CcListScreenTemplate extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: SingleChildScrollView(
-                child: content,
-              ),
+              child: content,
             ),
           ),
         ],

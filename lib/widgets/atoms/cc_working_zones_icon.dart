@@ -12,12 +12,15 @@ class CcWorkingZonesIcon extends StatelessWidget {
   });
 
   final secondaryColor = ColorSchemes.secondary;
+  final whiteColor = ColorSchemes.white;
   final grayColor = ColorSchemes.disabled;
   final redColor = ColorSchemes.error;
   final yellowColor = ColorSchemes.warning;
 
-  Color _getIconColor() {
+  Color _getBackgroundColor() {
     switch (iconType) {
+      case IconType.displayed:
+        return whiteColor;
       case IconType.enabled:
         return grayColor;
       case IconType.reported:
@@ -34,7 +37,7 @@ class CcWorkingZonesIcon extends StatelessWidget {
       height: 58,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(64),
-        color: _getIconColor(),
+        color: _getBackgroundColor(),
       ),
       child: Icon(
         icon,
@@ -45,6 +48,7 @@ class CcWorkingZonesIcon extends StatelessWidget {
 }
 
 enum IconType {
+  displayed,
   enabled,
   reported,
   disabled,

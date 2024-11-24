@@ -4,17 +4,19 @@ import 'package:mobile_clean_check/core/theme/themes.dart';
 
 class CcWorkingZoneItemWidget extends StatelessWidget {
   final IconData icon;
-  final String building;
-  final String rooms;
+  final String title;
+  final String? subtitle;
   final VoidCallback? onTap;
 
   const CcWorkingZoneItemWidget({
     required this.icon,
-    required this.building,
-    required this.rooms,
+    required this.title,
+    this.subtitle,
     this.onTap,
     super.key,
   });
+
+  final whiteColor = ColorSchemes.white;
 
   @override
   Widget build(BuildContext context) {
@@ -26,20 +28,22 @@ class CcWorkingZoneItemWidget extends StatelessWidget {
           children: [
             CcWorkingZonesIcon(
               icon: icon,
-              iconType: IconType.enabled,
+              iconType: IconType.displayed,
             ),
+            const SizedBox(height: 8.0),
             Text(
-              building,
-              style: const TextStyle(
-                color: ColorSchemes.white,
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: whiteColor,
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
               ),
             ),
             Text(
-              rooms,
-              style: const TextStyle(
-                color: ColorSchemes.white,
+              subtitle ?? '',
+              style: TextStyle(
+                color: whiteColor,
                 fontSize: 12,
               ),
             ),

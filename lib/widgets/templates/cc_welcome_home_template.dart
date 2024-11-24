@@ -38,7 +38,10 @@ class _CcWelcomeHomeTemplateState extends State<CcWelcomeHomeTemplate> {
           'Hola ${userName ?? 'Usuario'}, ¿Qué quieres hacer?',
           style: TextStyle(color: surfaceColor, fontSize: 16),
         ),
-        widget.actions,
+        Padding(
+          padding: const EdgeInsets.only(top: 16.0),
+          child: widget.actions,
+        ),
       ],
     );
   }

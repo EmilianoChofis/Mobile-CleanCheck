@@ -17,7 +17,7 @@ class MaidHomeScreen extends StatelessWidget {
           content: CcTitleContentTemplate(
             title: 'Lista de edificios',
             content: CcListItemsWidget(
-              content: [
+              items: [
                 {
                   'name': 'Edificio Palmira',
                   'rooms': '20 habitaciones',

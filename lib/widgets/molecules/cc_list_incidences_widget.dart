@@ -25,6 +25,8 @@ class CcListIncidencesWidget extends StatelessWidget {
 
   String interpretStatus(IconType iconType) {
     switch (iconType) {
+      case IconType.displayed:
+        return '';
       case IconType.enabled:
         return 'Disponible';
       case IconType.reported:

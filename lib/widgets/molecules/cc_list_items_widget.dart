@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/modules/modules.dart';
-import 'package:mobile_clean_check/widgets/molecules/cc_item_simple_content_widget.dart';
+import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcListItemsWidget extends StatelessWidget {
-  final List<Map<String, String>> content;
+  final List<Map<String, dynamic>> items;
 
   const CcListItemsWidget({
-    required this.content,
+    required this.items,
     super.key,
   });
+
+  final secondaryColor = ColorSchemes.secondary;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: content.map((item) {
+      children: items.map((item) {
         return Column(
           children: [
             CcItemListWidget(
@@ -28,7 +30,10 @@ class CcListItemsWidget extends StatelessWidget {
               },
               icon: Icons.domain_outlined,
               title: item['name']!,
-              content: CcItemSimpleContentWidget(subtitle: item['rooms']!),
+              content: Text(
+                item['rooms']!,
+                style: TextStyle(color: secondaryColor),
+              ),
             ),
             const SizedBox(height: 16.0),
           ],

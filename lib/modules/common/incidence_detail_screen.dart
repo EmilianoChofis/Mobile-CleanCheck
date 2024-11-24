@@ -32,6 +32,8 @@ class IncidenceDetailScreen extends StatelessWidget {
 
   String interpretStatus(IconType iconType) {
     switch (iconType) {
+      case IconType.displayed:
+        return '';
       case IconType.enabled:
         return 'Disponible';
       case IconType.reported:
@@ -43,6 +45,8 @@ class IncidenceDetailScreen extends StatelessWidget {
 
   Widget _buildStatusDescription(IconType iconType) {
     switch (iconType) {
+      case IconType.displayed:
+        return const SizedBox.shrink();
       case IconType.enabled:
         return const Text.rich(
           style: TextStyle(fontSize: 16.0),

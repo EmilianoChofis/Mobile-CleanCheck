@@ -10,12 +10,28 @@ void main() {
       RepositoryProvider<AuthRepository>(
         create: (context) => AuthRepository(),
       ),
+      RepositoryProvider<BuildingRepository>(
+        create: (context) => BuildingRepository(),
+      ),
+      RepositoryProvider<FloorRepository>(
+        create: (context) => FloorRepository(),
+      ),
     ],
     child: MultiBlocProvider(
       providers: [
         BlocProvider<AuthCubit>(
           create: (context) => AuthCubit(
             authRepository: context.read<AuthRepository>(),
+          ),
+        ),
+        BlocProvider<BuildingCubit>(
+          create: (context) => BuildingCubit(
+            buildingRepository: context.read<BuildingRepository>(),
+          ),
+        ),
+        BlocProvider<FloorCubit>(
+          create: (context) => FloorCubit(
+            floorRepository: context.read<FloorRepository>(),
           ),
         ),
       ],

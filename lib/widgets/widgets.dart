@@ -22,6 +22,7 @@ export 'package:mobile_clean_check/widgets/molecules/cc_list_items_widget.dart';
 export 'package:mobile_clean_check/widgets/molecules/cc_rooms_sheet_content_widget.dart';
 export 'package:mobile_clean_check/widgets/molecules/cc_search_bar_widget.dart';
 export 'package:mobile_clean_check/widgets/molecules/cc_floor_widget.dart';
+export 'package:mobile_clean_check/widgets/molecules/cc_list_slidable_widget.dart';
 export 'package:mobile_clean_check/widgets/molecules/cc_images_display_widget.dart';
 export 'package:mobile_clean_check/widgets/molecules/cc_image_picker_widget.dart';
 export 'package:mobile_clean_check/widgets/molecules/cc_secure_progress_password_widget.dart';
@@ -40,6 +41,9 @@ export 'package:mobile_clean_check/widgets/organisms/cc_pin_button_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_report_button_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_report_form_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_working_zone_maid_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_working_zone_manager_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_fab_building_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_register_building_form_widget.dart';
 
 // Template widgets
 export 'package:mobile_clean_check/widgets/templates/cc_auth_template.dart';

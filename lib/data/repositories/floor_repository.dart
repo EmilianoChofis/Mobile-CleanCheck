@@ -1,24 +1,23 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:mobile_clean_check/core/configs/configs.dart';
+import 'package:mobile_clean_check/data/models/models.dart';
 
-class AuthRepository {
+class FloorRepository {
   final Dio dio = DioClient.instance;
 
-  Future<ApiResponse<AuthResponse>> login(AuthModel auth) async {
+  Future<ApiResponse<FloorModel>> createFloor(FloorModel floor) async {
     try {
       final response = await dio.post(
-        '/auth/signIn',
-        data: json.encode(auth.toJson()),
+        '/floor/create',
+        data: floor.toJson(),
       );
 
-      return ApiResponse<AuthResponse>.fromJson(
+      return ApiResponse<FloorModel>.fromJson(
         response.data,
-            (json) => AuthResponse.fromJson(json),
+        (json) => FloorModel.fromJson(json),
       );
     } on DioException catch (e) {
-      return ApiResponse<AuthResponse>(
+      return ApiResponse<FloorModel>(
         data: null,
         error: true,
         statusCode: e.response?.statusCode ?? 500,
@@ -27,5 +26,4 @@ class AuthRepository {
       );
     }
   }
-
 }

@@ -43,8 +43,8 @@ class _CcWorkingZoneMaidWidgetState extends State<CcWorkingZoneMaidWidget> {
     //TODO Implementar la lista de zonas de trabajo iterando sobre pinnedItems
     return const CcWorkingZoneItemWidget(
       icon: Icons.bed_outlined,
-      building: 'Edificio Palmira',
-      rooms: '20 habitaciones',
+      title: 'Edificio Palmira',
+      subtitle: '20 habitaciones',
     );
   }
 

@@ -8,7 +8,9 @@ final Map<String, Map<String, dynamic>> roleConfigurations = {
     'error': false,
     'screens': const [
       ManagerHomeScreen(),
+      ManagerBuildingsScreen(),
       ManagerHomeScreen(),
+      IncidencesScreen(),
       ManagerHomeScreen(),
     ],
     'items': [
@@ -16,6 +18,16 @@ final Map<String, Map<String, dynamic>> roleConfigurations = {
         label: 'Inicio',
         icon: Icon(Icons.home_outlined),
         activeIcon: CcBnbActiveIconWidget(icon: Icon(Icons.home_outlined)),
+      ),
+      const BottomNavigationBarItem(
+        label: 'Edificios',
+        icon: Icon(Icons.apartment_outlined),
+        activeIcon: CcBnbActiveIconWidget(icon: Icon(Icons.apartment_outlined)),
+      ),
+      const BottomNavigationBarItem(
+        label: 'Usuarios',
+        icon: Icon(Icons.group_outlined),
+        activeIcon: CcBnbActiveIconWidget(icon: Icon(Icons.group_outlined)),
       ),
       const BottomNavigationBarItem(
         label: 'Incidencias',
