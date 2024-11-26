@@ -7,7 +7,7 @@ export 'package:mobile_clean_check/widgets/atoms/cc_room_name_widget.dart';
 export 'package:mobile_clean_check/widgets/atoms/cc_room_widget.dart';
 export 'package:mobile_clean_check/widgets/atoms/cc_snack_bar_widget.dart';
 export 'package:mobile_clean_check/widgets/atoms/cc_title_screen_widget.dart';
-export 'package:mobile_clean_check/widgets/atoms/cc_working_zones_icon.dart';
+export 'package:mobile_clean_check/widgets/molecules/cc_working_zones_icon.dart';
 
 // Molecule widgets
 export 'package:mobile_clean_check/widgets/molecules/cc_app_bar_widget.dart';
@@ -30,6 +30,7 @@ export 'package:mobile_clean_check/widgets/molecules/cc_symbology_widget.dart';
 export 'package:mobile_clean_check/widgets/molecules/cc_text_form_field_password_widget.dart';
 export 'package:mobile_clean_check/widgets/molecules/cc_text_form_field_widget.dart';
 export 'package:mobile_clean_check/widgets/molecules/cc_working_zone_item_widget.dart';
+export 'package:mobile_clean_check/widgets/molecules/cc_drop_down_widget.dart';
 
 // Organism widgets
 export 'package:mobile_clean_check/widgets/organisms/cc_change_password_form_widget.dart';
@@ -42,8 +43,10 @@ export 'package:mobile_clean_check/widgets/organisms/cc_report_button_widget.dar
 export 'package:mobile_clean_check/widgets/organisms/cc_report_form_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_working_zone_maid_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_working_zone_manager_widget.dart';
-export 'package:mobile_clean_check/widgets/organisms/cc_fab_building_widget.dart';
-export 'package:mobile_clean_check/widgets/organisms/cc_register_building_form_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_fab_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_building_form_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_building_bottom_sheet_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_room_form_widget.dart';
 
 // Template widgets
 export 'package:mobile_clean_check/widgets/templates/cc_auth_template.dart';

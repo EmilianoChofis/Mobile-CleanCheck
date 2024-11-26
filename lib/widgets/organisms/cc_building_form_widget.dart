@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
-import 'package:mobile_clean_check/data/models/building_model.dart';
+import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
-class CcRegisterBuildingFormWidget extends StatefulWidget {
+class CcBuildingFormWidget extends StatefulWidget {
   final BuildingModel? building;
   final GlobalKey<FormState> formKey;
   final TextEditingController nameBuildingController;
   final TextEditingController numberFloorsController;
 
-  const CcRegisterBuildingFormWidget({
+  const CcBuildingFormWidget({
     this.building,
     required this.formKey,
     required this.nameBuildingController,
@@ -18,12 +18,10 @@ class CcRegisterBuildingFormWidget extends StatefulWidget {
   });
 
   @override
-  State<CcRegisterBuildingFormWidget> createState() =>
-      _CcRegisterBuildingFormWidgetState();
+  State<CcBuildingFormWidget> createState() => _CcBuildingFormWidgetState();
 }
 
-class _CcRegisterBuildingFormWidgetState
-    extends State<CcRegisterBuildingFormWidget> {
+class _CcBuildingFormWidgetState extends State<CcBuildingFormWidget> {
   double _sliderValue = 1.0;
 
   @override

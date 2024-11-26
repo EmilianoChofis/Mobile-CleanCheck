@@ -12,6 +12,17 @@ class ManagerHomeScreen extends StatefulWidget {
 }
 
 class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameBuildingController = TextEditingController();
+  final TextEditingController _numberFloorsController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameBuildingController.dispose();
+    _numberFloorsController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -22,25 +33,79 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CcAppBarWidget(title: "Inicio"),
-      body: BlocBuilder<BuildingCubit, BuildingState>(
-        builder: (context, state) {
-          if (state is BuildingLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is BuildingLoaded) {
-            return SingleChildScrollView(
-              child: CcHeaderTemplate(
-                header: _buildHeader(),
-                content: _buildContent(state.buildings),
-              ),
+      body: BlocListener<BuildingCubit, BuildingState>(
+        listener: (context, state) {
+          if (state is BuildingError) {
+            CcSnackBarWidget.show(
+              context,
+              message: state.message,
+              snackBarType: SnackBarType.error,
             );
-          } else if (state is BuildingError) {
-            return Center(child: Text('Error: ${state.message}'));
-          } else {
-            return const Center(child: Text('No hay información disponible.'));
+          } else if (state is BuildingSuccess) {
+            CcSnackBarWidget.show(
+              context,
+              message: state.message,
+              snackBarType: SnackBarType.success,
+            );
+
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
+
+            _nameBuildingController.clear();
+            _numberFloorsController.clear();
           }
         },
+        child: BlocBuilder<BuildingCubit, BuildingState>(
+          builder: (context, state) {
+            if (state is BuildingLoading) {
+              return const CircularProgressIndicator();
+            } else if (state is BuildingLoaded) {
+              return _buildHome(state.buildings);
+            } else {
+              return _buildHome([]);
+            }
+          },
+        ),
       ),
     );
+  }
+
+  Widget _buildHome(List<BuildingModel> buildings) {
+    return SingleChildScrollView(
+      child: CcHeaderTemplate(
+        header: _buildHeader(),
+        content: _buildContent(buildings),
+      ),
+    );
+  }
+
+  void _showRegisterBuildingBottomSheet() {
+    BuildingBottomSheet.show(
+      context,
+      formKey: _formKey,
+      nameBuildingController: _nameBuildingController,
+      numberFloorsController: _numberFloorsController,
+      onSave: (building) => _onSave(),
+      onCancel: () => _onCancel(),
+    );
+  }
+
+  void _onSave() {
+    if (_formKey.currentState!.validate()) {
+      final newBuilding = BuildingModel(
+        name: _nameBuildingController.text,
+        number: int.parse(_numberFloorsController.text),
+      );
+
+      context.read<BuildingCubit>().createBuildingWithFloors(newBuilding);
+    }
+  }
+
+  void _onCancel() {
+    _nameBuildingController.clear();
+    _numberFloorsController.clear();
+    Navigator.pop(context);
   }
 
   Widget _buildHeader() {
@@ -57,9 +122,11 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
             ),
           ),
           const SizedBox(height: 16.0),
-          const CcWorkingZoneTemplate(
+          CcWorkingZoneTemplate(
             title: "Accesos directos",
-            actions: CcWorkingZoneManagerWidget(),
+            actions: CcWorkingZoneManagerWidget(
+              onRegisterBuilding: _showRegisterBuildingBottomSheet,
+            ),
           ),
         ],
       ),
@@ -86,7 +153,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                 buttonType: ButtonType.text,
                 label: "Ver más",
                 suffixIcon: const Icon(Icons.chevron_right),
-                onPressed: () => print("Edificios"),
+                onPressed: () => {print("Edificios")},
                 isLoading: false,
               ),
             ],

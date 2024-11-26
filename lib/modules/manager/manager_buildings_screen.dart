@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_clean_check/core/configs/show_custom_bottom_sheet.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
@@ -21,6 +20,13 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
   final _searchController = SearchController();
 
   @override
+  void dispose() {
+    _nameBuildingController.dispose();
+    _numberFloorsController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     context.read<BuildingCubit>().getBuildings();
@@ -30,8 +36,9 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CcAppBarWidget(title: 'Edificios'),
-      floatingActionButton: CcFabBuildingWidget(
-        onPressed: () => _buildingBottomSheetForm(context),
+      floatingActionButton: CcFabWidget(
+        onPressed: () => _showBuildingBottomSheet(context),
+        icon: Icons.add,
       ),
       body: BlocListener<BuildingCubit, BuildingState>(
         listener: (context, state) {
@@ -47,7 +54,11 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
               message: state.message,
               snackBarType: SnackBarType.success,
             );
-            Navigator.pop(context);
+
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
+
             _nameBuildingController.clear();
             _numberFloorsController.clear();
           }
@@ -59,9 +70,7 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
             } else if (state is BuildingLoaded) {
               return _buildList(state.buildings);
             } else {
-              return const Center(
-                child: Text('No hay información disponible.'),
-              );
+              return _buildList([]);
             }
           },
         ),
@@ -69,13 +78,13 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
     );
   }
 
-  Widget _buildList(List<BuildingModel> buildings, [String? errorMessage]) {
+  Widget _buildList(List<BuildingModel> buildings) {
     return CcListScreenTemplate(
       title: 'Lista de edificios',
       search: CcSearchBarWidget(controller: _searchController),
       filters: _buildFilters(),
       symbology: _buildSymbology(),
-      content: _buildContent(buildings, errorMessage),
+      content: _buildContent(buildings),
     );
   }
 
@@ -100,11 +109,7 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
     );
   }
 
-  Widget _buildContent(List<BuildingModel> buildings, String? errorMessage) {
-    if (errorMessage != null) {
-      return Center(child: Text(errorMessage));
-    }
-
+  Widget _buildContent(List<BuildingModel> buildings) {
     if (buildings.isEmpty) {
       return const Center(child: Text('No hay edificios registrados.'));
     }
@@ -112,7 +117,7 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
     return CcListSlidableWidget<BuildingModel>(
       items: buildings,
       onEdit: (context, {item}) =>
-          _buildingBottomSheetForm(context, building: item),
+          _showBuildingBottomSheet(context, building: item),
       onDelete: (context, {item}) {},
       buildItem: (context, building) {
         return CcItemListWidget(
@@ -120,7 +125,7 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const MaidBuildingScreen(),
+                builder: (context) => ManagerRoomsScreen(building: building),
               ),
             );
           },
@@ -135,39 +140,16 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
     );
   }
 
-  void _buildingBottomSheetForm(BuildContext context,
+  void _showBuildingBottomSheet(BuildContext context,
       {BuildingModel? building}) {
-    if (building != null) {
-      _nameBuildingController.text = building.name;
-      _numberFloorsController.text = building.number.toString();
-    }
-
-    showCustomBottomSheet(
+    BuildingBottomSheet.show(
       context,
-      title: building == null ? 'Registrar edificio' : 'Editar edificio',
-      content: CcRegisterBuildingFormWidget(
-        formKey: _formKey,
-        nameBuildingController: _nameBuildingController,
-        numberFloorsController: _numberFloorsController,
-      ),
-      actions: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CcButtonWidget(
-            buttonType: ButtonType.elevated,
-            onPressed: () => _onSave(building),
-            label: building == null ? 'Registrar' : 'Actualizar',
-            isLoading: false,
-          ),
-          const SizedBox(height: 8.0),
-          CcButtonWidget(
-            buttonType: ButtonType.outlined,
-            onPressed: _onCancel,
-            label: "Cancelar",
-            isLoading: false,
-          ),
-        ],
-      ),
+      formKey: _formKey,
+      nameBuildingController: _nameBuildingController,
+      numberFloorsController: _numberFloorsController,
+      building: building,
+      onSave: (building) => _onSave(building),
+      onCancel: () => _onCancel(),
     );
   }
 
@@ -179,9 +161,9 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
       );
 
       if (building == null) {
-        context.read<BuildingCubit>().createBuilding(newBuilding);
+        context.read<BuildingCubit>().createBuildingWithFloors(newBuilding);
       } else {
-        context.read<BuildingCubit>().updateBuilding(
+        context.read<BuildingCubit>().updateBuildingWithFloors(
               building.copyWith(
                 name: newBuilding.name,
                 number: newBuilding.number,

@@ -10,6 +10,10 @@ class BuildingCubit extends Cubit<BuildingState> {
 
   Future<void> getBuildings() async {
     emit(BuildingLoading());
+    loadBuildings();
+  }
+
+  Future<void> loadBuildings() async {
     final response = await buildingRepository.getBuildings();
 
     if (response.error) {
@@ -19,25 +23,64 @@ class BuildingCubit extends Cubit<BuildingState> {
     }
   }
 
-  Future<void> createBuilding(BuildingModel building) async {
-    final response = await buildingRepository.createBuilding(building);
+  Future<void> createBuildingWithFloors(BuildingModel building) async {
+    final response =
+        await buildingRepository.createBuildingWithFloors(building);
 
     if (response.error) {
       emit(BuildingError(message: response.message));
     } else {
-      emit(BuildingSuccess(message: 'Edificio registrado con éxito'));
-      await getBuildings();
+      final createdBuilding = response.data;
+
+      List<FloorModel> floors = List.generate(
+        createdBuilding!.number,
+        (index) => FloorModel(
+          name: 'Piso ${index + 1}',
+          buildingId: createdBuilding.id,
+          building: createdBuilding,
+        ),
+      );
+
+      await FloorRepository().createListFloor(floors);
+
+      emit(BuildingSuccess(
+          message: 'Edificio creado y pisos añadidos con éxito'));
     }
+
+    await loadBuildings();
   }
 
-  Future<void> updateBuilding(BuildingModel building) async {
-    final response = await buildingRepository.updateBuilding(building);
+  Future<void> updateBuildingWithFloors(BuildingModel building) async {
+    final response =
+        await buildingRepository.updateBuildingWithFloors(building);
 
     if (response.error) {
       emit(BuildingError(message: response.message));
     } else {
+      final createdBuilding = response.data;
+      final buildingId = createdBuilding!.id;
+
+      final floorsResponse =
+          await FloorRepository().getFloorsByBuildingId(buildingId!);
+
+      final lastFloor = floorsResponse.data!.length;
+
+      List<FloorModel> floors = List.generate(
+        createdBuilding.number,
+        (index) => FloorModel(
+          name: 'Piso ${lastFloor + index + 1}',
+          buildingId: createdBuilding.id,
+          building: createdBuilding,
+        ),
+      );
+
+      await FloorRepository().createListFloor(floors);
+      await buildingRepository.updateBuilding(
+        building.copyWith(number: lastFloor + building.number),
+      );
+
       emit(BuildingSuccess(message: 'Edificio actualizado con éxito'));
-      await getBuildings();
     }
+    await loadBuildings();
   }
 }

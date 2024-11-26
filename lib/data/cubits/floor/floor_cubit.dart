@@ -8,14 +8,26 @@ class FloorCubit extends Cubit<FloorState> {
 
   FloorCubit({required this.floorRepository}) : super(FloorInitial());
 
-  Future<void> createFloor(FloorModel floor) async {
+  Future<void> createListFloor(List<FloorModel> floors) async {
     emit(FloorLoading());
-    final response = await floorRepository.createFloor(floor);
+    final response = await floorRepository.createListFloor(floors);
 
     if (response.error) {
       emit(FloorError(message: response.message));
     } else {
-      emit(FloorSuccess(message: 'Piso registrado con éxito'));
+      emit(FloorSuccess(message: 'Pisos registrados con éxito'));
+    }
+  }
+
+  Future<void> getFloorsByBuildingId(String buildingId) async {
+    emit(FloorLoading());
+
+    final response = await floorRepository.getFloorsByBuildingId(buildingId);
+
+    if (response.error) {
+      emit(FloorError(message: response.message));
+    } else {
+      emit(FloorLoaded(floors: response.data!));
     }
   }
 }

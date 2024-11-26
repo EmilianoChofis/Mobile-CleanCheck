@@ -6,6 +6,7 @@ export 'package:mobile_clean_check/modules/auth/change_password_screen.dart';
 //manager module
 export 'package:mobile_clean_check/modules/manager/manager_home_screen.dart';
 export 'package:mobile_clean_check/modules/manager/manager_buildings_screen.dart';
+export 'package:mobile_clean_check/modules/manager/manager_rooms_screen.dart';
 
 //receptionist module
 export 'package:mobile_clean_check/modules/receptionist/receptionist_home_screen.dart';

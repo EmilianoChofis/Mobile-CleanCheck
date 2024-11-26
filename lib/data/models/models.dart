@@ -6,3 +6,4 @@ export 'role_model.dart';
 export 'user_model.dart';
 export 'building_model.dart';
 export 'floor_model.dart';
+export 'room_model.dart';

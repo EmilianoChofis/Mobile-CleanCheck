@@ -25,7 +25,7 @@ class BuildingRepository {
     }
   }
 
-  Future<ApiResponse<BuildingModel>> createBuilding(
+  Future<ApiResponse<BuildingModel>> createBuildingWithFloors(
       BuildingModel building) async {
     try {
       final response = await dio.post(
@@ -48,7 +48,29 @@ class BuildingRepository {
     }
   }
 
-  Future<ApiResponse<BuildingModel>> updateBuilding(
+  Future<ApiResponse<BuildingModel>> updateBuilding(BuildingModel building) async {
+    try {
+      final response = await dio.put(
+        '/building/update',
+        data: building.toJson(),
+      );
+
+      return ApiResponse<BuildingModel>.fromJson(
+        response.data,
+        (json) => BuildingModel.fromJson(json),
+      );
+    } on DioException catch (e) {
+      return ApiResponse<BuildingModel>(
+        data: null,
+        error: true,
+        statusCode: e.response?.statusCode ?? 500,
+        message: e.response?.data['message'] ??
+            'Ha ocurrido un error. Inténtalo de nuevo.',
+      );
+    }
+  }
+
+  Future<ApiResponse<BuildingModel>> updateBuildingWithFloors(
       BuildingModel building) async {
     try {
       final response = await dio.put(

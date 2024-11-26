@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
 
-class CcFabBuildingWidget extends StatelessWidget {
+class CcFabWidget extends StatelessWidget {
   final VoidCallback onPressed;
-  const CcFabBuildingWidget({required this.onPressed, super.key});
+  final IconData icon;
+  const CcFabWidget({required this.onPressed, required this.icon, super.key});
 
   final primaryColor = ColorSchemes.primary;
   final secondaryColor = ColorSchemes.secondary;
@@ -16,7 +17,7 @@ class CcFabBuildingWidget extends StatelessWidget {
       shape: const CircleBorder(),
       backgroundColor: grayColor,
       foregroundColor: secondaryColor,
-      child: const Icon(Icons.add),
+      child: Icon(icon),
     );
   }
 }
