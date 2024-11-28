@@ -59,7 +59,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
         child: BlocBuilder<BuildingCubit, BuildingState>(
           builder: (context, state) {
             if (state is BuildingLoading) {
-              return const CircularProgressIndicator();
+              return const Center(child: CircularProgressIndicator());
             } else if (state is BuildingLoaded) {
               return _buildHome(state.buildings);
             } else {
