@@ -7,17 +7,17 @@ class CcRoomBottomSheetWidget {
   static void show(
     BuildContext context, {
     required GlobalKey<FormState> formKey,
-    required TextEditingController buildingController,
-    required TextEditingController floorController,
+    bool quickAccess = false,
+    required TextEditingController buildingsController,
+    required TextEditingController floorsController,
     required TextEditingController numberRoomsController,
-    required BuildingModel building,
     RoomModel? room,
     required VoidCallback onCancel,
     required Function(RoomModel?) onSave,
   }) {
     if (room != null) {
-      buildingController.text = room.floor.building.name;
-      floorController.text = room.floor.name;
+      buildingsController.text = room.floor.building.name;
+      floorsController.text = room.floor.name;
       numberRoomsController.text = room.identifier;
     }
 
@@ -26,8 +26,9 @@ class CcRoomBottomSheetWidget {
       title: room == null ? 'Registrar habitación' : 'Editar habitación',
       content: CcRoomFormWidget(
         formKey: formKey,
-        buildingController: buildingController,
-        floorController: floorController,
+        quickAccess: quickAccess,
+        buildingsController: buildingsController,
+        floorsController: floorsController,
         numberRoomsController: numberRoomsController,
       ),
       actions: Column(

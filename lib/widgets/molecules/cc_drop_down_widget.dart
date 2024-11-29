@@ -7,6 +7,7 @@ class CcDropDownWidget extends StatefulWidget {
   final String? label;
   final String hint;
   final Icon icon;
+  final ValueChanged<String?>? onChanged;
   final String? Function(String?)? validator;
 
   const CcDropDownWidget({
@@ -15,6 +16,7 @@ class CcDropDownWidget extends StatefulWidget {
     this.label,
     required this.hint,
     required this.icon,
+    this.onChanged,
     this.validator,
     super.key,
   });
@@ -25,6 +27,15 @@ class CcDropDownWidget extends StatefulWidget {
 
 class _CcDropDownWidgetState extends State<CcDropDownWidget> {
   String? _selectedValue;
+
+  @override
+  void initState() {
+    super.initState();
+    // Ensure _selectedValue is initialized with a valid value from the list
+    if (widget.items.isNotEmpty) {
+      _selectedValue = widget.items.first.value; // Set it to the first item initially
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +76,9 @@ class _CcDropDownWidgetState extends State<CcDropDownWidget> {
               _selectedValue = value;
               widget.controller.text = value ?? '';
             });
+            if (widget.onChanged != null) {
+              widget.onChanged!(value);
+            }
           },
           validator: widget.validator,
         ),

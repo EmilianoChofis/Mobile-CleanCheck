@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
+import 'package:mobile_clean_check/data/services/services.dart';
+import 'package:mobile_clean_check/widgets/organisms/cc_room_bottom_sheet_widget.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class ManagerHomeScreen extends StatefulWidget {
@@ -13,8 +15,13 @@ class ManagerHomeScreen extends StatefulWidget {
 
 class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   final TextEditingController _nameBuildingController = TextEditingController();
   final TextEditingController _numberFloorsController = TextEditingController();
+
+  final TextEditingController _buildingsController = TextEditingController();
+  final TextEditingController _floorsController = TextEditingController();
+  final TextEditingController _roomsController = TextEditingController();
 
   @override
   void dispose() {
@@ -31,41 +38,44 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const CcAppBarWidget(title: "Inicio"),
-      body: BlocListener<BuildingCubit, BuildingState>(
-        listener: (context, state) {
-          if (state is BuildingError) {
-            CcSnackBarWidget.show(
-              context,
-              message: state.message,
-              snackBarType: SnackBarType.error,
-            );
-          } else if (state is BuildingSuccess) {
-            CcSnackBarWidget.show(
-              context,
-              message: state.message,
-              snackBarType: SnackBarType.success,
-            );
+    return CcAppBlocListenerTemplate(
+      child: Scaffold(
+        appBar: const CcAppBarWidget(title: "Inicio"),
+        body: BlocListener<RoomCubit, RoomState>(
+          listener: (context, state) {
+            if (state is RoomError) {
+              CcSnackBarWidget.show(
+                context,
+                message: state.message,
+                snackBarType: SnackBarType.error,
+              );
+            } else if (state is RoomSuccess) {
+              CcSnackBarWidget.show(
+                context,
+                message: state.message,
+                snackBarType: SnackBarType.success,
+              );
 
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            }
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              }
 
-            _nameBuildingController.clear();
-            _numberFloorsController.clear();
-          }
-        },
-        child: BlocBuilder<BuildingCubit, BuildingState>(
-          builder: (context, state) {
-            if (state is BuildingLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is BuildingLoaded) {
-              return _buildHome(state.buildings);
-            } else {
-              return _buildHome([]);
+              _buildingsController.clear();
+              _floorsController.clear();
+              _roomsController.clear();
             }
           },
+          child: BlocBuilder<BuildingCubit, BuildingState>(
+            builder: (context, state) {
+              if (state is BuildingLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is BuildingLoaded) {
+                return _buildHome(state.buildings);
+              } else {
+                return _buildHome([]);
+              }
+            },
+          ),
         ),
       ),
     );
@@ -86,12 +96,25 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
       formKey: _formKey,
       nameBuildingController: _nameBuildingController,
       numberFloorsController: _numberFloorsController,
-      onSave: (building) => _onSave(),
+      onSave: (building) => _onSaveBuilding(),
       onCancel: () => _onCancel(),
     );
   }
 
-  void _onSave() {
+  void _showRegisterRoomBottomSheet() {
+    CcRoomBottomSheetWidget.show(
+      context,
+      formKey: _formKey,
+      quickAccess: true,
+      buildingsController: _buildingsController,
+      floorsController: _floorsController,
+      numberRoomsController: _roomsController,
+      onSave: (room) => _onSaveRoom(),
+      onCancel: _onCancel,
+    );
+  }
+
+  void _onSaveBuilding() {
     if (_formKey.currentState!.validate()) {
       final newBuilding = BuildingModel(
         name: _nameBuildingController.text,
@@ -99,6 +122,21 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
       );
 
       context.read<BuildingCubit>().createBuildingWithFloors(newBuilding);
+    }
+  }
+
+  void _onSaveRoom() async {
+    if (_formKey.currentState!.validate()) {
+      final roomCubit = context.read<RoomCubit>();
+      final roomService = RoomService();
+
+      final rooms = await roomService.generateRooms(
+        floorId: _floorsController.text,
+        floorControllerText: _floorsController.text,
+        roomsControllerText: _roomsController.text,
+      );
+
+      roomCubit.createListRooms(rooms);
     }
   }
 
@@ -126,6 +164,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
             title: "Accesos directos",
             actions: CcWorkingZoneManagerWidget(
               onRegisterBuilding: _showRegisterBuildingBottomSheet,
+              onRegisterRoom: _showRegisterRoomBottomSheet,
             ),
           ),
         ],
@@ -138,7 +177,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
         .take(3)
         .map((building) => {
               'name': building.name,
-              'rooms': '${building.number} habitaciones',
+              'rooms': '${building.number} edificios',
             })
         .toList();
 
@@ -148,14 +187,22 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
           title: "Edificios",
           content: Column(
             children: [
-              CcListItemsWidget(items: buildingItems),
-              CcButtonWidget(
-                buttonType: ButtonType.text,
-                label: "Ver más",
-                suffixIcon: const Icon(Icons.chevron_right),
-                onPressed: () => {print("Edificios")},
-                isLoading: false,
-              ),
+              if (buildingItems.isEmpty)
+                const CcBannerWidget(
+                  icon: Icons.apartment_outlined,
+                  text: 'Aquí se mostrarán los edificios registrados',
+                  trailing: Icons.chevron_right,
+                )
+              else ...[
+                CcListItemsWidget(items: buildingItems),
+                CcButtonWidget(
+                  buttonType: ButtonType.text,
+                  label: "Ver más",
+                  suffixIcon: const Icon(Icons.chevron_right),
+                  onPressed: () => print("Edificios"),
+                  isLoading: false,
+                ),
+              ],
             ],
           ),
         ),

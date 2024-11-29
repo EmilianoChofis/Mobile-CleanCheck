@@ -32,7 +32,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
       items = config['items'];
       navigatorKeys = List.generate(
         items.length,
-            (_) => GlobalKey<NavigatorState>(),
+        (_) => GlobalKey<NavigatorState>(),
       );
     }
   }
@@ -45,17 +45,19 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
     return PopScope(
       child: Scaffold(
-        body: IndexedStack(
-          index: _selectedIndex,
+        body: Stack(
           children: List.generate(
             screenOptions.length,
-                (index) => Navigator(
-              key: navigatorKeys[index],
-              onGenerateRoute: (RouteSettings settings) {
-                return MaterialPageRoute(
-                  builder: (_) => screenOptions[index],
-                );
-              },
+            (index) => Offstage(
+              offstage: _selectedIndex != index,
+              child: Navigator(
+                key: navigatorKeys[index],
+                onGenerateRoute: (RouteSettings settings) {
+                  return MaterialPageRoute(
+                    builder: (_) => screenOptions[index],
+                  );
+                },
+              ),
             ),
           ),
         ),

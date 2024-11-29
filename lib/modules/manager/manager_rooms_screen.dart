@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
-import 'package:mobile_clean_check/data/repositories/floor_repository.dart';
+import 'package:mobile_clean_check/data/services/services.dart';
 import 'package:mobile_clean_check/widgets/organisms/cc_room_bottom_sheet_widget.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
@@ -58,7 +58,11 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
               message: state.message,
               snackBarType: SnackBarType.success,
             );
-            Navigator.pop(context);
+
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
+
             _buildingsController.clear();
             _floorsController.clear();
           }
@@ -184,10 +188,9 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
     CcRoomBottomSheetWidget.show(
       context,
       formKey: _formKey,
-      buildingController: _buildingsController,
-      floorController: _floorsController,
+      buildingsController: _buildingsController,
+      floorsController: _floorsController,
       numberRoomsController: _roomsController,
-      building: widget.building,
       room: room,
       onSave: (room) => _onSave(room),
       onCancel: () => _onCancel(),
@@ -196,30 +199,14 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
 
   void _onSave(RoomModel? room) async {
     if (_formKey.currentState!.validate()) {
-      final response =
-          await FloorRepository().getFloorById(_floorsController.text);
-      final foundFloor = response.data!.name;
-      final selectedFloor = foundFloor.split(' ');
-      final firstLetter = selectedFloor[0].substring(0, 1);
-      final floorName = firstLetter + selectedFloor[1];
-      final numberOfRooms = int.tryParse(_roomsController.text.trim()) ?? 0;
-
-      final List<RoomModel> rooms = List.generate(
-        numberOfRooms,
-        (index) {
-          final roomNumber = index + 1;
-          return RoomModel(
-            identifier: floorName,
-            name: '${floorName}H$roomNumber',
-            floor: FloorModel(
-              id: _floorsController.text,
-              name: floorName,
-              building: widget.building,
-            ),
-          );
-        },
+      final roomCubit = context.read<RoomCubit>();
+      final roomService = RoomService();
+      final rooms = await roomService.generateRooms(
+        floorId: _floorsController.text,
+        floorControllerText: _floorsController.text,
+        roomsControllerText: _roomsController.text,
       );
-      context.read<RoomCubit>().createListRooms(rooms);
+      roomCubit.createListRooms(rooms);
     }
   }
 

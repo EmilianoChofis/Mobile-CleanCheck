@@ -25,7 +25,7 @@ class BuildingRepository {
     }
   }
 
-  Future<ApiResponse<BuildingModel>> createBuildingWithFloors(
+  Future<ApiResponse<BuildingModel>> createBuilding(
       BuildingModel building) async {
     try {
       final response = await dio.post(
@@ -48,7 +48,8 @@ class BuildingRepository {
     }
   }
 
-  Future<ApiResponse<BuildingModel>> updateBuilding(BuildingModel building) async {
+  Future<ApiResponse<BuildingModel>> updateBuilding(
+      BuildingModel building) async {
     try {
       final response = await dio.put(
         '/building/update',

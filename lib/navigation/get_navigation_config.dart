@@ -9,9 +9,9 @@ final Map<String, Map<String, dynamic>> roleConfigurations = {
     'screens': const [
       ManagerHomeScreen(),
       ManagerBuildingsScreen(),
-      ManagerUsersScreen(),
       IncidencesScreen(),
-      ManagerHomeScreen(),
+      IncidencesScreen(),
+      IncidencesScreen(),
     ],
     'items': [
       const BottomNavigationBarItem(

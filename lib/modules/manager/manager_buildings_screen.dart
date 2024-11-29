@@ -40,29 +40,7 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
         onPressed: () => _showBuildingBottomSheet(context),
         icon: Icons.add,
       ),
-      body: BlocListener<BuildingCubit, BuildingState>(
-        listener: (context, state) {
-          if (state is BuildingError) {
-            CcSnackBarWidget.show(
-              context,
-              message: state.message,
-              snackBarType: SnackBarType.error,
-            );
-          } else if (state is BuildingSuccess) {
-            CcSnackBarWidget.show(
-              context,
-              message: state.message,
-              snackBarType: SnackBarType.success,
-            );
-
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            }
-
-            _nameBuildingController.clear();
-            _numberFloorsController.clear();
-          }
-        },
+      body: CcAppBlocListenerTemplate(
         child: BlocBuilder<BuildingCubit, BuildingState>(
           builder: (context, state) {
             if (state is BuildingLoading) {
@@ -164,11 +142,11 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
         context.read<BuildingCubit>().createBuildingWithFloors(newBuilding);
       } else {
         context.read<BuildingCubit>().updateBuildingWithFloors(
-              building.copyWith(
-                name: newBuilding.name,
-                number: newBuilding.number,
-              ),
-            );
+          building.copyWith(
+            name: newBuilding.name,
+            number: newBuilding.number,
+          ),
+        );
       }
     }
   }

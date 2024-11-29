@@ -9,6 +9,7 @@ class BuildingCubit extends Cubit<BuildingState> {
   BuildingCubit({required this.buildingRepository}) : super(BuildingInitial());
 
   Future<void> getBuildings() async {
+    if (state is BuildingLoading) return;
     emit(BuildingLoading());
     loadBuildings();
   }
@@ -16,7 +17,7 @@ class BuildingCubit extends Cubit<BuildingState> {
   Future<void> loadBuildings() async {
     final response = await buildingRepository.getBuildings();
 
-    if (response.error) {
+    if (response.error && response.statusCode != 400) {
       emit(BuildingError(message: response.message));
     } else {
       emit(BuildingLoaded(buildings: response.data!));
@@ -24,10 +25,9 @@ class BuildingCubit extends Cubit<BuildingState> {
   }
 
   Future<void> createBuildingWithFloors(BuildingModel building) async {
-    final response =
-        await buildingRepository.createBuildingWithFloors(building);
+    final response = await buildingRepository.createBuilding(building);
 
-    if (response.error) {
+    if (response.error && response.statusCode != 400) {
       emit(BuildingError(message: response.message));
     } else {
       final createdBuilding = response.data;
@@ -54,7 +54,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     final response =
         await buildingRepository.updateBuildingWithFloors(building);
 
-    if (response.error) {
+    if (response.error && response.statusCode != 400) {
       emit(BuildingError(message: response.message));
     } else {
       final createdBuilding = response.data;
@@ -78,7 +78,6 @@ class BuildingCubit extends Cubit<BuildingState> {
       await buildingRepository.updateBuilding(
         building.copyWith(number: lastFloor + building.number),
       );
-
       emit(BuildingSuccess(message: 'Edificio actualizado con éxito'));
     }
     await loadBuildings();
