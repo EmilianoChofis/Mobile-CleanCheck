@@ -1,23 +1,23 @@
 import 'package:mobile_clean_check/data/models/role_model.dart';
 
 class UserModel {
-  final String id;
+  final String? id;
   final String name;
   final String email;
-  final String password;
-  final String createdAt;
-  final bool status;
-  final bool blocked;
+  final String? password;
+  final String? createdAt;
+  final bool? status;
+  final bool? blocked;
   final RoleModel role;
 
   UserModel({
-    required this.id,
+    this.id,
     required this.name,
     required this.email,
-    required this.password,
-    required this.createdAt,
-    required this.status,
-    required this.blocked,
+    this.password,
+    this.createdAt,
+    this.status,
+    this.blocked,
     required this.role,
   });
 

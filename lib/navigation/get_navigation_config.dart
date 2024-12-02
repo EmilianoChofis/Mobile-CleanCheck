@@ -9,7 +9,7 @@ final Map<String, Map<String, dynamic>> roleConfigurations = {
     'screens': const [
       ManagerHomeScreen(),
       ManagerBuildingsScreen(),
-      IncidencesScreen(),
+      ManagerUsersScreen(),
       IncidencesScreen(),
       IncidencesScreen(),
     ],
