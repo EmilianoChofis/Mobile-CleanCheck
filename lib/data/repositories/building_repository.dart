@@ -35,7 +35,7 @@ class BuildingRepository {
 
       return ApiResponse<BuildingModel>.fromJson(
         response.data,
-        (json) => BuildingModel.fromJson(json),
+        (json) => BuildingModel.fromJson(json)
       );
     } on DioException catch (e) {
       return ApiResponse<BuildingModel>(

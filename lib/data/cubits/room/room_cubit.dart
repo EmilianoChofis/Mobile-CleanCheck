@@ -33,6 +33,5 @@ class RoomCubit extends Cubit<RoomState> {
       emit(RoomSuccess(message: response.message));
     }
 
-    await loadRooms(rooms[0].floor.building.id!);
   }
 }

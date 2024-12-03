@@ -21,7 +21,9 @@ class RoomModel {
       identifier: json['identifier'],
       name: json['name'],
       status: json['status'],
-      floor: FloorModel.fromJson(json['floor']),
+      floor: json['floor'] != null
+          ? FloorModel.fromJson(json['floor'])
+          : FloorModel(name: 'Unknown'),
     );
   }
 

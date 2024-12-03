@@ -16,7 +16,6 @@ class CcRoomBottomSheetWidget {
     required Function(RoomModel?) onSave,
   }) {
     if (room != null) {
-      buildingsController.text = room.floor.building.name;
       floorsController.text = room.floor.name;
       numberRoomsController.text = room.identifier;
     }

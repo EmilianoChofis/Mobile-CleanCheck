@@ -14,7 +14,6 @@ class ManagerUsersScreen extends StatefulWidget {
 }
 
 class _ManagerUsersScreenState extends State<ManagerUsersScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final _searchController = SearchController();
@@ -124,27 +123,6 @@ class _ManagerUsersScreenState extends State<ManagerUsersScreen> {
     // );
   }
 
-  void _onSaveUser(UserModel? user) {
-    if (_formKey.currentState!.validate()) {
-      final newUser = UserModel(
-        name: _nameController.text,
-        email: _emailController.text,
-        role: RoleModel(id: '1', name: 'Admin'),
-      );
-
-      if (user == null) {
-        // context.read<UserCubit>().cre(newUser);
-      } else {
-        // context.read<UserCubit>().updateUser(
-        //   user.copyWith(
-        //     name: newUser.name,
-        //     email: newUser.email,
-        //     isActive: newUser.isActive,
-        //   ),
-        // );
-      }
-    }
-  }
 
   void _onDeleteUser(UserModel? user) {
     if (user != null) {
@@ -152,9 +130,4 @@ class _ManagerUsersScreenState extends State<ManagerUsersScreen> {
     }
   }
 
-  void _onCancel() {
-    _nameController.clear();
-    _emailController.clear();
-    Navigator.pop(context);
-  }
 }

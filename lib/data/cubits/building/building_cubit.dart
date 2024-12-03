@@ -18,6 +18,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     final response = await buildingRepository.getBuildings();
 
     if (response.error && response.statusCode != 400) {
+      print('error: ${response.message}');
       emit(BuildingError(message: response.message));
     } else {
       emit(BuildingLoaded(buildings: response.data!));
@@ -32,12 +33,13 @@ class BuildingCubit extends Cubit<BuildingState> {
     } else {
       final createdBuilding = response.data;
 
+      print('createdBuilding: $createdBuilding');
+
       List<FloorModel> floors = List.generate(
-        createdBuilding!.number,
+        createdBuilding!.number!,
         (index) => FloorModel(
           name: 'Piso ${index + 1}',
           buildingId: createdBuilding.id,
-          building: createdBuilding,
         ),
       );
 
@@ -66,17 +68,16 @@ class BuildingCubit extends Cubit<BuildingState> {
       final lastFloor = floorsResponse.data!.length;
 
       List<FloorModel> floors = List.generate(
-        createdBuilding.number,
+        createdBuilding.number!,
         (index) => FloorModel(
           name: 'Piso ${lastFloor + index + 1}',
           buildingId: createdBuilding.id,
-          building: createdBuilding,
         ),
       );
 
       await FloorRepository().createListFloor(floors);
       await buildingRepository.updateBuilding(
-        building.copyWith(number: lastFloor + building.number),
+        building.copyWith(number: lastFloor + building.number!),
       );
       emit(BuildingSuccess(message: 'Edificio actualizado con éxito'));
     }

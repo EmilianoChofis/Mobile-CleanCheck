@@ -26,11 +26,6 @@ class RoomService {
           floor: FloorModel(
             id: floorId,
             name: floorName,
-            building: BuildingModel(
-              id: response.data!.building.id,
-              name: response.data!.building.name,
-              number: response.data!.building.number,
-            ),
           ),
         );
       },

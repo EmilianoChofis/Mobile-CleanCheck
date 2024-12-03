@@ -90,15 +90,9 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
     );
   }
 
-  void _showRegisterBuildingBottomSheet() {
-    BuildingBottomSheet.show(
-      context,
-      formKey: _formKey,
-      nameBuildingController: _nameBuildingController,
-      numberFloorsController: _numberFloorsController,
-      onSave: (building) => _onSaveBuilding(),
-      onCancel: () => _onCancel(),
-    );
+  void _showBuildingBottomSheet(BuildContext context,
+      {BuildingModel? building}) {
+    BuildingBottomSheet.show(context, building: building);
   }
 
   void _showRegisterRoomBottomSheet() {
@@ -112,17 +106,6 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
       onSave: (room) => _onSaveRoom(),
       onCancel: _onCancel,
     );
-  }
-
-  void _onSaveBuilding() {
-    if (_formKey.currentState!.validate()) {
-      final newBuilding = BuildingModel(
-        name: _nameBuildingController.text,
-        number: int.parse(_numberFloorsController.text),
-      );
-
-      context.read<BuildingCubit>().createBuildingWithFloors(newBuilding);
-    }
   }
 
   void _onSaveRoom() async {
@@ -163,7 +146,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
           CcWorkingZoneTemplate(
             title: "Accesos directos",
             actions: CcWorkingZoneManagerWidget(
-              onRegisterBuilding: _showRegisterBuildingBottomSheet,
+              onRegisterBuilding: () => _showBuildingBottomSheet(context),
               onRegisterRoom: _showRegisterRoomBottomSheet,
             ),
           ),
@@ -173,13 +156,11 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
   }
 
   Widget _buildContent(List<BuildingModel> buildings) {
-    final buildingItems = buildings
-        .take(3)
-        .map((building) => {
-              'name': building.name,
-              'rooms': '${building.number} edificios',
-            })
-        .toList();
+    final buildingItems = buildings.take(3).map((building) {
+      final f = building.floors?.length ?? 0;
+      final ft = f != 1 ? '$f pisos' : '$f piso';
+      return {'name': building.name, 'rooms': ft};
+    }).toList();
 
     return Column(
       children: [

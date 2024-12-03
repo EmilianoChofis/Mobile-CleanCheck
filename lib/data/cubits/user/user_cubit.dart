@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:mobile_clean_check/data/cubits/cubits.dart';
-import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:mobile_clean_check/data/repositories/repositories.dart';
 
 class UserCubit extends Cubit<UserState> {
