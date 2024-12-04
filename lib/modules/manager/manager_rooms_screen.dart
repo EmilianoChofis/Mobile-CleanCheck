@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
-import 'package:mobile_clean_check/data/services/services.dart';
 import 'package:mobile_clean_check/widgets/organisms/cc_room_bottom_sheet_widget.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
@@ -16,18 +15,7 @@ class ManagerRoomsScreen extends StatefulWidget {
 }
 
 class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _buildingsController = TextEditingController();
-  final TextEditingController _floorsController = TextEditingController();
-  final TextEditingController _roomsController = TextEditingController();
   final _searchController = SearchController();
-
-  @override
-  void dispose() {
-    _buildingsController.dispose();
-    _floorsController.dispose();
-    super.dispose();
-  }
 
   @override
   void initState() {
@@ -62,9 +50,6 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             }
-
-            _buildingsController.clear();
-            _floorsController.clear();
           }
         },
         child: BlocBuilder<RoomCubit, RoomState>(
@@ -185,35 +170,6 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
   }
 
   void _showBuildingBottomSheet(BuildContext context, {RoomModel? room}) {
-    CcRoomBottomSheetWidget.show(
-      context,
-      formKey: _formKey,
-      buildingsController: _buildingsController,
-      floorsController: _floorsController,
-      numberRoomsController: _roomsController,
-      room: room,
-      onSave: (room) => _onSave(room),
-      onCancel: () => _onCancel(),
-    );
-  }
-
-  void _onSave(RoomModel? room) async {
-    if (_formKey.currentState!.validate()) {
-      final roomCubit = context.read<RoomCubit>();
-      final roomService = RoomService();
-      final rooms = await roomService.generateRooms(
-        floorId: _floorsController.text,
-        floorControllerText: _floorsController.text,
-        roomsControllerText: _roomsController.text,
-      );
-      roomCubit.createListRooms(rooms);
-    }
-  }
-
-  void _onCancel() {
-    Navigator.pop(context);
-    _buildingsController.clear();
-    _floorsController.clear();
-    _roomsController.clear();
+    CcRoomBottomSheetWidget.show(context, room: room);
   }
 }

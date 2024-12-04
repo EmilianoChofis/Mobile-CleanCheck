@@ -7,7 +7,20 @@ class UserRepository {
 
   Future<ApiResponse<List<UserModel>>> getUsers() async {
     try {
-      final response = await dio.get('/user/getAll');
+      final response = await dio.post(
+        '/user/getAll',
+        data: {
+          "paginationType": {
+            "filter": "name",
+            "limit": 5,
+            "order": "asc",
+            "page": 0,
+            "sortBy": "name"
+          },
+          "value": ""
+        },
+      );
+      print('response: ${response.data}');
 
       return ApiResponse<List<UserModel>>.fromJson(
         response.data,
@@ -15,6 +28,7 @@ class UserRepository {
             (json as List).map((json) => UserModel.fromJson(json)).toList(),
       );
     } on DioException catch (e) {
+      print('error: ${e.response?.data}');
       return ApiResponse<List<UserModel>>(
         data: null,
         error: true,

@@ -96,16 +96,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
   }
 
   void _showRegisterRoomBottomSheet() {
-    CcRoomBottomSheetWidget.show(
-      context,
-      formKey: _formKey,
-      quickAccess: true,
-      buildingsController: _buildingsController,
-      floorsController: _floorsController,
-      numberRoomsController: _roomsController,
-      onSave: (room) => _onSaveRoom(),
-      onCancel: _onCancel,
-    );
+    CcRoomBottomSheetWidget.show(context, quickAccess: true);
   }
 
   void _onSaveRoom() async {

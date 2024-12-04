@@ -66,9 +66,7 @@ class FloorRepository {
     try {
       final response = await dio.post(
         '/floor/create-list',
-        data: {
-          'floors': floors.map((floor) => floor.toJson()).toList(),
-        },
+        data: floors.map((floor) => floor.toJson()).toList(),
       );
 
       final List<dynamic> data = response.data['data'];

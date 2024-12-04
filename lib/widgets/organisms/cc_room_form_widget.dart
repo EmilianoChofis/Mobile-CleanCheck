@@ -11,7 +11,7 @@ class CcRoomFormWidget extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController? buildingsController;
   final TextEditingController floorsController;
-  final TextEditingController numberRoomsController;
+  final TextEditingController roomsController;
 
   const CcRoomFormWidget({
     this.room,
@@ -19,7 +19,7 @@ class CcRoomFormWidget extends StatefulWidget {
     required this.formKey,
     required this.buildingsController,
     required this.floorsController,
-    required this.numberRoomsController,
+    required this.roomsController,
     super.key,
   });
 
@@ -33,17 +33,17 @@ class _CcRoomFormWidgetState extends State<CcRoomFormWidget> {
   @override
   void initState() {
     super.initState();
-    widget.numberRoomsController.addListener(_updateSliderFromTextField);
+    widget.roomsController.addListener(_updateSliderFromTextField);
   }
 
   @override
   void dispose() {
     super.dispose();
-    widget.numberRoomsController.removeListener(_updateSliderFromTextField);
+    widget.roomsController.removeListener(_updateSliderFromTextField);
   }
 
   void _updateSliderFromTextField() {
-    final textValue = widget.numberRoomsController.text;
+    final textValue = widget.roomsController.text;
     final parsedValue = int.tryParse(textValue);
 
     if (parsedValue != null && parsedValue > 10) {
@@ -60,7 +60,7 @@ class _CcRoomFormWidgetState extends State<CcRoomFormWidget> {
   void _updateTextFieldFromSlider(double value) {
     setState(() {
       _sliderValue = value;
-      widget.numberRoomsController.text = value.toInt().toString();
+      widget.roomsController.text = value.toInt().toString();
     });
   }
 
@@ -98,7 +98,7 @@ class _CcRoomFormWidgetState extends State<CcRoomFormWidget> {
               hint: 'Número de habitaciones',
               keyboardType: TextInputType.number,
               icon: const Icon(Icons.bed_outlined),
-              controller: widget.numberRoomsController,
+              controller: widget.roomsController,
               validator: (value) {
                 final parsedValue = int.tryParse(value!);
                 if (value.isEmpty || parsedValue! < 1) {

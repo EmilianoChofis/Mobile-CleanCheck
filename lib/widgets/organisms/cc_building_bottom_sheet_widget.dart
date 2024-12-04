@@ -18,7 +18,7 @@ class BuildingBottomSheet {
   }) {
     if (building != null) {
       _nameBuildingController.text = building.name;
-      _numberFloorsController.text = building.number.toString();
+      _numberFloorsController.text = building.floors!.length.toString();
     } else {
       _nameBuildingController.clear();
       _numberFloorsController.clear();
@@ -56,12 +56,14 @@ class BuildingBottomSheet {
   static void _onSave(BuildContext context, BuildingModel? building) {
     if (_formKey.currentState!.validate()) {
       final newBuilding = BuildingModel(name: _nameBuildingController.text);
+      final newFloors = int.parse(_numberFloorsController.text);
 
       if (building == null) {
         context.read<BuildingCubit>().createBuildingWithFloors(newBuilding);
       } else {
-        context.read<BuildingCubit>().updateBuildingWithFloors(
+        context.read<BuildingCubit>().updateBuilding(
               building.copyWith(name: newBuilding.name),
+              newFloors,
             );
       }
       _onCancel(context);
