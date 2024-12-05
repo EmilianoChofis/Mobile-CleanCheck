@@ -98,16 +98,19 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
   }
 
   Widget _buildContent() {
-    final floors = widget.building.floors ?? [];
+    final floorsWithRooms = widget.building.floors
+        ?.where((floor) => (floor.rooms?.isNotEmpty ?? false))
+        .toList() ??
+        [];
 
-    if (floors.isEmpty) {
-      return const Center(child: Text('No hay pisos registrados.'));
+    if (floorsWithRooms.isEmpty) {
+      return const Center(child: Text('No hay pisos con habitaciones.'));
     }
 
     return ListView.builder(
-      itemCount: floors.length,
+      itemCount: floorsWithRooms.length,
       itemBuilder: (context, floorIndex) {
-        final floor = floors[floorIndex];
+        final floor = floorsWithRooms[floorIndex];
         final rooms = floor.rooms ?? [];
 
         return Column(
@@ -124,36 +127,35 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
               ),
             ),
             const SizedBox(height: 8.0),
-            rooms.isNotEmpty
-                ? ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: rooms.length,
-                    itemBuilder: (context, roomIndex) {
-                      final room = rooms[roomIndex];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: CcItemListWidget(
-                          iconType: IconType.enabled,
-                          onTap: () {},
-                          icon: Icons.domain_outlined,
-                          title: room.name,
-                          content: Text(
-                            room.status ?? 'Estado desconocido',
-                            style:
-                                const TextStyle(color: ColorSchemes.secondary),
-                          ),
-                        ),
-                      );
+
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: rooms.length,
+              itemBuilder: (context, roomIndex) {
+                final room = rooms[roomIndex];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: CcItemListWidget(
+                    iconType: IconType.enabled,
+                    onTap: () {
                     },
-                  )
-                : const Center(
-                    child: Text('No hay habitaciones en este piso.')),
+                    icon: Icons.domain_outlined,
+                    title: room.name,
+                    content: Text(
+                      room.status ?? 'Estado desconocido',
+                      style: const TextStyle(color: ColorSchemes.secondary),
+                    ),
+                  ),
+                );
+              },
+            ),
           ],
         );
       },
     );
   }
+
 
   void _showBuildingBottomSheet(BuildContext context, {RoomModel? room}) {
     CcRoomBottomSheetWidget.show(context, room: room);

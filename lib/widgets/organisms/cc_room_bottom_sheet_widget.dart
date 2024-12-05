@@ -59,6 +59,8 @@ class CcRoomBottomSheetWidget {
   static void _onSave(BuildContext context, RoomModel? room) async {
     if (_formKey.currentState!.validate()) {
       final roomCubit = context.read<RoomCubit>();
+      final buildingCubit = context.read<BuildingCubit>();
+
       final roomService = RoomService();
 
       final rooms = await roomService.generateRooms(
@@ -66,10 +68,8 @@ class CcRoomBottomSheetWidget {
         floorControllerText: _floorsController.text,
         roomsControllerText: _roomsController.text,
       );
-
-      print(rooms);
-
       roomCubit.createListRooms(rooms);
+      buildingCubit.getBuildings();
     }
   }
 
