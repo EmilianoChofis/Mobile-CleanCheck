@@ -80,7 +80,7 @@ class _CcRoomFormWidgetState extends State<CcRoomFormWidget> {
             _buildFloorsDropDown(),
             const SizedBox(height: 32.0),
             Text(
-              'Número de habitaciones',
+              'Número de habitaciones nuevas',
               style: TextThemes.lightTextTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w500,
               ),
@@ -158,22 +158,38 @@ class _CcRoomFormWidgetState extends State<CcRoomFormWidget> {
           return const CircularProgressIndicator();
         }
         if (state is FloorLoaded) {
-          return _buildFinalDropDown(
+          return CcDropDownWidget(
+            label: 'Piso',
+            hint: 'Selecciona un piso',
+            icon: const Icon(Icons.apartment),
+            controller: widget.floorsController,
             items: state.floors.map((floor) {
               return DropdownMenuItem<String>(
                 value: floor.id,
                 child: Text(floor.name),
               );
             }).toList(),
+            onChanged: (selectedFloorId) {
+              if (selectedFloorId != null) {
+                setState(() => widget.floorsController.text = selectedFloorId);
+              }
+            },
+
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Selecciona un piso.';
+              }
+              return null;
+            },
           );
         } else {
-          return _buildFinalDropDown(items: []);
+          return _buildFinalDropDown([]);
         }
       },
     );
   }
 
-  Widget _buildFinalDropDown({required List<DropdownMenuItem<String>> items}) {
+  Widget _buildFinalDropDown(List<DropdownMenuItem<String>> items) {
     return CcDropDownWidget(
       label: 'Piso',
       hint: 'Selecciona un piso',

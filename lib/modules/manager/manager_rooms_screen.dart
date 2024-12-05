@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
-import 'package:mobile_clean_check/widgets/organisms/cc_room_bottom_sheet_widget.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class ManagerRoomsScreen extends StatefulWidget {
@@ -106,7 +105,7 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
 
     Map<String, List<RoomModel>> groupedRooms = {};
     for (var room in rooms) {
-      final floorName = room.floor.name;
+      final floorName = room.identifier;
       if (groupedRooms.containsKey(floorName)) {
         groupedRooms[floorName]!.add(room);
       } else {
@@ -115,11 +114,6 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
     }
 
     var sortedFloorNames = groupedRooms.keys.toList();
-    sortedFloorNames.sort((a, b) {
-      final numA = int.tryParse(a.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-      final numB = int.tryParse(b.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-      return numA.compareTo(numB);
-    });
 
     return ListView.builder(
       itemCount: sortedFloorNames.length,

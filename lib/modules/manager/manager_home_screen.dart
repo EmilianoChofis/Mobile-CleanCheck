@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
-import 'package:mobile_clean_check/data/services/services.dart';
-import 'package:mobile_clean_check/widgets/organisms/cc_room_bottom_sheet_widget.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class ManagerHomeScreen extends StatefulWidget {
@@ -14,22 +12,6 @@ class ManagerHomeScreen extends StatefulWidget {
 }
 
 class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  final TextEditingController _nameBuildingController = TextEditingController();
-  final TextEditingController _numberFloorsController = TextEditingController();
-
-  final TextEditingController _buildingsController = TextEditingController();
-  final TextEditingController _floorsController = TextEditingController();
-  final TextEditingController _roomsController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameBuildingController.dispose();
-    _numberFloorsController.dispose();
-    super.dispose();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -59,10 +41,6 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
               if (Navigator.canPop(context)) {
                 Navigator.pop(context);
               }
-
-              _buildingsController.clear();
-              _floorsController.clear();
-              _roomsController.clear();
             }
           },
           child: BlocBuilder<BuildingCubit, BuildingState>(
@@ -92,32 +70,11 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
 
   void _showBuildingBottomSheet(BuildContext context,
       {BuildingModel? building}) {
-    BuildingBottomSheet.show(context, building: building);
+    CcBuildingBottomSheetWidget.show(context, building: building);
   }
 
   void _showRegisterRoomBottomSheet() {
     CcRoomBottomSheetWidget.show(context, quickAccess: true);
-  }
-
-  void _onSaveRoom() async {
-    if (_formKey.currentState!.validate()) {
-      final roomCubit = context.read<RoomCubit>();
-      final roomService = RoomService();
-
-      final rooms = await roomService.generateRooms(
-        floorId: _floorsController.text,
-        floorControllerText: _floorsController.text,
-        roomsControllerText: _roomsController.text,
-      );
-
-      roomCubit.createListRooms(rooms);
-    }
-  }
-
-  void _onCancel() {
-    _nameBuildingController.clear();
-    _numberFloorsController.clear();
-    Navigator.pop(context);
   }
 
   Widget _buildHeader() {
@@ -130,7 +87,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
               icon: Icons.warning_amber,
               text: "3 incidencias pendientes",
               trailing: Icons.chevron_right,
-              onTap: () => print("Incidencias"),
+              onTap: () => {},
             ),
           ),
           const SizedBox(height: 16.0),
@@ -171,7 +128,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                   buttonType: ButtonType.text,
                   label: "Ver más",
                   suffixIcon: const Icon(Icons.chevron_right),
-                  onPressed: () => print("Edificios"),
+                  onPressed: () => {},
                   isLoading: false,
                 ),
               ],
@@ -203,7 +160,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                 buttonType: ButtonType.text,
                 label: "Ver más",
                 suffixIcon: const Icon(Icons.chevron_right),
-                onPressed: () => print("Usuarios"),
+                onPressed: () => {},
                 isLoading: false,
               ),
             ],

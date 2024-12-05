@@ -7,8 +7,8 @@ class RoomService {
     required String floorControllerText,
     required String roomsControllerText,
   }) async {
+
     final response = await FloorRepository().getFloorById(floorId);
-    if (response.data == null) throw Exception('Piso no encontrado');
 
     final foundFloor = response.data!.name;
     final selectedFloor = foundFloor.split(' ');
@@ -23,10 +23,7 @@ class RoomService {
         return RoomModel(
           identifier: floorName,
           name: '${floorName}H$roomNumber',
-          floor: FloorModel(
-            id: floorId,
-            name: floorName,
-          ),
+          floorId: floorId,
         );
       },
     );

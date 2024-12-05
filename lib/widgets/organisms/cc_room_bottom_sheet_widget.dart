@@ -20,8 +20,8 @@ class CcRoomBottomSheetWidget {
     RoomModel? room,
   }) {
     if (room != null) {
-      _buildingsController.text = room.floor.buildingId!;
-      _floorsController.text = room.floor.name;
+      _buildingsController.text = room.floor!.buildingId!;
+      _floorsController.text = room.floor!.name;
       _roomsController.text = room.identifier;
     }
 
@@ -60,14 +60,19 @@ class CcRoomBottomSheetWidget {
     if (_formKey.currentState!.validate()) {
       final roomCubit = context.read<RoomCubit>();
       final roomService = RoomService();
+
       final rooms = await roomService.generateRooms(
         floorId: _floorsController.text,
         floorControllerText: _floorsController.text,
         roomsControllerText: _roomsController.text,
       );
+
+      print(rooms);
+
       roomCubit.createListRooms(rooms);
     }
   }
+
 
   static void _onCancel(BuildContext context) {
     Navigator.pop(context);

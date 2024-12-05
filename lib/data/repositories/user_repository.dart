@@ -20,15 +20,12 @@ class UserRepository {
           "value": ""
         },
       );
-      print('response: ${response.data}');
-
       return ApiResponse<List<UserModel>>.fromJson(
         response.data,
         (json) =>
             (json as List).map((json) => UserModel.fromJson(json)).toList(),
       );
     } on DioException catch (e) {
-      print('error: ${e.response?.data}');
       return ApiResponse<List<UserModel>>(
         data: null,
         error: true,

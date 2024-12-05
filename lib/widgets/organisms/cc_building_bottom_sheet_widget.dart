@@ -5,7 +5,7 @@ import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
-class BuildingBottomSheet {
+class CcBuildingBottomSheetWidget {
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   static final TextEditingController _nameBuildingController =
       TextEditingController();
@@ -59,7 +59,7 @@ class BuildingBottomSheet {
       final newFloors = int.parse(_numberFloorsController.text);
 
       if (building == null) {
-        context.read<BuildingCubit>().createBuildingWithFloors(newBuilding);
+        context.read<BuildingCubit>().createBuildingWithFloors(newBuilding, newFloors);
       } else {
         context.read<BuildingCubit>().updateBuilding(
               building.copyWith(name: newBuilding.name),

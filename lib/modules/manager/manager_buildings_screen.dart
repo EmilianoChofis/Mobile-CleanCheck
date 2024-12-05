@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:mobile_clean_check/modules/modules.dart';
+import 'package:mobile_clean_check/widgets/organisms/cc_change_status_bottom_sheet_widget.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class ManagerBuildingsScreen extends StatefulWidget {
@@ -26,7 +27,7 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
     return Scaffold(
       appBar: const CcAppBarWidget(title: 'Edificios'),
       floatingActionButton: CcFabWidget(
-        onPressed: () => _showBuildingBottomSheet(context),
+        onPressed: () => _showBuildingBottomSheet(context, null),
         icon: Icons.add,
       ),
       body: CcAppBlocListenerTemplate(
@@ -86,15 +87,24 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
           : CcListSlidableWidget<BuildingModel>(
               items: buildings,
               onEdit: (context, {item}) {
-                _showBuildingBottomSheet(context, building: item);
+                _showBuildingBottomSheet(context, item);
               },
-              onDelete: (context, {item}) {},
+              onDelete: (context, {item}) {
+                _showChangeStatusBottomSheet(
+                  context,
+                  item!,
+                  item.status! ? IconType.enabled : IconType.disabled,
+                );
+              },
               buildItem: (context, building) {
-                final f = building.floors?.length ?? 0;
-                final ft = f != 1 ? '$f pisos' : '$f piso';
+                final floors = building.floors?.length ?? 0;
+                final floorText =
+                    floors != 1 ? '$floors pisos' : '$floors piso';
+                final iconType =
+                    building.status! ? IconType.enabled : IconType.disabled;
 
                 return CcItemListWidget(
-                  iconType: IconType.enabled,
+                  iconType: iconType,
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -105,15 +115,28 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
                   },
                   icon: Icons.domain_outlined,
                   title: building.name,
-                  content: Text(ft),
+                  content: Text(floorText),
                 );
               },
             ),
     );
   }
 
-  void _showBuildingBottomSheet(BuildContext context,
-      {BuildingModel? building}) {
-    BuildingBottomSheet.show(context, building: building);
+  void _showBuildingBottomSheet(BuildContext context, BuildingModel? building) {
+    CcBuildingBottomSheetWidget.show(context, building: building);
+  }
+
+  void _showChangeStatusBottomSheet(
+      BuildContext context, BuildingModel building, IconType iconType) {
+    CcChangeStatusBottomSheetWidget.show(
+      context,
+      building: building,
+      title: building.status! ? 'Deshabilitar edificio' : 'Habilitar edificio',
+      cardTitle: building.name,
+      cardSubtitle: building.floors!.length.toString(),
+      cardType: iconType,
+      cardIcon: Icons.domain_outlined,
+      content: const Text('¿Estás seguro de deshabilitar este edificio?'),
+    );
   }
 }

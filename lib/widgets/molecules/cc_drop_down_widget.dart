@@ -31,9 +31,8 @@ class _CcDropDownWidgetState extends State<CcDropDownWidget> {
   @override
   void initState() {
     super.initState();
-    // Ensure _selectedValue is initialized with a valid value from the list
     if (widget.items.isNotEmpty) {
-      _selectedValue = widget.items.first.value; // Set it to the first item initially
+      _selectedValue = widget.items.first.value;
     }
   }
 

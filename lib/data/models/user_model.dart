@@ -1,14 +1,17 @@
 import 'package:mobile_clean_check/data/models/role_model.dart';
+import 'package:mobile_clean_check/data/models/status_aware.dart';
 
-class UserModel {
+class UserModel implements StatusAware {
   final String? id;
   final String name;
   final String email;
   final String? password;
   final String? createdAt;
-  final bool? status;
   final bool? blocked;
   final RoleModel role;
+
+  @override
+  final bool? status;
 
   UserModel({
     this.id,

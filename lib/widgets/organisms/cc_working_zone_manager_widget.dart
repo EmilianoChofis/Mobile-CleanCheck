@@ -27,14 +27,14 @@ class CcWorkingZoneManagerWidget extends StatelessWidget {
       {
         'icon': Icons.person_outline,
         'title': 'Registrar usuario',
-        'onTap': () => print('Registrar usuario'),
+        'onTap': () => () => {},
       },
     ];
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: items.map(
-            (item) {
+        (item) {
           return CcWorkingZoneItemWidget(
             icon: item['icon'] as IconData,
             title: item['title'] as String,
