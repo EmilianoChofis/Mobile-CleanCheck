@@ -20,7 +20,6 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
   void initState() {
     super.initState();
     context.read<FloorCubit>().getFloorsByBuildingId(widget.building.id!);
-    context.read<RoomCubit>().getRooms(widget.building);
   }
 
   @override
@@ -56,9 +55,9 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
             if (state is RoomLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is RoomLoaded) {
-              return _buildList(state.rooms);
+              return _buildList();
             } else {
-              return _buildList([]);
+              return _buildList();
             }
           },
         ),
@@ -66,13 +65,13 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
     );
   }
 
-  Widget _buildList(List<RoomModel> rooms) {
+  Widget _buildList() {
     return CcListScreenTemplate(
       title: 'Lista de habitaciones',
       search: CcSearchBarWidget(controller: _searchController),
       filters: _buildFilters(),
       symbology: _buildSymbology(),
-      content: _buildContent(rooms),
+      content: _buildContent(),
     );
   }
 
@@ -98,28 +97,18 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
     );
   }
 
-  Widget _buildContent(List<RoomModel> rooms) {
-    if (rooms.isEmpty) {
-      return const Center(child: Text('No hay habitaciones registrados.'));
-    }
+  Widget _buildContent() {
+    final floors = widget.building.floors ?? [];
 
-    Map<String, List<RoomModel>> groupedRooms = {};
-    for (var room in rooms) {
-      final floorName = room.identifier;
-      if (groupedRooms.containsKey(floorName)) {
-        groupedRooms[floorName]!.add(room);
-      } else {
-        groupedRooms[floorName] = [room];
-      }
+    if (floors.isEmpty) {
+      return const Center(child: Text('No hay pisos registrados.'));
     }
-
-    var sortedFloorNames = groupedRooms.keys.toList();
 
     return ListView.builder(
-      itemCount: sortedFloorNames.length,
-      itemBuilder: (context, index) {
-        final floorName = sortedFloorNames[index];
-        final floorRooms = groupedRooms[floorName]!;
+      itemCount: floors.length,
+      itemBuilder: (context, floorIndex) {
+        final floor = floors[floorIndex];
+        final rooms = floor.rooms ?? [];
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +116,7 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                floorName,
+                floor.name,
                 style: const TextStyle(
                   color: ColorSchemes.secondary,
                   fontWeight: FontWeight.bold,
@@ -135,28 +124,31 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
               ),
             ),
             const SizedBox(height: 8.0),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: floorRooms.length,
-              itemBuilder: (context, roomIndex) {
-                final room = floorRooms[roomIndex];
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: CcItemListWidget(
-                    iconType: IconType.enabled,
-                    onTap: () {},
-                    icon: Icons.domain_outlined,
-                    title: room.name,
-                    content: Text(
-                      room.status!,
-                      style: const TextStyle(color: ColorSchemes.secondary),
-                    ),
-                  ),
-                );
-              },
-            ),
+            rooms.isNotEmpty
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: rooms.length,
+                    itemBuilder: (context, roomIndex) {
+                      final room = rooms[roomIndex];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: CcItemListWidget(
+                          iconType: IconType.enabled,
+                          onTap: () {},
+                          icon: Icons.domain_outlined,
+                          title: room.name,
+                          content: Text(
+                            room.status ?? 'Estado desconocido',
+                            style:
+                                const TextStyle(color: ColorSchemes.secondary),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : const Center(
+                    child: Text('No hay habitaciones en este piso.')),
           ],
         );
       },
