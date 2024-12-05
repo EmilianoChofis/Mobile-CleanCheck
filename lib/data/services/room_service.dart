@@ -4,22 +4,22 @@ import 'package:mobile_clean_check/data/repositories/repositories.dart';
 class RoomService {
   Future<List<RoomModel>> generateRooms({
     required String floorId,
+    required int lastRoomNumber,
+    required int newRooms,
     required String floorControllerText,
     required String roomsControllerText,
   }) async {
-
     final response = await FloorRepository().getFloorById(floorId);
 
     final foundFloor = response.data!.name;
     final selectedFloor = foundFloor.split(' ');
     final firstLetter = selectedFloor[0].substring(0, 1);
     final floorName = firstLetter + selectedFloor[1];
-    final numberOfRooms = int.tryParse(roomsControllerText.trim()) ?? 0;
 
     return List.generate(
-      numberOfRooms,
-          (index) {
-        final roomNumber = index + 1;
+      newRooms,
+      (index) {
+        final roomNumber = lastRoomNumber + index + 1;
         return RoomModel(
           identifier: floorName,
           name: '${floorName}H$roomNumber',

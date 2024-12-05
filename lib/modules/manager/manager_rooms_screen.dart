@@ -27,7 +27,7 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
     return Scaffold(
       appBar: CcAppBarWidget(title: widget.building.name),
       floatingActionButton: CcFabWidget(
-        onPressed: () => _showBuildingBottomSheet(context),
+        onPressed: () => _showBuildingBottomSheet(context, widget.building, null),
         icon: Icons.add,
       ),
       body: BlocListener<RoomCubit, RoomState>(
@@ -99,8 +99,8 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
 
   Widget _buildContent() {
     final floorsWithRooms = widget.building.floors
-        ?.where((floor) => (floor.rooms?.isNotEmpty ?? false))
-        .toList() ??
+            ?.where((floor) => (floor.rooms?.isNotEmpty ?? false))
+            .toList() ??
         [];
 
     if (floorsWithRooms.isEmpty) {
@@ -127,7 +127,6 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
               ),
             ),
             const SizedBox(height: 8.0),
-
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -138,8 +137,7 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: CcItemListWidget(
                     iconType: IconType.enabled,
-                    onTap: () {
-                    },
+                    onTap: () {},
                     icon: Icons.domain_outlined,
                     title: room.name,
                     content: Text(
@@ -156,8 +154,15 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
     );
   }
 
-
-  void _showBuildingBottomSheet(BuildContext context, {RoomModel? room}) {
-    CcRoomBottomSheetWidget.show(context, room: room);
+  void _showBuildingBottomSheet(
+    BuildContext context,
+    BuildingModel? building,
+    RoomModel? room,
+  ) {
+    CcRoomBottomSheetWidget.show(
+      context,
+      building: widget.building,
+      room: room,
+    );
   }
 }
