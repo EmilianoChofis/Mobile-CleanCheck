@@ -50,6 +50,8 @@ export 'package:mobile_clean_check/widgets/organisms/cc_room_form_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_room_bottom_sheet_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_user_form_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_user_bottom_sheet_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_change_status_bottom_sheet_widget.dart';
+
 
 // Template widgets
 export 'package:mobile_clean_check/widgets/templates/cc_auth_template.dart';
@@ -60,4 +62,3 @@ export 'package:mobile_clean_check/widgets/templates/cc_list_screen_template.dar
 export 'package:mobile_clean_check/widgets/templates/cc_title_content_template.dart';
 export 'package:mobile_clean_check/widgets/templates/cc_welcome_home_template.dart';
 export 'package:mobile_clean_check/widgets/templates/cc_working_zone_template.dart';
-export 'package:mobile_clean_check/widgets/templates/cc_app_bloc_listener_template.dart';

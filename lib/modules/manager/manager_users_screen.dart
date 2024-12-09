@@ -14,16 +14,7 @@ class ManagerUsersScreen extends StatefulWidget {
 }
 
 class _ManagerUsersScreenState extends State<ManagerUsersScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
   final _searchController = SearchController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    super.dispose();
-  }
 
   @override
   void initState() {
@@ -39,38 +30,36 @@ class _ManagerUsersScreenState extends State<ManagerUsersScreen> {
         onPressed: () => _showUserBottomSheet(context, null),
         icon: Icons.add,
       ),
-      body: CcAppBlocListenerTemplate(
-        child: BlocListener<UserCubit, UserState>(
-          listener: (context, state) {
-            if (state is UserError) {
-              CcSnackBarWidget.show(
-                context,
-                message: state.message,
-                snackBarType: SnackBarType.error,
-              );
-            } else if (state is UserSuccess) {
-              CcSnackBarWidget.show(
-                context,
-                message: state.message,
-                snackBarType: SnackBarType.success,
-              );
+      body: BlocListener<UserCubit, UserState>(
+        listener: (context, state) {
+          if (state is UserError) {
+            CcSnackBarWidget.show(
+              context,
+              message: state.message,
+              snackBarType: SnackBarType.error,
+            );
+          } else if (state is UserSuccess) {
+            CcSnackBarWidget.show(
+              context,
+              message: state.message,
+              snackBarType: SnackBarType.success,
+            );
 
-              if (Navigator.canPop(context)) {
-                Navigator.pop(context);
-              }
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
+          }
+        },
+        child: BlocBuilder<UserCubit, UserState>(
+          builder: (context, state) {
+            if (state is UserLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is UsersLoaded) {
+              return _buildList(state.users);
+            } else {
+              return _buildList([]);
             }
           },
-          child: BlocBuilder<UserCubit, UserState>(
-            builder: (context, state) {
-              if (state is UserLoading) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is UsersLoaded) {
-                return _buildList(state.users);
-              } else {
-                return _buildList([]);
-              }
-            },
-          ),
         ),
       ),
     );

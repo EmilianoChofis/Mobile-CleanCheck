@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:mobile_clean_check/modules/modules.dart';
-import 'package:mobile_clean_check/widgets/organisms/cc_change_status_bottom_sheet_widget.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class ManagerBuildingsScreen extends StatefulWidget {
@@ -30,7 +29,26 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
         onPressed: () => _showBuildingBottomSheet(context, null),
         icon: Icons.add,
       ),
-      body: CcAppBlocListenerTemplate(
+      body: BlocListener<BuildingCubit, BuildingState>(
+        listener: (context, state) {
+          if (state is BuildingError) {
+            CcSnackBarWidget.show(
+              context,
+              message: state.message,
+              snackBarType: SnackBarType.error,
+            );
+          } else if (state is BuildingSuccess) {
+            CcSnackBarWidget.show(
+              context,
+              message: state.message,
+              snackBarType: SnackBarType.success,
+            );
+
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
+          }
+        },
         child: BlocBuilder<BuildingCubit, BuildingState>(
           builder: (context, state) {
             if (state is BuildingLoading) {
