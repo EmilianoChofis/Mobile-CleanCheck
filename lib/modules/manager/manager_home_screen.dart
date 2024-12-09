@@ -103,7 +103,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                   trailing: Icons.chevron_right,
                 )
               else ...[
-                CcListItemsWidget(items: buildings),
+                CcListItemsWidget(items: buildings, onTap: (item) {}),
                 CcButtonWidget(
                   buttonType: ButtonType.text,
                   label: "Ver más",
@@ -137,7 +137,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                   trailing: Icons.chevron_right,
                 )
               else ...[
-                CcListItemsWidget(items: users),
+                CcListItemsWidget(items: users, onTap: (item) {}),
                 CcButtonWidget(
                   buttonType: ButtonType.text,
                   label: "Ver más",

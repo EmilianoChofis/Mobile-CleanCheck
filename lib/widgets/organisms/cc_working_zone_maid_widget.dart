@@ -32,10 +32,13 @@ class _CcWorkingZoneMaidWidgetState extends State<CcWorkingZoneMaidWidget> {
   }
 
   Widget _buildBannerWidget() {
-    return const CcBannerWidget(
-      icon: Icons.info_outline,
-      text:
-          "Puedes fijar tus zonas de trabajo para tener acceso directo a ellas.",
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: CcBannerWidget(
+        icon: Icons.info_outline,
+        text:
+            "Puedes fijar tus zonas de trabajo para tener acceso directo a ellas.",
+      ),
     );
   }
 

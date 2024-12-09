@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class MaidBuildingScreen extends StatefulWidget {
-  const MaidBuildingScreen({super.key});
+  final BuildingModel building;
+
+  const MaidBuildingScreen({
+    required this.building,
+    super.key,
+  });
 
   @override
   State<MaidBuildingScreen> createState() => _MaidBuildingScreenState();
@@ -14,6 +20,11 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Check if there's at least one room in any floor
+    bool hasRooms = widget.building.floors
+            ?.any((floor) => floor.rooms?.isNotEmpty ?? false) ??
+        false;
+
     return Scaffold(
       appBar: const CcAppBarWidget(
         title: 'Registrar limpieza',
@@ -27,7 +38,7 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
             builder: (context, selectedRoom, _) {
               return CcItemListWidget(
                 iconType: IconType.enabled,
-                title: 'Edificio Palmira',
+                title: widget.building.name,
                 content: CcItemBuildingContentWidget(
                   room: selectedRoom ?? '...',
                 ),
@@ -60,10 +71,20 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
             ),
           ],
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [CcFloorWidget(selectedRoomNotifier: selectedRoomNotifier)],
-        ),
+        content: hasRooms
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: widget.building.floors!.map((floor) {
+                  return CcFloorWidget(
+                      floor: floor, selectedRoomNotifier: selectedRoomNotifier);
+                }).toList(),
+              )
+            : const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 128.0),
+                  child: Text('Sin habitaciones registradas'),
+                ),
+              ),
         actions: ValueListenableBuilder<String?>(
           valueListenable: selectedRoomNotifier,
           builder: (context, selectedRoom, _) {

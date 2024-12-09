@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_clean_check/modules/modules.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcListItemsWidget extends StatelessWidget {
   final List<Map<String, dynamic>> items;
+  final Function(Map<String, dynamic>) onTap;
 
   const CcListItemsWidget({
     required this.items,
+    required this.onTap,
     super.key,
   });
 
@@ -21,13 +22,7 @@ class CcListItemsWidget extends StatelessWidget {
           children: [
             CcItemListWidget(
               iconType: IconType.enabled,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const MaidBuildingScreen(),
-                  ),
-                );
-              },
+              onTap: () => onTap(item),
               icon: Icons.domain_outlined,
               title: item['name']!,
               content: Text(
