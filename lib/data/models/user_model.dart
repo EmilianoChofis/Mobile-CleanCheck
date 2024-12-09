@@ -36,4 +36,17 @@ class UserModel implements StatusAware {
       role: RoleModel.fromJson(json['role']),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'password': password,
+      'createdAt': createdAt,
+      'status': status,
+      'blocked': blocked,
+      'role': role.toJson(),
+    };
+  }
 }

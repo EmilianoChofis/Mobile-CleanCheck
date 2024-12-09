@@ -11,7 +11,7 @@ final Map<String, Map<String, dynamic>> roleConfigurations = {
       ManagerBuildingsScreen(),
       ManagerUsersScreen(),
       IncidencesScreen(),
-      IncidencesScreen(),
+      ProfileScreen(),
     ],
     'items': [
       const BottomNavigationBarItem(

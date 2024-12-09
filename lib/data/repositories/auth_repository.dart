@@ -8,7 +8,7 @@ class AuthRepository {
 
   Future<ApiResponse<AuthResponse>> login(AuthModel auth) async {
     try {
-      final response = await dio.post(
+      final response = await dio.put(
         '/auth/signIn',
         data: json.encode(auth.toJson()),
       );

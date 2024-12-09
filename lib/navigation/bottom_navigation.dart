@@ -75,10 +75,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
   }
 
   void _onItemTapped(int index) {
-    if (_selectedIndex == index) {
-      navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
-    } else {
-      setState(() => _selectedIndex = index);
-    }
+    setState(() {
+      navigatorKeys[_selectedIndex]
+          .currentState
+          ?.popUntil((route) => route.isFirst);
+      _selectedIndex = index;
+    });
   }
 }

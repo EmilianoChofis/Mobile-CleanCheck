@@ -78,24 +78,29 @@ class _CcChangePasswordFormWidgetState
             },
           ),
           const SizedBox(height: 48.0),
-          CcButtonWidget(
-            buttonType: ButtonType.elevated,
-            label: "Cambiar contraseña",
-            suffixIcon: const Icon(Icons.chevron_right),
-            isLoading: false,
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {}
-            },
-          ),
-          const SizedBox(height: 8.0),
-          CcButtonWidget(
-            buttonType: ButtonType.text,
-            label: "No recibí el código",
-            isLoading: false,
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CcButtonWidget(
+                buttonType: ButtonType.elevated,
+                label: "Cambiar contraseña",
+                suffixIcon: const Icon(Icons.chevron_right),
+                isLoading: false,
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {}
+                },
+              ),
+              const SizedBox(height: 8.0),
+              CcButtonWidget(
+                buttonType: ButtonType.text,
+                label: "No recibí el código",
+                isLoading: false,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          )
         ],
       ),
     );
