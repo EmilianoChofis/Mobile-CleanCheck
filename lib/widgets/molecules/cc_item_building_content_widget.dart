@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
 
-class CcItemListBuildingContentWidget extends StatefulWidget {
+class CcItemBuildingContentWidget extends StatefulWidget {
   final String room;
-  const CcItemListBuildingContentWidget({required this.room, super.key});
+  const CcItemBuildingContentWidget({required this.room, super.key});
 
   @override
-  State<CcItemListBuildingContentWidget> createState() =>
-      _CcItemListBuildingContentWidgetState();
+  State<CcItemBuildingContentWidget> createState() =>
+      _CcItemBuildingContentWidgetState();
 }
 
-class _CcItemListBuildingContentWidgetState
-    extends State<CcItemListBuildingContentWidget> {
+class _CcItemBuildingContentWidgetState
+    extends State<CcItemBuildingContentWidget> {
   final primaryColor = ColorSchemes.primary;
   final secondaryColor = ColorSchemes.secondary;
   String? userName;

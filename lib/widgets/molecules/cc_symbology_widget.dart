@@ -48,9 +48,9 @@ class CcSymbologyWidget extends StatelessWidget {
     return Row(
       children: [
         _buildSymbol(label, color),
-        const SizedBox(width: 4),
+        const SizedBox(width: 4.0),
         _buildText(label),
-        const SizedBox(width: 8),
+        const SizedBox(width: 12.0),
       ],
     );
   }

@@ -6,19 +6,19 @@ import 'package:mobile_clean_check/core/configs/configs.dart';
 class AuthRepository {
   final Dio dio = DioClient.instance;
 
-  Future<ApiResponse> login(AuthModel auth) async {
+  Future<ApiResponse<AuthResponse>> login(AuthModel auth) async {
     try {
-      final response = await dio.post(
+      final response = await dio.put(
         '/auth/signIn',
         data: json.encode(auth.toJson()),
       );
 
-      return ApiResponse.fromJson(
+      return ApiResponse<AuthResponse>.fromJson(
         response.data,
         (json) => AuthResponse.fromJson(json),
       );
     } on DioException catch (e) {
-      return ApiResponse(
+      return ApiResponse<AuthResponse>(
         data: null,
         error: true,
         statusCode: e.response?.statusCode ?? 500,

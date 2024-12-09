@@ -3,12 +3,19 @@ import 'package:mobile_clean_check/core/theme/color_schemes.dart';
 
 class CcSnackBarWidget {
   static void show(
-      BuildContext context, {
-        required String message,
-        required SnackBarType snackBarType,
-      }) {
+    BuildContext context, {
+    required String message,
+    required SnackBarType snackBarType,
+  }) {
     final snackBar = SnackBar(
-      content: Text(message),
+      content: Text(
+        message,
+        style: TextStyle(
+          color: snackBarType == SnackBarType.warning
+              ? ColorSchemes.primary
+              : ColorSchemes.disabled,
+        ),
+      ),
       behavior: SnackBarBehavior.floating,
       backgroundColor: _getSnackBarColor(snackBarType),
     );

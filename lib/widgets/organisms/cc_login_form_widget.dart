@@ -22,11 +22,7 @@ class _CcLoginFormWidgetState extends State<CcLoginFormWidget> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            "/home",
-                (route) => false,
-          );
+          Navigator.pushNamed(context, "/");
         } else if (state is AuthError) {
           CcSnackBarWidget.show(
             context,
@@ -57,7 +53,7 @@ class _CcLoginFormWidgetState extends State<CcLoginFormWidget> {
                     return "Ingresa tu correo electrónico";
                   }
 
-                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                  if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$')
                       .hasMatch(value)) {
                     return "Ingresa un correo electrónico válido";
                   }
@@ -78,20 +74,26 @@ class _CcLoginFormWidgetState extends State<CcLoginFormWidget> {
                 },
               ),
               const SizedBox(height: 48.0),
-              CcButtonWidget(
-                buttonType: ButtonType.elevated,
-                label: "Iniciar sesión",
-                prefixIcon: const Icon(Icons.login_outlined),
-                isLoading: state is AuthLoading,
-                onPressed: _login,
-              ),
-              const SizedBox(height: 8.0),
-              CcButtonWidget(
-                buttonType: ButtonType.text,
-                label: "¿Olvidaste tu contraseña?",
-                isLoading: false,
-                onPressed: () =>
-                    Navigator.pushNamed(context, "/forgot-password"),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CcButtonWidget(
+                    buttonType: ButtonType.elevated,
+                    label: "Iniciar sesión",
+                    prefixIcon: const Icon(Icons.login_outlined),
+                    isLoading: state is AuthLoading,
+                    onPressed: _login,
+                  ),
+                  const SizedBox(height: 8.0),
+                  CcButtonWidget(
+                    buttonType: ButtonType.text,
+                    label: "¿Olvidaste tu contraseña?",
+                    isLoading: false,
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/forgot-password");
+                    },
+                  ),
+                ],
               ),
             ],
           ),

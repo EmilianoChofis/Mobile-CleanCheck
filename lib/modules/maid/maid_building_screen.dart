@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
-import 'package:mobile_clean_check/core/theme/themes.dart';
 
 class MaidBuildingScreen extends StatefulWidget {
-  const MaidBuildingScreen({super.key});
+  final BuildingModel building;
+
+  const MaidBuildingScreen({
+    required this.building,
+    super.key,
+  });
 
   @override
   State<MaidBuildingScreen> createState() => _MaidBuildingScreenState();
@@ -13,13 +18,16 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
   final ValueNotifier<String?> selectedRoomNotifier =
       ValueNotifier<String?>(null);
 
-  final redColor = ColorSchemes.error;
-
   @override
   Widget build(BuildContext context) {
+    // Check if there's at least one room in any floor
+    bool hasRooms = widget.building.floors
+            ?.any((floor) => floor.rooms?.isNotEmpty ?? false) ??
+        false;
+
     return Scaffold(
       appBar: const CcAppBarWidget(
-        title: "Registrar limpieza",
+        title: 'Registrar limpieza',
         actions: [CcPinButtonWidget()],
       ),
       body: CcBuildingRoomsTemplate(
@@ -29,8 +37,9 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
             valueListenable: selectedRoomNotifier,
             builder: (context, selectedRoom, _) {
               return CcItemListWidget(
-                title: "Edificio Palmira",
-                subtitle: CcItemListBuildingContentWidget(
+                iconType: IconType.enabled,
+                title: widget.building.name,
+                content: CcItemBuildingContentWidget(
                   room: selectedRoom ?? '...',
                 ),
                 icon: Icons.apartment,
@@ -39,6 +48,7 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
             },
           ),
         ),
+        title: 'Habitaciones',
         filters: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -61,32 +71,41 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
             ),
           ],
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CcFloorWidget(selectedRoomNotifier: selectedRoomNotifier),
-          ],
-        ),
-        actions: Row(
-          children: [
-            CcButtonWidget(
-              buttonType: ButtonType.outlined,
-              prefixIcon: const Icon(Icons.warning_amber),
-              label: 'Reportar',
-              isLoading: false,
-              color: redColor,
-              onPressed: () {},
-            ),
-            const SizedBox(width: 8.0),
-            Expanded(
-              child: CcButtonWidget(
-                buttonType: ButtonType.elevated,
-                label: 'Marcar como limpia',
-                isLoading: false,
-                onPressed: () {},
+        content: hasRooms
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: widget.building.floors!.map((floor) {
+                  return CcFloorWidget(
+                      floor: floor, selectedRoomNotifier: selectedRoomNotifier);
+                }).toList(),
+              )
+            : const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 128.0),
+                  child: Text('Sin habitaciones registradas'),
+                ),
               ),
-            ),
-          ],
+        actions: ValueListenableBuilder<String?>(
+          valueListenable: selectedRoomNotifier,
+          builder: (context, selectedRoom, _) {
+            if (selectedRoom != null) {
+              return Row(
+                children: [
+                  CcReportButtonWidget(
+                    selectedRoomNotifier: selectedRoomNotifier,
+                  ),
+                  const SizedBox(width: 8.0),
+                  Expanded(
+                    child: CcCleanButtonWidget(
+                      selectedRoomNotifier: selectedRoomNotifier,
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          },
         ),
       ),
     );

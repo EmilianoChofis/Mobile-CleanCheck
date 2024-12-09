@@ -1,17 +1,17 @@
 class ApiResponse<T> {
-  final T data;
+  final T? data;
   final bool error;
   final int statusCode;
   final String message;
 
   ApiResponse({
-    required this.data,
+    this.data,
     required this.error,
     required this.statusCode,
     required this.message,
   });
 
-  factory ApiResponse.fromJson(Map<String, dynamic> json, T Function(Map<String, dynamic>) fromJsonT) {
+  factory ApiResponse.fromJson(Map<String, dynamic> json, T Function(dynamic) fromJsonT) {
     return ApiResponse(
       data: fromJsonT(json['data']),
       error: json['error'],

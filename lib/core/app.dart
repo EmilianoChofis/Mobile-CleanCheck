@@ -14,17 +14,14 @@ class MyApp extends StatelessWidget {
       title: 'Mobile CleanCheck',
       theme: AppTheme.lightTheme,
       themeMode: ThemeMode.system,
+      initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),
-        '/login': (context) => buildRoute(const LoginScreen(), getRole()),
-        '/forgot-password': (context) => buildRoute(const ForgotPasswordScreen(), getRole()),
-        '/change-password': (context) => buildRoute(const ChangePasswordScreen(), getRole()),
-        '/home': (context) => _buildHomeRoute(),
+        '/login': (context) => const LoginScreen(),
+        '/forgot-password': (context) => const ForgotPasswordScreen(),
+        '/change-password': (context) => const ChangePasswordScreen(),
+        '/home': (context) => const RoleResolver(),
       },
     );
-  }
-
-  Widget _buildHomeRoute() {
-    return buildRoute(const LoginScreen(), getRole());
   }
 }

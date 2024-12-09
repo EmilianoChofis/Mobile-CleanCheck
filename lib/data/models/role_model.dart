@@ -1,12 +1,12 @@
 class RoleModel {
   final String id;
   final String name;
-  final String description;
+  final String? description;
 
   RoleModel({
     required this.id,
     required this.name,
-    required this.description,
+    this.description,
   });
 
   factory RoleModel.fromJson(Map<String, dynamic> json) {
@@ -15,5 +15,13 @@ class RoleModel {
       name: json['name'],
       description: json['description'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+    };
   }
 }

@@ -1,37 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
+import 'package:mobile_clean_check/core/theme/themes.dart';
+import 'package:mobile_clean_check/data/models/models.dart';
 
 class CcFloorWidget extends StatelessWidget {
   final ValueNotifier<String?> selectedRoomNotifier;
+  final FloorModel floor;
 
-  const CcFloorWidget({required this.selectedRoomNotifier, super.key});
+  const CcFloorWidget({
+    required this.selectedRoomNotifier,
+    required this.floor,
+    super.key,
+  });
+
+  final secondaryColor = ColorSchemes.secondary;
 
   @override
   Widget build(BuildContext context) {
-    const String floor = 'Piso 1';
-    final rooms = [
-      {'name': 'P1H1', 'state': RoomStatus.reported},
-      {'name': 'P1H2', 'state': RoomStatus.empty},
-      {'name': 'P1H3', 'state': RoomStatus.empty},
-      {'name': 'P1H4', 'state': RoomStatus.reported},
-      {'name': 'P1H5', 'state': RoomStatus.cleaned},
-      {'name': 'P1H6', 'state': RoomStatus.disabled},
-      {'name': 'P1H7', 'state': RoomStatus.empty},
-    ];
+    if (floor.rooms == null || floor.rooms!.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const CcFloorTitleWidget(floor: floor),
+          Text(
+            floor.name,
+            style: TextStyle(color: secondaryColor, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8.0),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: rooms.map((room) {
-              final roomName = room['name'].toString();
-              final roomState = room['state'] as RoomStatus;
+            children: floor.rooms!.map((room) {
+              final roomName = room.name;
+              final roomState = RoomStatus.values.firstWhere(
+                    (e) => e.toString() == 'RoomStatus.${room.status?.toLowerCase()}',
+                orElse: () => RoomStatus.empty,
+              );
 
               return GestureDetector(
                 onTap: roomState == RoomStatus.empty
@@ -51,7 +59,7 @@ class CcFloorWidget extends StatelessWidget {
             }).toList(),
           ),
           const SizedBox(height: 24.0),
-          const CcDividerWidget(),
+          const Divider(),
         ],
       ),
     );

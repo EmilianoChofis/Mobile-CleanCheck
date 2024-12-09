@@ -23,13 +23,11 @@ class _SplashScreenState extends State<SplashScreen> {
       final token = prefs.getString('token');
 
       if (mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (token != null && role != null) {
-            Navigator.pushReplacementNamed(context, "/home");
-          } else {
-            Navigator.pushReplacementNamed(context, "/login");
-          }
-        });
+        if (token != null && role != null) {
+          Navigator.pushNamed(context, '/home');
+        } else {
+          Navigator.pushNamed(context, '/login');
+        }
       }
     });
   }

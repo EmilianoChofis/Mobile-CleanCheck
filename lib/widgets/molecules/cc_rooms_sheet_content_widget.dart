@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_clean_check/core/theme/themes.dart';
 
 class CcRoomsSheetContentWidget extends StatefulWidget {
   final List<String> items;
@@ -18,28 +19,41 @@ class CcRoomsSheetContentWidget extends StatefulWidget {
 }
 
 class _CcRoomsSheetContentWidgetState extends State<CcRoomsSheetContentWidget> {
+  final primaryColor = ColorSchemes.primary;
+  final secondaryColor = ColorSchemes.secondary;
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: widget.items.length,
+      itemCount: widget.items.length * 2 - 1,
       itemBuilder: (context, index) {
-        final item = widget.items[index];
-        final isPinned = widget.tempPinnedItems.contains(item);
-        return ListTile(
-          title: Text(item),
-          trailing: IconButton(
-            icon: Icon(
-              isPinned ? Icons.push_pin : Icons.push_pin_outlined,
-              color: isPinned ? Colors.blue : null,
+        if (index.isOdd) {
+          return const Divider();
+        } else {
+          final itemIndex = index ~/ 2;
+          final item = widget.items[itemIndex];
+          final isPinned = widget.tempPinnedItems.contains(item);
+
+          return ListTile(
+            title: Text(
+              item,
+              style:
+                  TextStyle(color: primaryColor, fontWeight: FontWeight.w500),
             ),
-            onPressed: () {
-              setState(() {
-                widget.onToggle(item, isPinned);
-              });
-            },
-          ),
-        );
+            trailing: IconButton(
+              icon: Icon(
+                isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+                color: secondaryColor,
+              ),
+              onPressed: () {
+                setState(() {
+                  widget.onToggle(item, isPinned);
+                });
+              },
+            ),
+          );
+        }
       },
     );
   }

@@ -9,30 +9,29 @@ class CcPinButtonWidget extends StatefulWidget {
 }
 
 class _CcPinButtonWidgetState extends State<CcPinButtonWidget> {
+  Set<String> pinnedItems = {};
+  Set<String> tempPinnedItems = {};
+
   void _showBottomSheet(BuildContext context) {
     List<String> items = [
-      "Item 1",
-      "Item 2",
-      "Item 3",
-      "Item 4",
-      "Item 5",
-      "Item 6",
-      "Item 7",
-      "Item 8",
-      "Item 9",
-      "Item 10",
-      "Item 11",
-      "Item 12",
+      'P1H1',
+      'P1H2',
+      'P1H3',
+      'P1H4',
+      'P1H5',
+      'P1H6',
+      'P1H7',
+      'P1H8',
+      'P1H9',
     ];
-    Set<String> pinnedItems = {};
-    Set<String> tempPinnedItems = Set<String>.from(pinnedItems);
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       isDismissible: false,
-      constraints:
-          BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.85),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.85,
+      ),
       enableDrag: false,
       builder: (context) {
         return StatefulBuilder(
@@ -54,17 +53,37 @@ class _CcPinButtonWidgetState extends State<CcPinButtonWidget> {
                   });
                 },
               ),
-              onCancel: () => Navigator.pop(context),
-              onSave: () {
-                setState(() => pinnedItems = Set<String>.from(tempPinnedItems));
-                Navigator.pop(context);
-              },
+              actions: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CcButtonWidget(
+                    buttonType: ButtonType.elevated,
+                    onPressed: _onSave,
+                    label: "Fijar habitaciones",
+                    isLoading: false,
+                  ),
+                  const SizedBox(height: 8.0),
+                  CcButtonWidget(
+                    buttonType: ButtonType.outlined,
+                    onPressed: _onCancel,
+                    label: "Cancelar",
+                    isLoading: false,
+                  ),
+                ],
+              ),
             );
           },
         );
       },
     );
   }
+
+  void _onSave() {
+    setState(() => pinnedItems = Set<String>.from(tempPinnedItems));
+    Navigator.pop(context);
+  }
+
+  void _onCancel() => Navigator.pop(context);
 
   @override
   Widget build(BuildContext context) {

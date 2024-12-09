@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_clean_check/core/theme/themes.dart';
+import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcTitleContentTemplate extends StatelessWidget {
   final String title;
@@ -13,13 +13,16 @@ class CcTitleContentTemplate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: TextThemes.lightTextTheme.headlineSmall),
-        const SizedBox(height: 8.0),
-        content,
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CcTitleScreenWidget(title: title),
+          const SizedBox(height: 8.0),
+          content,
+        ],
+      ),
     );
   }
 }
