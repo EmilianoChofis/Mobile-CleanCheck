@@ -86,7 +86,7 @@ class _CcBuildingFormWidgetState extends State<CcBuildingFormWidget> {
             ),
             const SizedBox(height: 32.0),
             Text(
-              'Número de pisos',
+              'Número de pisos nuevos',
               style: TextThemes.lightTextTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w500,
               ),

@@ -47,6 +47,11 @@ export 'package:mobile_clean_check/widgets/organisms/cc_fab_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_building_form_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_building_bottom_sheet_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_room_form_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_room_bottom_sheet_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_user_form_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_user_bottom_sheet_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_change_status_bottom_sheet_widget.dart';
+
 
 // Template widgets
 export 'package:mobile_clean_check/widgets/templates/cc_auth_template.dart';

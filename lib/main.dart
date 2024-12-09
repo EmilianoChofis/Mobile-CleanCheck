@@ -19,6 +19,9 @@ void main() {
       RepositoryProvider<RoomRepository>(
         create: (context) => RoomRepository(),
       ),
+      RepositoryProvider<UserRepository>(
+        create: (context) => UserRepository(),
+      ),
     ],
     child: MultiBlocProvider(
       providers: [
@@ -40,6 +43,11 @@ void main() {
         BlocProvider<RoomCubit>(
           create: (context) => RoomCubit(
             roomRepository: context.read<RoomRepository>(),
+          ),
+        ),
+        BlocProvider<UserCubit>(
+          create: (context) => UserCubit(
+            userRepository: context.read<UserRepository>(),
           ),
         ),
       ],

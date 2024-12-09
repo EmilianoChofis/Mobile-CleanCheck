@@ -9,6 +9,7 @@ class BuildingCubit extends Cubit<BuildingState> {
   BuildingCubit({required this.buildingRepository}) : super(BuildingInitial());
 
   Future<void> getBuildings() async {
+    if (state is BuildingLoading) return;
     emit(BuildingLoading());
     loadBuildings();
   }
@@ -23,9 +24,21 @@ class BuildingCubit extends Cubit<BuildingState> {
     }
   }
 
-  Future<void> createBuildingWithFloors(BuildingModel building) async {
-    final response =
-        await buildingRepository.createBuildingWithFloors(building);
+  Future<BuildingModel?> getBuildingById(String buildingId) async {
+    final response = await buildingRepository.getBuildingById(buildingId);
+
+    if (response.error) {
+      emit(BuildingError(message: response.message));
+      return null;
+    } else {
+      emit(BuildingLoaded(buildings: [response.data!]));
+      return response.data!;
+    }
+  }
+
+  Future<void> createBuildingWithFloors(
+      BuildingModel building, int newFloors) async {
+    final response = await buildingRepository.createBuilding(building);
 
     if (response.error) {
       emit(BuildingError(message: response.message));
@@ -33,54 +46,55 @@ class BuildingCubit extends Cubit<BuildingState> {
       final createdBuilding = response.data;
 
       List<FloorModel> floors = List.generate(
-        createdBuilding!.number,
+        newFloors,
         (index) => FloorModel(
           name: 'Piso ${index + 1}',
-          buildingId: createdBuilding.id,
-          building: createdBuilding,
+          buildingId: createdBuilding!.id,
         ),
       );
 
       await FloorRepository().createListFloor(floors);
 
-      emit(BuildingSuccess(
-          message: 'Edificio creado y pisos añadidos con éxito'));
+      emit(BuildingSuccess(message: response.message));
     }
 
     await loadBuildings();
   }
 
-  Future<void> updateBuildingWithFloors(BuildingModel building) async {
-    final response =
-        await buildingRepository.updateBuildingWithFloors(building);
+  Future<void> updateBuilding(BuildingModel building, int newFloors) async {
+    final response = await buildingRepository.updateBuilding(building);
 
     if (response.error) {
       emit(BuildingError(message: response.message));
     } else {
-      final createdBuilding = response.data;
-      final buildingId = createdBuilding!.id;
-
-      final floorsResponse =
-          await FloorRepository().getFloorsByBuildingId(buildingId!);
-
-      final lastFloor = floorsResponse.data!.length;
+      final createdBuilding = response.data!;
+      final lastFloor = createdBuilding.floors!.length;
 
       List<FloorModel> floors = List.generate(
-        createdBuilding.number,
+        newFloors,
         (index) => FloorModel(
           name: 'Piso ${lastFloor + index + 1}',
           buildingId: createdBuilding.id,
-          building: createdBuilding,
         ),
       );
-
       await FloorRepository().createListFloor(floors);
       await buildingRepository.updateBuilding(
-        building.copyWith(number: lastFloor + building.number),
+        building.copyWith(number: lastFloor + building.number!),
       );
-
-      emit(BuildingSuccess(message: 'Edificio actualizado con éxito'));
+      emit(BuildingSuccess(message: response.message));
     }
+    await loadBuildings();
+  }
+
+  Future<void> deleteBuilding(String buildingId) async {
+    final response = await buildingRepository.deleteBuilding(buildingId);
+
+    if (response.error) {
+      emit(BuildingError(message: response.message));
+    } else {
+      emit(BuildingSuccess(message: response.message));
+    }
+
     await loadBuildings();
   }
 }

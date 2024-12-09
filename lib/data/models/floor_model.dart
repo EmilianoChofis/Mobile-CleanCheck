@@ -1,16 +1,17 @@
-import 'package:mobile_clean_check/data/models/building_model.dart';
+
+import 'package:mobile_clean_check/data/models/room_model.dart';
 
 class FloorModel {
   String? id;
   String name;
   String? buildingId;
-  BuildingModel building;
+  List<RoomModel>? rooms;
 
   FloorModel({
     this.id,
     required this.name,
     this.buildingId,
-    required this.building,
+    this.rooms,
   });
 
   factory FloorModel.fromJson(Map<String, dynamic> json) {
@@ -18,7 +19,11 @@ class FloorModel {
       id: json['id'],
       name: json['name'],
       buildingId: json['buildingId'],
-      building: BuildingModel.fromJson(json['building']),
+      rooms: json['rooms'] != null
+          ? (json['rooms'] as List)
+              .map((roomJson) => RoomModel.fromJson(roomJson))
+              .toList()
+          : null,
     );
   }
 
@@ -27,7 +32,7 @@ class FloorModel {
       'id': id,
       'name': name,
       'buildingId': buildingId,
-      'building': building.toJson(),
+      'rooms': rooms?.map((room) => room.toJson()).toList(),
     };
   }
 
@@ -35,13 +40,13 @@ class FloorModel {
     String? id,
     String? name,
     String? buildingId,
-    BuildingModel? building,
+    List<RoomModel>? rooms,
   }) {
     return FloorModel(
       id: id ?? this.id,
       name: name ?? this.name,
       buildingId: buildingId ?? this.buildingId,
-      building: building ?? this.building,
+      rooms: rooms ?? this.rooms,
     );
   }
 }

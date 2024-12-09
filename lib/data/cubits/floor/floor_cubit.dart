@@ -15,7 +15,7 @@ class FloorCubit extends Cubit<FloorState> {
     if (response.error) {
       emit(FloorError(message: response.message));
     } else {
-      emit(FloorSuccess(message: 'Pisos registrados con éxito'));
+      emit(FloorSuccess(message: response.message));
     }
   }
 

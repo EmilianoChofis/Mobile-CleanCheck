@@ -25,7 +25,25 @@ class BuildingRepository {
     }
   }
 
-  Future<ApiResponse<BuildingModel>> createBuildingWithFloors(
+  Future<ApiResponse<BuildingModel>> getBuildingById(String buildingId) async {
+    try {
+      final response = await dio.get('/building/getById/$buildingId');
+      return ApiResponse<BuildingModel>.fromJson(
+        response.data,
+        (json) => BuildingModel.fromJson(json),
+      );
+    } on DioException catch (e) {
+      return ApiResponse<BuildingModel>(
+        data: null,
+        error: true,
+        statusCode: e.response?.statusCode ?? 500,
+        message: e.response?.data['message'] ??
+            'Ha ocurrido un error. Inténtalo de nuevo.',
+      );
+    }
+  }
+
+  Future<ApiResponse<BuildingModel>> createBuilding(
       BuildingModel building) async {
     try {
       final response = await dio.post(
@@ -34,9 +52,7 @@ class BuildingRepository {
       );
 
       return ApiResponse<BuildingModel>.fromJson(
-        response.data,
-        (json) => BuildingModel.fromJson(json),
-      );
+          response.data, (json) => BuildingModel.fromJson(json));
     } on DioException catch (e) {
       return ApiResponse<BuildingModel>(
         data: null,
@@ -48,7 +64,8 @@ class BuildingRepository {
     }
   }
 
-  Future<ApiResponse<BuildingModel>> updateBuilding(BuildingModel building) async {
+  Future<ApiResponse<BuildingModel>> updateBuilding(
+      BuildingModel building) async {
     try {
       final response = await dio.put(
         '/building/update',
@@ -70,13 +87,9 @@ class BuildingRepository {
     }
   }
 
-  Future<ApiResponse<BuildingModel>> updateBuildingWithFloors(
-      BuildingModel building) async {
+  Future<ApiResponse<BuildingModel>> deleteBuilding(String buildingId) async {
     try {
-      final response = await dio.put(
-        '/building/update',
-        data: building.toJson(),
-      );
+      final response = await dio.put('/building/changeStatus/$buildingId');
 
       return ApiResponse<BuildingModel>.fromJson(
         response.data,

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
-import 'package:mobile_clean_check/data/repositories/floor_repository.dart';
-import 'package:mobile_clean_check/widgets/organisms/cc_room_bottom_sheet_widget.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class ManagerRoomsScreen extends StatefulWidget {
@@ -16,24 +15,12 @@ class ManagerRoomsScreen extends StatefulWidget {
 }
 
 class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _buildingsController = TextEditingController();
-  final TextEditingController _floorsController = TextEditingController();
-  final TextEditingController _roomsController = TextEditingController();
   final _searchController = SearchController();
-
-  @override
-  void dispose() {
-    _buildingsController.dispose();
-    _floorsController.dispose();
-    super.dispose();
-  }
 
   @override
   void initState() {
     super.initState();
     context.read<FloorCubit>().getFloorsByBuildingId(widget.building.id!);
-    context.read<RoomCubit>().getRooms(widget.building);
   }
 
   @override
@@ -41,7 +28,8 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
     return Scaffold(
       appBar: CcAppBarWidget(title: widget.building.name),
       floatingActionButton: CcFabWidget(
-        onPressed: () => _showBuildingBottomSheet(context),
+        onPressed: () =>
+            _showBuildingBottomSheet(context, widget.building, null),
         icon: Icons.add,
       ),
       body: BlocListener<RoomCubit, RoomState>(
@@ -58,9 +46,10 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
               message: state.message,
               snackBarType: SnackBarType.success,
             );
-            Navigator.pop(context);
-            _buildingsController.clear();
-            _floorsController.clear();
+
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
           }
         },
         child: BlocBuilder<RoomCubit, RoomState>(
@@ -68,9 +57,9 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
             if (state is RoomLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is RoomLoaded) {
-              return _buildList(state.rooms);
+              return _buildList();
             } else {
-              return _buildList([]);
+              return _buildList();
             }
           },
         ),
@@ -78,13 +67,13 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
     );
   }
 
-  Widget _buildList(List<RoomModel> rooms) {
+  Widget _buildList() {
     return CcListScreenTemplate(
       title: 'Lista de habitaciones',
       search: CcSearchBarWidget(controller: _searchController),
       filters: _buildFilters(),
       symbology: _buildSymbology(),
-      content: _buildContent(rooms),
+      content: _buildContent(),
     );
   }
 
@@ -110,123 +99,67 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
     );
   }
 
-  Widget _buildContent(List<RoomModel> rooms) {
-    if (rooms.isEmpty) {
-      return const Center(child: Text('No hay habitaciones registrados.'));
+  Widget _buildContent() {
+    final floorsWithRooms = widget.building.floors
+            ?.where((floor) => (floor.rooms?.isNotEmpty ?? false))
+            .toList() ??
+        [];
+
+    if (floorsWithRooms.isEmpty) {
+      return const Center(child: Text('No hay pisos con habitaciones.'));
     }
 
-    Map<String, List<RoomModel>> groupedRooms = {};
-    for (var room in rooms) {
-      final floorName = room.floor.name;
-      if (groupedRooms.containsKey(floorName)) {
-        groupedRooms[floorName]!.add(room);
-      } else {
-        groupedRooms[floorName] = [room];
-      }
-    }
-
-    var sortedFloorNames = groupedRooms.keys.toList();
-    sortedFloorNames.sort((a, b) {
-      final numA = int.tryParse(a.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-      final numB = int.tryParse(b.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-      return numA.compareTo(numB);
-    });
-
-    return ListView.builder(
-      itemCount: sortedFloorNames.length,
-      itemBuilder: (context, index) {
-        final floorName = sortedFloorNames[index];
-        final floorRooms = groupedRooms[floorName]!;
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
+    return CustomScrollView(
+      slivers: [
+        for (var floor in floorsWithRooms) ...[
+          SliverStickyHeader(
+            header: Container(
+              color: Colors.white,
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                floorName,
+                floor.name,
                 style: const TextStyle(
                   color: ColorSchemes.secondary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            const SizedBox(height: 8.0),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: floorRooms.length,
-              itemBuilder: (context, roomIndex) {
-                final room = floorRooms[roomIndex];
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: CcItemListWidget(
-                    iconType: IconType.enabled,
-                    onTap: () {},
-                    icon: Icons.domain_outlined,
-                    title: room.name,
-                    content: Text(
-                      room.status!,
-                      style: const TextStyle(color: ColorSchemes.secondary),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final room = floor.rooms![index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: CcItemListWidget(
+                      iconType: IconType.enabled,
+                      onTap: () {},
+                      icon: Icons.domain_outlined,
+                      title: room.name,
+                      content: Text(
+                        room.status ?? 'Estado desconocido',
+                        style: const TextStyle(color: ColorSchemes.secondary),
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+                childCount: floor.rooms?.length ?? 0,
+              ),
             ),
-          ],
-        );
-      },
+          ),
+        ],
+      ],
     );
   }
 
-  void _showBuildingBottomSheet(BuildContext context, {RoomModel? room}) {
+  void _showBuildingBottomSheet(
+    BuildContext context,
+    BuildingModel? building,
+    RoomModel? room,
+  ) {
     CcRoomBottomSheetWidget.show(
       context,
-      formKey: _formKey,
-      buildingController: _buildingsController,
-      floorController: _floorsController,
-      numberRoomsController: _roomsController,
       building: widget.building,
       room: room,
-      onSave: (room) => _onSave(room),
-      onCancel: () => _onCancel(),
     );
-  }
-
-  void _onSave(RoomModel? room) async {
-    if (_formKey.currentState!.validate()) {
-      final response =
-          await FloorRepository().getFloorById(_floorsController.text);
-      final foundFloor = response.data!.name;
-      final selectedFloor = foundFloor.split(' ');
-      final firstLetter = selectedFloor[0].substring(0, 1);
-      final floorName = firstLetter + selectedFloor[1];
-      final numberOfRooms = int.tryParse(_roomsController.text.trim()) ?? 0;
-
-      final List<RoomModel> rooms = List.generate(
-        numberOfRooms,
-        (index) {
-          final roomNumber = index + 1;
-          return RoomModel(
-            identifier: floorName,
-            name: '${floorName}H$roomNumber',
-            floor: FloorModel(
-              id: _floorsController.text,
-              name: floorName,
-              building: widget.building,
-            ),
-          );
-        },
-      );
-      context.read<RoomCubit>().createListRooms(rooms);
-    }
-  }
-
-  void _onCancel() {
-    Navigator.pop(context);
-    _buildingsController.clear();
-    _floorsController.clear();
-    _roomsController.clear();
   }
 }

@@ -12,100 +12,49 @@ class ManagerHomeScreen extends StatefulWidget {
 }
 
 class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameBuildingController = TextEditingController();
-  final TextEditingController _numberFloorsController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameBuildingController.dispose();
-    _numberFloorsController.dispose();
-    super.dispose();
-  }
-
   @override
   void initState() {
     super.initState();
     context.read<BuildingCubit>().getBuildings();
+    context.read<UserCubit>().getUsers();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CcAppBarWidget(title: "Inicio"),
-      body: BlocListener<BuildingCubit, BuildingState>(
-        listener: (context, state) {
-          if (state is BuildingError) {
-            CcSnackBarWidget.show(
-              context,
-              message: state.message,
-              snackBarType: SnackBarType.error,
-            );
-          } else if (state is BuildingSuccess) {
-            CcSnackBarWidget.show(
-              context,
-              message: state.message,
-              snackBarType: SnackBarType.success,
-            );
-
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            }
-
-            _nameBuildingController.clear();
-            _numberFloorsController.clear();
-          }
-        },
-        child: BlocBuilder<BuildingCubit, BuildingState>(
-          builder: (context, state) {
-            if (state is BuildingLoading) {
-              return const CircularProgressIndicator();
-            } else if (state is BuildingLoaded) {
-              return _buildHome(state.buildings);
-            } else {
-              return _buildHome([]);
-            }
-          },
+      body: SingleChildScrollView(
+        child: CcHeaderTemplate(
+          header: _buildHeader(),
+          content: Column(
+            children: [
+              CcTitleContentTemplate(
+                title: "Edificios",
+                content: _buildBuildingsContent(),
+              ),
+              const SizedBox(height: 16.0),
+              CcTitleContentTemplate(
+                title: "Usuarios",
+                content: _buildUsersContent(),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildHome(List<BuildingModel> buildings) {
-    return SingleChildScrollView(
-      child: CcHeaderTemplate(
-        header: _buildHeader(),
-        content: _buildContent(buildings),
-      ),
-    );
+  void _showBuildingBottomSheet(BuildContext context,
+      {BuildingModel? building}) {
+    CcBuildingBottomSheetWidget.show(context, building: building);
   }
 
-  void _showRegisterBuildingBottomSheet() {
-    BuildingBottomSheet.show(
-      context,
-      formKey: _formKey,
-      nameBuildingController: _nameBuildingController,
-      numberFloorsController: _numberFloorsController,
-      onSave: (building) => _onSave(),
-      onCancel: () => _onCancel(),
-    );
+  void _showRoomBottomSheet() {
+    CcRoomBottomSheetWidget.show(context, quickAccess: true);
   }
 
-  void _onSave() {
-    if (_formKey.currentState!.validate()) {
-      final newBuilding = BuildingModel(
-        name: _nameBuildingController.text,
-        number: int.parse(_numberFloorsController.text),
-      );
-
-      context.read<BuildingCubit>().createBuildingWithFloors(newBuilding);
-    }
-  }
-
-  void _onCancel() {
-    _nameBuildingController.clear();
-    _numberFloorsController.clear();
-    Navigator.pop(context);
+  void _showUserBottomSheet() {
+    CcUserBottomSheetWidget.show(context);
   }
 
   Widget _buildHeader() {
@@ -118,14 +67,16 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
               icon: Icons.warning_amber,
               text: "3 incidencias pendientes",
               trailing: Icons.chevron_right,
-              onTap: () => print("Incidencias"),
+              onTap: () => {},
             ),
           ),
           const SizedBox(height: 16.0),
           CcWorkingZoneTemplate(
             title: "Accesos directos",
             actions: CcWorkingZoneManagerWidget(
-              onRegisterBuilding: _showRegisterBuildingBottomSheet,
+              onRegisterBuilding: () => _showBuildingBottomSheet(context),
+              onRegisterRoom: _showRoomBottomSheet,
+              onRegisterUser: _showUserBottomSheet,
             ),
           ),
         ],
@@ -133,64 +84,73 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
     );
   }
 
-  Widget _buildContent(List<BuildingModel> buildings) {
-    final buildingItems = buildings
-        .take(3)
-        .map((building) => {
-              'name': building.name,
-              'rooms': '${building.number} habitaciones',
-            })
-        .toList();
+  Widget _buildBuildingsContent() {
+    return BlocBuilder<BuildingCubit, BuildingState>(
+      builder: (context, state) {
+        if (state is BuildingLoaded) {
+          final buildings = state.buildings.take(3).map((building) {
+            final f = building.floors?.length ?? 0;
+            final ft = f != 1 ? '$f pisos' : '$f piso';
+            return {'name': building.name, 'rooms': ft};
+          }).toList();
 
-    return Column(
-      children: [
-        CcTitleContentTemplate(
-          title: "Edificios",
-          content: Column(
+          return Column(
             children: [
-              CcListItemsWidget(items: buildingItems),
-              CcButtonWidget(
-                buttonType: ButtonType.text,
-                label: "Ver más",
-                suffixIcon: const Icon(Icons.chevron_right),
-                onPressed: () => {print("Edificios")},
-                isLoading: false,
-              ),
+              if (buildings.isEmpty)
+                const CcBannerWidget(
+                  icon: Icons.apartment_outlined,
+                  text: 'Aquí se mostrarán los edificios registrados',
+                  trailing: Icons.chevron_right,
+                )
+              else ...[
+                CcListItemsWidget(items: buildings),
+                CcButtonWidget(
+                  buttonType: ButtonType.text,
+                  label: "Ver más",
+                  suffixIcon: const Icon(Icons.chevron_right),
+                  onPressed: () {},
+                  isLoading: false,
+                ),
+              ],
             ],
-          ),
-        ),
-        const SizedBox(height: 16.0),
-        CcTitleContentTemplate(
-          title: "Usuarios",
-          content: Column(
+          );
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Widget _buildUsersContent() {
+    return BlocBuilder<UserCubit, UserState>(
+      builder: (context, state) {
+        if (state is UsersLoaded) {
+          final users = state.users.take(3).map((user) {
+            return {'name': user.name, 'rooms': user.email};
+          }).toList();
+
+          return Column(
             children: [
-              const CcListItemsWidget(
-                items: [
-                  {
-                    'name': 'Juan Perez',
-                    'rooms': 'Administrador',
-                  },
-                  {
-                    'name': 'Maria Lopez',
-                    'rooms': 'Limpieza',
-                  },
-                  {
-                    'name': 'Pedro Ramirez',
-                    'rooms': 'Mantenimiento',
-                  },
-                ],
-              ),
-              CcButtonWidget(
-                buttonType: ButtonType.text,
-                label: "Ver más",
-                suffixIcon: const Icon(Icons.chevron_right),
-                onPressed: () => print("Usuarios"),
-                isLoading: false,
-              ),
+              if (users.isEmpty)
+                const CcBannerWidget(
+                  icon: Icons.person_outline,
+                  text: 'Aquí se mostrarán los usuarios registrados',
+                  trailing: Icons.chevron_right,
+                )
+              else ...[
+                CcListItemsWidget(items: users),
+                CcButtonWidget(
+                  buttonType: ButtonType.text,
+                  label: "Ver más",
+                  suffixIcon: const Icon(Icons.chevron_right),
+                  onPressed: () => {},
+                  isLoading: false,
+                ),
+              ],
             ],
-          ),
-        ),
-      ],
+          );
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
     );
   }
 }

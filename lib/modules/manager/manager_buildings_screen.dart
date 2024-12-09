@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:mobile_clean_check/modules/modules.dart';
@@ -14,17 +13,7 @@ class ManagerBuildingsScreen extends StatefulWidget {
 }
 
 class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameBuildingController = TextEditingController();
-  final TextEditingController _numberFloorsController = TextEditingController();
   final _searchController = SearchController();
-
-  @override
-  void dispose() {
-    _nameBuildingController.dispose();
-    _numberFloorsController.dispose();
-    super.dispose();
-  }
 
   @override
   void initState() {
@@ -37,7 +26,7 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
     return Scaffold(
       appBar: const CcAppBarWidget(title: 'Edificios'),
       floatingActionButton: CcFabWidget(
-        onPressed: () => _showBuildingBottomSheet(context),
+        onPressed: () => _showBuildingBottomSheet(context, null),
         icon: Icons.add,
       ),
       body: BlocListener<BuildingCubit, BuildingState>(
@@ -58,9 +47,6 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             }
-
-            _nameBuildingController.clear();
-            _numberFloorsController.clear();
           }
         },
         child: BlocBuilder<BuildingCubit, BuildingState>(
@@ -110,72 +96,62 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
   }
 
   Widget _buildContent(List<BuildingModel> buildings) {
-    if (buildings.isEmpty) {
-      return const Center(child: Text('No hay edificios registrados.'));
-    }
+    return RefreshIndicator(
+      onRefresh: () async => await context.read<BuildingCubit>().getBuildings(),
+      child: buildings.isEmpty
+          ? const Center(child: Text('No hay edificios registrados.'))
+          : CcListSlidableWidget<BuildingModel>(
+              items: buildings,
+              onEdit: (context, {item}) {
+                _showBuildingBottomSheet(context, item);
+              },
+              onDelete: (context, {item}) {
+                _showChangeStatusBottomSheet(
+                  context,
+                  item!,
+                  item.status! ? IconType.enabled : IconType.disabled,
+                );
+              },
+              buildItem: (context, b) {
+                final floors = b.floors?.length ?? 0;
+                final floorText =
+                    floors != 1 ? '$floors pisos' : '$floors piso';
+                final it = b.status! ? IconType.enabled : IconType.disabled;
 
-    return CcListSlidableWidget<BuildingModel>(
-      items: buildings,
-      onEdit: (context, {item}) =>
-          _showBuildingBottomSheet(context, building: item),
-      onDelete: (context, {item}) {},
-      buildItem: (context, building) {
-        return CcItemListWidget(
-          iconType: IconType.enabled,
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => ManagerRoomsScreen(building: building),
-              ),
-            );
-          },
-          icon: Icons.domain_outlined,
-          title: building.name,
-          content: Text(
-            '${building.number} pisos',
-            style: const TextStyle(color: ColorSchemes.secondary),
-          ),
-        );
-      },
+                return CcItemListWidget(
+                  iconType: it,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ManagerRoomsScreen(building: b),
+                      ),
+                    );
+                  },
+                  icon: Icons.domain_outlined,
+                  title: b.name,
+                  content: Text(floorText),
+                );
+              },
+            ),
     );
   }
 
-  void _showBuildingBottomSheet(BuildContext context,
-      {BuildingModel? building}) {
-    BuildingBottomSheet.show(
+  void _showBuildingBottomSheet(BuildContext context, BuildingModel? building) {
+    CcBuildingBottomSheetWidget.show(context, building: building);
+  }
+
+  void _showChangeStatusBottomSheet(
+      BuildContext context, BuildingModel building, IconType iconType) {
+    CcChangeStatusBottomSheetWidget.show(
       context,
-      formKey: _formKey,
-      nameBuildingController: _nameBuildingController,
-      numberFloorsController: _numberFloorsController,
-      building: building,
-      onSave: (building) => _onSave(building),
-      onCancel: () => _onCancel(),
+      item: building,
+      title: building.status! ? 'Deshabilitar edificio' : 'Habilitar edificio',
+      cardTitle: building.name,
+      cardSubtitle: '${building.floors!.length} pisos',
+      cardType: iconType,
+      cardIcon: Icons.domain_outlined,
+      content: const Text('¿Estás seguro de deshabilitar este edificio?'),
+      onDelete: (id) => context.read<BuildingCubit>().deleteBuilding(id),
     );
-  }
-
-  void _onSave(BuildingModel? building) {
-    if (_formKey.currentState!.validate()) {
-      final newBuilding = BuildingModel(
-        name: _nameBuildingController.text,
-        number: int.parse(_numberFloorsController.text),
-      );
-
-      if (building == null) {
-        context.read<BuildingCubit>().createBuildingWithFloors(newBuilding);
-      } else {
-        context.read<BuildingCubit>().updateBuildingWithFloors(
-              building.copyWith(
-                name: newBuilding.name,
-                number: newBuilding.number,
-              ),
-            );
-      }
-    }
-  }
-
-  void _onCancel() {
-    _nameBuildingController.clear();
-    _numberFloorsController.clear();
-    Navigator.pop(context);
   }
 }

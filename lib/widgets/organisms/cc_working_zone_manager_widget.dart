@@ -3,9 +3,13 @@ import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcWorkingZoneManagerWidget extends StatelessWidget {
   final VoidCallback onRegisterBuilding;
+  final VoidCallback onRegisterRoom;
+  final VoidCallback onRegisterUser;
 
   const CcWorkingZoneManagerWidget({
     required this.onRegisterBuilding,
+    required this.onRegisterRoom,
+    required this.onRegisterUser,
     super.key,
   });
 
@@ -20,19 +24,19 @@ class CcWorkingZoneManagerWidget extends StatelessWidget {
       {
         'icon': Icons.bed_outlined,
         'title': 'Registrar habitación',
-        'onTap': () => print('Registrar habitación'),
+        'onTap': onRegisterRoom,
       },
       {
         'icon': Icons.person_outline,
         'title': 'Registrar usuario',
-        'onTap': () => print('Registrar usuario'),
+        'onTap': onRegisterUser,
       },
     ];
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: items.map(
-            (item) {
+        (item) {
           return CcWorkingZoneItemWidget(
             icon: item['icon'] as IconData,
             title: item['title'] as String,

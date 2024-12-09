@@ -8,14 +8,14 @@ class AuthRepository {
 
   Future<ApiResponse<AuthResponse>> login(AuthModel auth) async {
     try {
-      final response = await dio.post(
+      final response = await dio.put(
         '/auth/signIn',
         data: json.encode(auth.toJson()),
       );
 
       return ApiResponse<AuthResponse>.fromJson(
         response.data,
-            (json) => AuthResponse.fromJson(json),
+        (json) => AuthResponse.fromJson(json),
       );
     } on DioException catch (e) {
       return ApiResponse<AuthResponse>(
@@ -27,5 +27,4 @@ class AuthRepository {
       );
     }
   }
-
 }

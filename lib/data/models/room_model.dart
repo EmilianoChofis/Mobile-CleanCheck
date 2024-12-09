@@ -5,14 +5,16 @@ class RoomModel {
   final String identifier;
   final String name;
   final String? status;
-  final FloorModel floor;
+  final String? floorId;
+  final FloorModel? floor;
 
   RoomModel({
     this.id,
     required this.identifier,
     required this.name,
     this.status,
-    required this.floor,
+    this.floorId,
+    this.floor,
   });
 
   factory RoomModel.fromJson(Map<String, dynamic> json) {
@@ -21,7 +23,10 @@ class RoomModel {
       identifier: json['identifier'],
       name: json['name'],
       status: json['status'],
-      floor: FloorModel.fromJson(json['floor']),
+      floorId: json['floorId'],
+      floor: json['floor'] != null
+          ? FloorModel.fromJson(json['floor'])
+          : FloorModel(name: 'Unknown'),
     );
   }
 
@@ -31,7 +36,8 @@ class RoomModel {
       'identifier': identifier,
       'name': name,
       'status': status,
-      'floor': floor.toJson(),
+      'floorId': floorId,
+      'floor': floor?.toJson(),
     };
   }
 
@@ -40,6 +46,7 @@ class RoomModel {
     String? identifier,
     String? name,
     String? status,
+    String? floorId,
     FloorModel? floor,
   }) {
     return RoomModel(
@@ -47,6 +54,7 @@ class RoomModel {
       identifier: identifier ?? this.identifier,
       name: name ?? this.name,
       status: status ?? this.status,
+      floorId: floorId ?? this.floorId,
       floor: floor ?? this.floor,
     );
   }

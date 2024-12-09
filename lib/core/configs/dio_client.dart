@@ -6,8 +6,8 @@ class DioClient {
   static Dio get instance {
     _dio ??= Dio(BaseOptions(
       baseUrl: 'http://192.168.1.75:8080/api-clean',
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
     ));
 
     return _dio!;
