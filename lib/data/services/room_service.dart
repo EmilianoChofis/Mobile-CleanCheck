@@ -10,7 +10,6 @@ class RoomService {
     required String roomsControllerText,
   }) async {
     final response = await FloorRepository().getFloorById(floorId);
-
     final foundFloor = response.data!.name;
     final selectedFloor = foundFloor.split(' ');
     final firstLetter = selectedFloor[0].substring(0, 1);
@@ -22,7 +21,7 @@ class RoomService {
         final roomNumber = lastRoomNumber + index + 1;
         return RoomModel(
           identifier: '${floorName}H$roomNumber',
-          name: '${floorName}H$roomNumber',
+          name: 'H$roomNumber',
           floorId: floorId,
         );
       },

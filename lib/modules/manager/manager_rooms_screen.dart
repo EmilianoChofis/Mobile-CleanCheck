@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
@@ -27,7 +28,8 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
     return Scaffold(
       appBar: CcAppBarWidget(title: widget.building.name),
       floatingActionButton: CcFabWidget(
-        onPressed: () => _showBuildingBottomSheet(context, widget.building, null),
+        onPressed: () =>
+            _showBuildingBottomSheet(context, widget.building, null),
         icon: Icons.add,
       ),
       body: BlocListener<RoomCubit, RoomState>(
@@ -107,16 +109,12 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
       return const Center(child: Text('No hay pisos con habitaciones.'));
     }
 
-    return ListView.builder(
-      itemCount: floorsWithRooms.length,
-      itemBuilder: (context, floorIndex) {
-        final floor = floorsWithRooms[floorIndex];
-        final rooms = floor.rooms ?? [];
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
+    return CustomScrollView(
+      slivers: [
+        for (var floor in floorsWithRooms) ...[
+          SliverStickyHeader(
+            header: Container(
+              color: Colors.white,
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 floor.name,
@@ -126,31 +124,30 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 8.0),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: rooms.length,
-              itemBuilder: (context, roomIndex) {
-                final room = rooms[roomIndex];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: CcItemListWidget(
-                    iconType: IconType.enabled,
-                    onTap: () {},
-                    icon: Icons.domain_outlined,
-                    title: room.name,
-                    content: Text(
-                      room.status ?? 'Estado desconocido',
-                      style: const TextStyle(color: ColorSchemes.secondary),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final room = floor.rooms![index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: CcItemListWidget(
+                      iconType: IconType.enabled,
+                      onTap: () {},
+                      icon: Icons.domain_outlined,
+                      title: room.name,
+                      content: Text(
+                        room.status ?? 'Estado desconocido',
+                        style: const TextStyle(color: ColorSchemes.secondary),
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+                childCount: floor.rooms?.length ?? 0,
+              ),
             ),
-          ],
-        );
-      },
+          ),
+        ],
+      ],
     );
   }
 
