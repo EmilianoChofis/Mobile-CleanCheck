@@ -25,7 +25,7 @@ class AuthCubit extends Cubit<AuthState> {
 
       await prefs.setString('user', name);
       await prefs.setString('token', response.data!.token);
-      await prefs.setString('role', response.data!.user.role.name);
+      await prefs.setString('role', response.data!.user.role!.name);
       await prefs.setString('user_json', jsonEncode(response.data!.user));
 
       emit(AuthAuthenticated(response.data!));

@@ -26,15 +26,8 @@ class CcDropDownWidget extends StatefulWidget {
 }
 
 class _CcDropDownWidgetState extends State<CcDropDownWidget> {
-  String? _selectedValue;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.items.isNotEmpty) {
-      _selectedValue = widget.items.first.value;
-    }
-  }
+  final primaryColor = ColorSchemes.primary;
+  final secondaryColor = ColorSchemes.secondary;
 
   @override
   Widget build(BuildContext context) {
@@ -50,29 +43,22 @@ class _CcDropDownWidgetState extends State<CcDropDownWidget> {
           ),
         const SizedBox(height: 8.0),
         DropdownButtonFormField<String>(
-          value: _selectedValue,
-          hint: Text(widget.hint,
-              style: const TextStyle(color: ColorSchemes.secondary)),
-          icon: const Icon(Icons.keyboard_arrow_down_outlined,
-              color: ColorSchemes.secondary),
-          style: const TextStyle(
-            color: ColorSchemes.primary,
-            decorationColor: ColorSchemes.secondary,
+          hint: Text(widget.hint, style: TextStyle(color: secondaryColor)),
+          icon: Icon(Icons.keyboard_arrow_down_outlined, color: secondaryColor),
+          style: TextStyle(
+            color: primaryColor,
+            decorationColor: secondaryColor,
             fontSize: 16.0,
             fontFamily: 'Jost',
             fontWeight: FontWeight.w400,
           ),
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             border: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: ColorSchemes.secondary,
-              ),
-            ),
+                borderSide: BorderSide(color: secondaryColor)),
           ),
           items: widget.items,
           onChanged: (value) {
             setState(() {
-              _selectedValue = value;
               widget.controller.text = value ?? '';
             });
             if (widget.onChanged != null) {

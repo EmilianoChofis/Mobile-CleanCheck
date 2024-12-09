@@ -7,19 +7,7 @@ class UserRepository {
 
   Future<ApiResponse<List<UserModel>>> getUsers() async {
     try {
-      final response = await dio.post(
-        '/user/getAll',
-        data: {
-          "paginationType": {
-            "filter": "name",
-            "limit": 5,
-            "order": "asc",
-            "page": 0,
-            "sortBy": "name"
-          },
-          "value": ""
-        },
-      );
+      final response = await dio.get('/user/getAll');
       return ApiResponse<List<UserModel>>.fromJson(
         response.data,
         (json) =>
@@ -27,6 +15,44 @@ class UserRepository {
       );
     } on DioException catch (e) {
       return ApiResponse<List<UserModel>>(
+        data: null,
+        error: true,
+        statusCode: e.response?.statusCode ?? 500,
+        message: e.response?.data['message'] ??
+            'Ha ocurrido un error. Inténtalo de nuevo.',
+      );
+    }
+  }
+
+  Future<ApiResponse<UserModel>> createUser(UserModel user, String role) async {
+    try {
+      final response =
+          await dio.post('/auth/createUser/$role', data: user.toJson());
+      return ApiResponse<UserModel>.fromJson(
+        response.data,
+        (json) => UserModel.fromJson(json),
+      );
+    } on DioException catch (e) {
+      return ApiResponse<UserModel>(
+        data: null,
+        error: true,
+        statusCode: e.response?.statusCode ?? 500,
+        message: e.response?.data['message'] ??
+            'Ha ocurrido un error. Inténtalo de nuevo.',
+      );
+    }
+  }
+
+  Future<ApiResponse<UserModel>> updateUser(UserModel user) async {
+    try {
+      final response = await dio.put('/user/update', data: user.toJson());
+      return ApiResponse<UserModel>.fromJson(
+        response.data,
+        (json) => UserModel.fromJson(json),
+      );
+    } on DioException catch (e) {
+      print(e.response?.data);
+      return ApiResponse<UserModel>(
         data: null,
         error: true,
         statusCode: e.response?.statusCode ?? 500,

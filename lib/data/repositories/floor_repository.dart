@@ -7,7 +7,7 @@ class FloorRepository {
 
   Future<ApiResponse<FloorModel>> getFloorById(String id) async {
     try {
-      final response = await dio.post('/floor/findById/$id');
+      final response = await dio.get('/floor/getById/$id');
       return ApiResponse<FloorModel>(
         data: FloorModel.fromJson(response.data['data']),
         error: false,
@@ -56,7 +56,7 @@ class FloorRepository {
       List<FloorModel> floors) async {
     try {
       final response = await dio.post(
-        '/floor/create-list',
+        '/floor/createList',
         data: floors.map((floor) => floor.toJson()).toList(),
       );
 

@@ -14,7 +14,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  Map<String, dynamic> userInfo = {};
+  Map<String, dynamic>? userInfo = {};
 
   @override
   void initState() {
@@ -53,20 +53,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
             radius: 50,
             backgroundColor: whiteColor,
             foregroundColor: primaryColor,
-            child: Text(userInfo['name']?[0] ?? 'N',
+            child: Text(userInfo?['name']?[0] ?? '',
                 style: const TextStyle(fontSize: 32)),
           ),
           Text(
-            userInfo['name'],
+            userInfo?['name'] ?? '',
             style: TextStyle(fontSize: 24, color: whiteColor),
           ),
           const SizedBox(height: 4.0),
           Text(
-            userInfo['role']['description'],
+            userInfo?['role']?['description'] ?? '',
             style: TextStyle(fontSize: 16, color: whiteColor),
           ),
           const SizedBox(height: 16.0),
-          Text(userInfo['email'], style: TextStyle(color: whiteColor)),
+          Text(userInfo?['email'] ?? '', style: TextStyle(color: whiteColor)),
         ],
       ),
     );

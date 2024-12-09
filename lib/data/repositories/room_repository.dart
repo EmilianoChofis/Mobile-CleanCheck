@@ -33,9 +33,10 @@ class RoomRepository {
   Future<ApiResponse<List<RoomModel>>> createListRooms(
       List<RoomModel> rooms) async {
     try {
-      final response = await dio.post('/room/create-list', data: {
-        'rooms': rooms.map((room) => room.toJson()).toList(),
-      });
+      final response = await dio.post(
+        '/room/createList',
+        data: rooms.map((room) => room.toJson()).toList(),
+      );
 
       final List<dynamic> data = response.data['data'];
 

@@ -21,7 +21,7 @@ class RoomService {
       (index) {
         final roomNumber = lastRoomNumber + index + 1;
         return RoomModel(
-          identifier: floorName,
+          identifier: '${floorName}H$roomNumber',
           name: '${floorName}H$roomNumber',
           floorId: floorId,
         );

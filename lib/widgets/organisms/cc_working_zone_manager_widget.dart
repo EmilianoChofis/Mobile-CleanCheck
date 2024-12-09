@@ -4,10 +4,12 @@ import 'package:mobile_clean_check/widgets/widgets.dart';
 class CcWorkingZoneManagerWidget extends StatelessWidget {
   final VoidCallback onRegisterBuilding;
   final VoidCallback onRegisterRoom;
+  final VoidCallback onRegisterUser;
 
   const CcWorkingZoneManagerWidget({
     required this.onRegisterBuilding,
     required this.onRegisterRoom,
+    required this.onRegisterUser,
     super.key,
   });
 
@@ -27,7 +29,7 @@ class CcWorkingZoneManagerWidget extends StatelessWidget {
       {
         'icon': Icons.person_outline,
         'title': 'Registrar usuario',
-        'onTap': () => () => {},
+        'onTap': onRegisterUser,
       },
     ];
 

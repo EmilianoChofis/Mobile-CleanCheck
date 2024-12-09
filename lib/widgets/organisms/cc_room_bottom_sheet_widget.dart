@@ -41,7 +41,7 @@ class CcRoomBottomSheetWidget {
         children: [
           CcButtonWidget(
             buttonType: ButtonType.elevated,
-            onPressed: () => _onSave(context, building!, room),
+            onPressed: () => _onSave(context, building, room),
             label: room == null ? 'Registrar' : 'Actualizar',
             isLoading: false,
           ),
@@ -58,16 +58,26 @@ class CcRoomBottomSheetWidget {
   }
 
   static void _onSave(
-      BuildContext context, BuildingModel building, RoomModel? room) async {
+      BuildContext context, BuildingModel? building, RoomModel? room) async {
     if (_formKey.currentState!.validate()) {
       final roomCubit = context.read<RoomCubit>();
       final buildingCubit = context.read<BuildingCubit>();
-
       final roomService = RoomService();
 
-      final floor = building.floors!.firstWhere((floor) {
-        return floor.id == _floorsController.text;
-      });
+      late FloorModel floor;
+
+      if (building == null) {
+        final buildingId = _buildingsController.text;
+        final rb = await buildingCubit.getBuildingById(buildingId);
+
+        floor = rb!.floors!.firstWhere((floor) {
+          return floor.id == _floorsController.text;
+        });
+      } else {
+        floor = building.floors!.firstWhere((floor) {
+          return floor.id == _floorsController.text;
+        });
+      }
 
       final rooms = await roomService.generateRooms(
         floorId: _floorsController.text,
@@ -79,6 +89,8 @@ class CcRoomBottomSheetWidget {
 
       roomCubit.createListRooms(rooms);
       buildingCubit.getBuildings();
+
+      _onCancel(context);
     }
   }
 

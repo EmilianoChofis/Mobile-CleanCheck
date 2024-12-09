@@ -16,54 +16,32 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
   void initState() {
     super.initState();
     context.read<BuildingCubit>().getBuildings();
+    context.read<UserCubit>().getUsers();
   }
 
   @override
   Widget build(BuildContext context) {
-    return CcAppBlocListenerTemplate(
-      child: Scaffold(
-        appBar: const CcAppBarWidget(title: "Inicio"),
-        body: BlocListener<RoomCubit, RoomState>(
-          listener: (context, state) {
-            if (state is RoomError) {
-              CcSnackBarWidget.show(
-                context,
-                message: state.message,
-                snackBarType: SnackBarType.error,
-              );
-            } else if (state is RoomSuccess) {
-              CcSnackBarWidget.show(
-                context,
-                message: state.message,
-                snackBarType: SnackBarType.success,
-              );
+    final buildingState = context.watch<BuildingCubit>().state;
+    final userState = context.watch<UserCubit>().state;
 
-              if (Navigator.canPop(context)) {
-                Navigator.pop(context);
-              }
-            }
-          },
-          child: BlocBuilder<BuildingCubit, BuildingState>(
-            builder: (context, state) {
-              if (state is BuildingLoading) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is BuildingLoaded) {
-                return _buildHome(state.buildings);
-              } else {
-                return _buildHome([]);
-              }
-            },
-          ),
+    List<BuildingModel> buildings = [];
+    List<UserModel> users = [];
+
+    if (buildingState is BuildingLoaded) {
+      buildings = buildingState.buildings;
+    }
+
+    if (userState is UsersLoaded) {
+      users = userState.users;
+    }
+
+    return Scaffold(
+      appBar: const CcAppBarWidget(title: "Inicio"),
+      body: SingleChildScrollView(
+        child: CcHeaderTemplate(
+          header: _buildHeader(),
+          content: _buildContent(buildings, users),
         ),
-      ),
-    );
-  }
-
-  Widget _buildHome(List<BuildingModel> buildings) {
-    return SingleChildScrollView(
-      child: CcHeaderTemplate(
-        header: _buildHeader(),
-        content: _buildContent(buildings),
       ),
     );
   }
@@ -73,8 +51,12 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
     CcBuildingBottomSheetWidget.show(context, building: building);
   }
 
-  void _showRegisterRoomBottomSheet() {
+  void _showRoomBottomSheet() {
     CcRoomBottomSheetWidget.show(context, quickAccess: true);
+  }
+
+  void _showUserBottomSheet() {
+    CcUserBottomSheetWidget.show(context);
   }
 
   Widget _buildHeader() {
@@ -95,7 +77,8 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
             title: "Accesos directos",
             actions: CcWorkingZoneManagerWidget(
               onRegisterBuilding: () => _showBuildingBottomSheet(context),
-              onRegisterRoom: _showRegisterRoomBottomSheet,
+              onRegisterRoom: _showRoomBottomSheet,
+              onRegisterUser: _showUserBottomSheet,
             ),
           ),
         ],
@@ -103,11 +86,15 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
     );
   }
 
-  Widget _buildContent(List<BuildingModel> buildings) {
+  Widget _buildContent(List<BuildingModel> buildings, List<UserModel> users) {
     final buildingItems = buildings.take(3).map((building) {
       final f = building.floors?.length ?? 0;
       final ft = f != 1 ? '$f pisos' : '$f piso';
       return {'name': building.name, 'rooms': ft};
+    }).toList();
+
+    final userItems = users.take(3).map((user) {
+      return {'name': user.name, 'rooms': user.email};
     }).toList();
 
     return Column(
@@ -140,22 +127,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
           title: "Usuarios",
           content: Column(
             children: [
-              const CcListItemsWidget(
-                items: [
-                  {
-                    'name': 'Juan Perez',
-                    'rooms': 'Administrador',
-                  },
-                  {
-                    'name': 'Maria Lopez',
-                    'rooms': 'Limpieza',
-                  },
-                  {
-                    'name': 'Pedro Ramirez',
-                    'rooms': 'Mantenimiento',
-                  },
-                ],
-              ),
+              CcListItemsWidget(items: userItems),
               CcButtonWidget(
                 buttonType: ButtonType.text,
                 label: "Ver más",

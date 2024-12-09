@@ -24,13 +24,15 @@ class BuildingCubit extends Cubit<BuildingState> {
     }
   }
 
-  Future<void> getBuildingById(String buildingId) async {
+  Future<BuildingModel?> getBuildingById(String buildingId) async {
     final response = await buildingRepository.getBuildingById(buildingId);
 
     if (response.error) {
       emit(BuildingError(message: response.message));
+      return null;
     } else {
       emit(BuildingLoaded(buildings: [response.data!]));
+      return response.data!;
     }
   }
 

@@ -32,6 +32,5 @@ class RoomCubit extends Cubit<RoomState> {
     } else {
       emit(RoomSuccess(message: response.message));
     }
-
   }
 }

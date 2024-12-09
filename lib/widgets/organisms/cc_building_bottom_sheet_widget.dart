@@ -18,7 +18,8 @@ class CcBuildingBottomSheetWidget {
   }) {
     if (building != null) {
       _nameBuildingController.text = building.name;
-      _numberFloorsController.text = building.floors!.length.toString();
+      _numberFloorsController.text =
+          'Pisos actuales: ${building.floors!.length}';
     } else {
       _nameBuildingController.clear();
       _numberFloorsController.clear();
@@ -59,7 +60,9 @@ class CcBuildingBottomSheetWidget {
       final newFloors = int.parse(_numberFloorsController.text);
 
       if (building == null) {
-        context.read<BuildingCubit>().createBuildingWithFloors(newBuilding, newFloors);
+        context
+            .read<BuildingCubit>()
+            .createBuildingWithFloors(newBuilding, newFloors);
       } else {
         context.read<BuildingCubit>().updateBuilding(
               building.copyWith(name: newBuilding.name),

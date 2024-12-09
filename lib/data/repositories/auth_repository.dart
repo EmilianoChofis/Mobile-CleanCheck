@@ -15,7 +15,7 @@ class AuthRepository {
 
       return ApiResponse<AuthResponse>.fromJson(
         response.data,
-            (json) => AuthResponse.fromJson(json),
+        (json) => AuthResponse.fromJson(json),
       );
     } on DioException catch (e) {
       return ApiResponse<AuthResponse>(
@@ -27,5 +27,4 @@ class AuthRepository {
       );
     }
   }
-
 }

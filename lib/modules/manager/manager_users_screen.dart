@@ -36,20 +36,41 @@ class _ManagerUsersScreenState extends State<ManagerUsersScreen> {
     return Scaffold(
       appBar: const CcAppBarWidget(title: 'Usuarios'),
       floatingActionButton: CcFabWidget(
-        onPressed: () => _showUserBottomSheet(context),
+        onPressed: () => _showUserBottomSheet(context, null),
         icon: Icons.add,
       ),
       body: CcAppBlocListenerTemplate(
-        child: BlocBuilder<UserCubit, UserState>(
-          builder: (context, state) {
-            if (state is UserLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is UserLoaded) {
-              return _buildList(state.users);
-            } else {
-              return _buildList([]);
+        child: BlocListener<UserCubit, UserState>(
+          listener: (context, state) {
+            if (state is UserError) {
+              CcSnackBarWidget.show(
+                context,
+                message: state.message,
+                snackBarType: SnackBarType.error,
+              );
+            } else if (state is UserSuccess) {
+              CcSnackBarWidget.show(
+                context,
+                message: state.message,
+                snackBarType: SnackBarType.success,
+              );
+
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              }
             }
           },
+          child: BlocBuilder<UserCubit, UserState>(
+            builder: (context, state) {
+              if (state is UserLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is UsersLoaded) {
+                return _buildList(state.users);
+              } else {
+                return _buildList([]);
+              }
+            },
+          ),
         ),
       ),
     );
@@ -93,13 +114,12 @@ class _ManagerUsersScreenState extends State<ManagerUsersScreen> {
 
     return CcListSlidableWidget<UserModel>(
       items: users,
-      onEdit: (context, {item}) =>
-          _showUserBottomSheet(context, user: item),
+      onEdit: (context, {item}) => _showUserBottomSheet(context, item),
       onDelete: (context, {item}) => _onDeleteUser(item),
       buildItem: (context, user) {
         return CcItemListWidget(
           iconType: IconType.enabled,
-          onTap: () => _showUserBottomSheet(context, user: user),
+          onTap: () => _showUserBottomSheet(context, user),
           icon: Icons.person_outline,
           title: user.name,
           content: Text(
@@ -111,23 +131,13 @@ class _ManagerUsersScreenState extends State<ManagerUsersScreen> {
     );
   }
 
-  void _showUserBottomSheet(BuildContext context, {UserModel? user}) {
-    // UserBottomSheet.show(
-    //   context,
-    //   formKey: _formKey,
-    //   nameController: _nameController,
-    //   emailController: _emailController,
-    //   user: user,
-    //   onSave: (user) => _onSaveUser(user),
-    //   onCancel: () => _onCancel(),
-    // );
+  void _showUserBottomSheet(BuildContext context, UserModel? user) {
+    CcUserBottomSheetWidget.show(context, user: user);
   }
-
 
   void _onDeleteUser(UserModel? user) {
     if (user != null) {
       // context.read<UserCubit>().deleteUser(user);
     }
   }
-
 }

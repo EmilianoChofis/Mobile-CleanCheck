@@ -8,7 +8,8 @@ class UserModel implements StatusAware {
   final String? password;
   final String? createdAt;
   final bool? blocked;
-  final RoleModel role;
+  final String? roleId;
+  final RoleModel? role;
 
   @override
   final bool? status;
@@ -21,7 +22,8 @@ class UserModel implements StatusAware {
     this.createdAt,
     this.status,
     this.blocked,
-    required this.role,
+    this.roleId,
+    this.role,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -33,6 +35,7 @@ class UserModel implements StatusAware {
       createdAt: json['createdAt'],
       status: json['status'],
       blocked: json['blocked'],
+      roleId: json['roleId'],
       role: RoleModel.fromJson(json['role']),
     );
   }
@@ -46,7 +49,8 @@ class UserModel implements StatusAware {
       'createdAt': createdAt,
       'status': status,
       'blocked': blocked,
-      'role': role.toJson(),
+      'roleId': roleId,
+      'role': role,
     };
   }
 }
