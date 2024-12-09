@@ -45,4 +45,16 @@ class UserCubit extends Cubit<UserState> {
     }
     loadUsers();
   }
+
+  Future<void> deleteUser(String id) async {
+    final response = await userRepository.deleteUser(id);
+
+    if (response.error) {
+      emit(UserError(message: response.message));
+    } else {
+      emit(UserSuccess(message: response.message));
+    }
+    loadUsers();
+  }
+
 }

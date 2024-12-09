@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_clean_check/data/cubits/cubits.dart';
-import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcChangeStatusBottomSheetWidget {
   static void show(
     BuildContext context, {
-    required BuildingModel building,
+    required dynamic item,
     required String title,
     required String cardTitle,
     required String cardSubtitle,
     required IconType cardType,
     required IconData cardIcon,
     required Widget content,
+    required void Function(String id) onDelete,
   }) {
     showModalBottomSheet(
       context: context,
@@ -35,7 +33,7 @@ class CcChangeStatusBottomSheetWidget {
                 cardType,
                 cardIcon,
               ),
-              actions: _buildActions(context, title, building.id!),
+              actions: _buildActions(context, title, item.id!, onDelete),
             );
           },
         );
@@ -53,36 +51,41 @@ class CcChangeStatusBottomSheetWidget {
     return CcItemListWidget(
       isDisplay: true,
       title: cardTitle,
-      content: Text('$cardSubtitle pisos'),
+      content: Text(cardSubtitle),
       iconType: cardType,
       icon: cardIcon,
       onTap: () {},
     );
   }
 
-  static Widget _buildActions(BuildContext context, String title, String id) {
+  static Widget _buildActions(
+      BuildContext context, String title, String id, void Function(String id) onDelete) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CcButtonWidget(
           buttonType: ButtonType.elevated,
-          onPressed: () => _onSave(context, id),
+          onPressed: () {
+            onDelete(id);
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
+          },
           label: title,
           isLoading: false,
         ),
         const SizedBox(height: 8.0),
         CcButtonWidget(
           buttonType: ButtonType.outlined,
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
+          },
           label: 'Cancelar',
           isLoading: false,
         ),
       ],
     );
-  }
-
-  static void _onSave(BuildContext context, String buildingId) {
-    context.read<BuildingCubit>().deleteBuilding(buildingId);
-    Navigator.of(context).pop();
   }
 }

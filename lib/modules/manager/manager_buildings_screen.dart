@@ -97,9 +97,7 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
 
   Widget _buildContent(List<BuildingModel> buildings) {
     return RefreshIndicator(
-      onRefresh: () async {
-        await context.read<BuildingCubit>().getBuildings();
-      },
+      onRefresh: () async => await context.read<BuildingCubit>().getBuildings(),
       child: buildings.isEmpty
           ? const Center(child: Text('No hay edificios registrados.'))
           : CcListSlidableWidget<BuildingModel>(
@@ -114,25 +112,23 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
                   item.status! ? IconType.enabled : IconType.disabled,
                 );
               },
-              buildItem: (context, building) {
-                final floors = building.floors?.length ?? 0;
+              buildItem: (context, b) {
+                final floors = b.floors?.length ?? 0;
                 final floorText =
                     floors != 1 ? '$floors pisos' : '$floors piso';
-                final iconType =
-                    building.status! ? IconType.enabled : IconType.disabled;
+                final it = b.status! ? IconType.enabled : IconType.disabled;
 
                 return CcItemListWidget(
-                  iconType: iconType,
+                  iconType: it,
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) =>
-                            ManagerRoomsScreen(building: building),
+                        builder: (context) => ManagerRoomsScreen(building: b),
                       ),
                     );
                   },
                   icon: Icons.domain_outlined,
-                  title: building.name,
+                  title: b.name,
                   content: Text(floorText),
                 );
               },
@@ -148,13 +144,14 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
       BuildContext context, BuildingModel building, IconType iconType) {
     CcChangeStatusBottomSheetWidget.show(
       context,
-      building: building,
+      item: building,
       title: building.status! ? 'Deshabilitar edificio' : 'Habilitar edificio',
       cardTitle: building.name,
-      cardSubtitle: building.floors!.length.toString(),
+      cardSubtitle: '${building.floors!.length} pisos',
       cardType: iconType,
       cardIcon: Icons.domain_outlined,
       content: const Text('¿Estás seguro de deshabilitar este edificio?'),
+      onDelete: (id) => context.read<BuildingCubit>().deleteBuilding(id),
     );
   }
 }

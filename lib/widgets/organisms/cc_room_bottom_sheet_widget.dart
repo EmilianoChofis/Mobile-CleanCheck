@@ -90,7 +90,7 @@ class CcRoomBottomSheetWidget {
       roomCubit.createListRooms(rooms);
       buildingCubit.getBuildings();
 
-      _onCancel(context);
+      _onCancel;
     }
   }
 

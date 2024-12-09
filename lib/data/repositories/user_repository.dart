@@ -51,7 +51,24 @@ class UserRepository {
         (json) => UserModel.fromJson(json),
       );
     } on DioException catch (e) {
-      print(e.response?.data);
+      return ApiResponse<UserModel>(
+        data: null,
+        error: true,
+        statusCode: e.response?.statusCode ?? 500,
+        message: e.response?.data['message'] ??
+            'Ha ocurrido un error. Inténtalo de nuevo.',
+      );
+    }
+  }
+
+  Future<ApiResponse<UserModel>> deleteUser(String id) async {
+    try {
+      final response = await dio.put('/user/changeStatus/$id');
+      return ApiResponse<UserModel>.fromJson(
+        response.data,
+        (json) => UserModel.fromJson(json),
+      );
+    } on DioException catch (e) {
       return ApiResponse<UserModel>(
         data: null,
         error: true,

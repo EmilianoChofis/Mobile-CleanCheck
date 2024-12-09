@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/data/cubits/user/user_cubit.dart';
 import 'package:mobile_clean_check/data/cubits/user/user_state.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
@@ -97,26 +96,31 @@ class _ManagerUsersScreenState extends State<ManagerUsersScreen> {
   }
 
   Widget _buildContent(List<UserModel> users) {
-    if (users.isEmpty) {
-      return const Center(child: Text('No hay usuarios registrados.'));
-    }
-
-    return CcListSlidableWidget<UserModel>(
-      items: users,
-      onEdit: (context, {item}) => _showUserBottomSheet(context, item),
-      onDelete: (context, {item}) => _onDeleteUser(item),
-      buildItem: (context, user) {
-        return CcItemListWidget(
-          iconType: IconType.enabled,
-          onTap: () => _showUserBottomSheet(context, user),
-          icon: Icons.person_outline,
-          title: user.name,
-          content: Text(
-            user.email,
-            style: const TextStyle(color: ColorSchemes.secondary),
-          ),
-        );
-      },
+    return RefreshIndicator(
+      onRefresh: () async => context.read<UserCubit>().getUsers(),
+      child: users.isEmpty
+          ? const Center(child: Text('No hay usuarios registrados'))
+          : CcListSlidableWidget<UserModel>(
+              items: users,
+              onEdit: (context, {item}) => _showUserBottomSheet(context, item),
+              onDelete: (context, {item}) {
+                _showChangeStatusBottomSheet(
+                  context,
+                  item!,
+                  item.status! ? IconType.enabled : IconType.disabled,
+                );
+              },
+              buildItem: (context, u) {
+                final it = u.status! ? IconType.enabled : IconType.disabled;
+                return CcItemListWidget(
+                  iconType: it,
+                  onTap: () => _showUserBottomSheet(context, u),
+                  icon: Icons.person_outline,
+                  title: u.name,
+                  content: Text(u.email),
+                );
+              },
+            ),
     );
   }
 
@@ -124,9 +128,18 @@ class _ManagerUsersScreenState extends State<ManagerUsersScreen> {
     CcUserBottomSheetWidget.show(context, user: user);
   }
 
-  void _onDeleteUser(UserModel? user) {
-    if (user != null) {
-      // context.read<UserCubit>().deleteUser(user);
-    }
+  void _showChangeStatusBottomSheet(
+      BuildContext context, UserModel user, IconType iconType) {
+    CcChangeStatusBottomSheetWidget.show(
+      context,
+      item: user,
+      title: user.status! ? 'Deshabilitar usuario' : 'Habilitar usuario',
+      cardTitle: user.name,
+      cardSubtitle: user.email,
+      cardType: iconType,
+      cardIcon: user.status! ? Icons.person_outline : Icons.person_off_outlined,
+      content: const Text('¿Estás seguro de cambiar el estado del usuario?'),
+      onDelete: (id) => context.read<UserCubit>().deleteUser(id),
+    );
   }
 }
