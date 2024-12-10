@@ -107,22 +107,27 @@ class _IncidencesScreenState extends State<IncidencesScreen> {
               itemBuilder: (context, index) {
                 final item = reports[index];
                 final iconType = _parseIconType(item.status);
-                return CcItemListWidget(
-                  iconType: iconType,
-                  onTap: () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) {
-                      return IncidenceDetailScreen(report: item);
-                    }));
-                  },
-                  icon: Icons.bed_outlined,
-                  title: 'Habitación ${item.room?.identifier}',
-                  content: CcItemIncidencesContentWidget(
-                    status: _interpretStatus(iconType),
-                    buildingName: item.room!.floor!.building!.name,
-                    personal: item.user?.name,
-                    date: item.createdAt!,
-                  ),
+                return Column(
+                  children: [
+                    CcItemListWidget(
+                      iconType: iconType,
+                      onTap: () {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (context) {
+                          return IncidenceDetailScreen(report: item);
+                        }));
+                      },
+                      icon: Icons.bed_outlined,
+                      title: 'Habitación ${item.room?.identifier}',
+                      content: CcItemIncidencesContentWidget(
+                        status: _interpretStatus(iconType),
+                        buildingName: item.room!.floor!.building!.name,
+                        personal: item.user?.name,
+                        date: item.createdAt!,
+                      ),
+                    ),
+                    const SizedBox(height: 8.0),
+                  ],
                 );
               },
             ),

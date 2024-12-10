@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcPinButtonWidget extends StatefulWidget {
-  const CcPinButtonWidget({super.key});
+  final List<String> roomIdentifiers;
+  final String buildingIdentifier;
+
+  const CcPinButtonWidget({
+    super.key,
+    required this.roomIdentifiers,
+    required this.buildingIdentifier,
+  });
 
   @override
   State<CcPinButtonWidget> createState() => _CcPinButtonWidgetState();
@@ -12,19 +20,36 @@ class _CcPinButtonWidgetState extends State<CcPinButtonWidget> {
   Set<String> pinnedItems = {};
   Set<String> tempPinnedItems = {};
 
-  void _showBottomSheet(BuildContext context) {
-    List<String> items = [
-      'P1H1',
-      'P1H2',
-      'P1H3',
-      'P1H4',
-      'P1H5',
-      'P1H6',
-      'P1H7',
-      'P1H8',
-      'P1H9',
-    ];
+  @override
+  void initState() {
+    super.initState();
+    _loadPinnedItems();
+  }
 
+  Future<void> _loadPinnedItems() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String key = 'pinnedItems_${widget.buildingIdentifier}';
+
+    final List<String>? savedItems = prefs.getStringList(key);
+    if (savedItems != null) {
+      setState(() {
+        pinnedItems = Set<String>.from(savedItems);
+        tempPinnedItems = Set<String>.from(savedItems);
+      });
+    }
+    print(
+        'Pinned Items for ${widget.buildingIdentifier}: $pinnedItems'); // Debugging
+  }
+
+  Future<void> _savePinnedItems() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String key = 'pinnedItems_${widget.buildingIdentifier}';
+
+    await prefs.setStringList(key, pinnedItems.toList());
+    print('Pinned Items saved for ${widget.buildingIdentifier}: $pinnedItems');
+  }
+
+  void _showBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -41,7 +66,7 @@ class _CcPinButtonWidgetState extends State<CcPinButtonWidget> {
               subtitle:
                   "Puedes establecer las habitaciones de este edificio como zona de trabajo para tener acceso directo.",
               content: CcRoomsSheetContentWidget(
-                items: items,
+                items: widget.roomIdentifiers,
                 tempPinnedItems: tempPinnedItems,
                 onToggle: (item, isPinned) {
                   setModalState(() {
@@ -79,7 +104,10 @@ class _CcPinButtonWidgetState extends State<CcPinButtonWidget> {
   }
 
   void _onSave() {
-    setState(() => pinnedItems = Set<String>.from(tempPinnedItems));
+    setState(() {
+      pinnedItems = Set<String>.from(tempPinnedItems);
+    });
+    _savePinnedItems();
     Navigator.pop(context);
   }
 

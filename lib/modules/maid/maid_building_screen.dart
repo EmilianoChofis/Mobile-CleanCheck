@@ -9,10 +9,7 @@ import 'package:mobile_clean_check/widgets/widgets.dart';
 class MaidBuildingScreen extends StatefulWidget {
   final BuildingModel building;
 
-  const MaidBuildingScreen({
-    required this.building,
-    super.key,
-  });
+  const MaidBuildingScreen({required this.building, super.key});
 
   @override
   State<MaidBuildingScreen> createState() => _MaidBuildingScreenState();
@@ -22,11 +19,28 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
   final ValueNotifier<Map<String, String>?> selectedRoomNotifier =
       ValueNotifier<Map<String, String>?>(null);
 
+  List<String> _getRoomIdentifiers() {
+    List<String> identifiers = [];
+    for (var floor in widget.building.floors ?? []) {
+      for (var room in floor.rooms ?? []) {
+        identifiers.add(room.identifier);
+      }
+    }
+    return identifiers;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CcAppBarWidget(
-          title: 'Registrar limpieza', actions: [CcPinButtonWidget()]),
+      appBar: CcAppBarWidget(
+        title: 'Registrar limpieza',
+        actions: [
+          CcPinButtonWidget(
+            roomIdentifiers: _getRoomIdentifiers(),
+            buildingIdentifier: widget.building.id!,
+          ),
+        ],
+      ),
       body: BlocListener<RoomCubit, RoomState>(
         listener: (context, state) {
           if (state is RoomError) {

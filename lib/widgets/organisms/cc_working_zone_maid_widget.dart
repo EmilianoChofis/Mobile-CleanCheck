@@ -25,9 +25,7 @@ class _CcWorkingZoneMaidWidgetState extends State<CcWorkingZoneMaidWidget> {
     final prefs = await SharedPreferences.getInstance();
     final pinnedData = prefs.getString('pinnedItems');
     if (pinnedData != null) {
-      setState(() {
-        pinnedItems = Set<String>.from(json.decode(pinnedData));
-      });
+      setState(() => pinnedItems = Set<String>.from(json.decode(pinnedData)));
     }
   }
 
@@ -43,7 +41,6 @@ class _CcWorkingZoneMaidWidgetState extends State<CcWorkingZoneMaidWidget> {
   }
 
   Widget _buildWorkingZonesWidget() {
-    //TODO Implementar la lista de zonas de trabajo iterando sobre pinnedItems
     return const CcWorkingZoneItemWidget(
       icon: Icons.bed_outlined,
       title: 'Edificio Palmira',
