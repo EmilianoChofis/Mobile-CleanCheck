@@ -4,21 +4,27 @@ import 'package:mobile_clean_check/core/theme/themes.dart';
 class CcSymbologyWidget extends StatelessWidget {
   final String? grayLabel;
   final String? whiteLabel;
+  final String? secondaryLabel;
+  final String? greenLabel;
   final String? yellowLabel;
   final String? redLabel;
 
   const CcSymbologyWidget({
     this.grayLabel,
     this.whiteLabel,
+    this.secondaryLabel,
     this.yellowLabel,
+    this.greenLabel,
     this.redLabel,
     super.key,
   });
 
   final primaryColor = ColorSchemes.primary;
+  final secondaryColor = ColorSchemes.secondary;
   final grayColor = ColorSchemes.disabled;
   final whiteColor = ColorSchemes.white;
   final yellowColor = ColorSchemes.warning;
+  final greenColor = ColorSchemes.success;
   final redColor = ColorSchemes.error;
 
   Widget _buildSymbol(String? label, Color color) {
@@ -63,7 +69,9 @@ class CcSymbologyWidget extends StatelessWidget {
         children: [
           _buildSymbology(grayLabel, grayColor),
           _buildSymbology(whiteLabel, whiteColor),
+          _buildSymbology(secondaryLabel, secondaryColor),
           _buildSymbology(yellowLabel, yellowColor),
+          _buildSymbology(greenLabel, greenColor),
           _buildSymbology(redLabel, redColor),
         ],
       ),

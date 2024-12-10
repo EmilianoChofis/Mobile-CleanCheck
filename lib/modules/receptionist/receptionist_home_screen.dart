@@ -71,11 +71,12 @@ class _ReceptionistHomeScreenState extends State<ReceptionistHomeScreen> {
               ? const Center(child: Text('No hay edificios registrados.'))
               : CcListItemsWidget(
                   items: buildings,
+                  icon: Icons.apartment_outlined,
                   onTap: (item) {
                     final selectedBuilding = item['building'];
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => MaidBuildingScreen(
+                        builder: (context) => ReceptionistBuildingScreen(
                           building: selectedBuilding,
                         ),
                       ),

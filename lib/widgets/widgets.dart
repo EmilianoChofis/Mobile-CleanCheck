@@ -31,6 +31,7 @@ export 'package:mobile_clean_check/widgets/molecules/cc_text_form_field_password
 export 'package:mobile_clean_check/widgets/molecules/cc_text_form_field_widget.dart';
 export 'package:mobile_clean_check/widgets/molecules/cc_working_zone_item_widget.dart';
 export 'package:mobile_clean_check/widgets/molecules/cc_drop_down_widget.dart';
+export 'package:mobile_clean_check/widgets/molecules/cc_clean_rooms_slidable_widget.dart';
 
 // Organism widgets
 export 'package:mobile_clean_check/widgets/organisms/cc_change_password_form_widget.dart';
@@ -52,6 +53,7 @@ export 'package:mobile_clean_check/widgets/organisms/cc_user_form_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_user_bottom_sheet_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_change_status_bottom_sheet_widget.dart';
 export 'package:mobile_clean_check/widgets/organisms/cc_working_zone_receptionist_widget.dart';
+export 'package:mobile_clean_check/widgets/organisms/cc_check_button_widget.dart';
 
 // Template widgets
 export 'package:mobile_clean_check/widgets/templates/cc_auth_template.dart';

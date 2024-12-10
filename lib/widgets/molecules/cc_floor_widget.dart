@@ -38,11 +38,11 @@ class CcFloorWidget extends StatelessWidget {
               final roomName = room.name;
               final roomState = RoomStatus.values.firstWhere(
                     (e) => e.toString() == 'RoomStatus.${room.status?.toLowerCase()}',
-                orElse: () => RoomStatus.empty,
+                orElse: () => RoomStatus.checked,
               );
 
               return GestureDetector(
-                onTap: roomState == RoomStatus.empty
+                onTap: roomState == RoomStatus.checked
                     ? () => selectedRoomNotifier.value = roomName
                     : null,
                 child: ValueListenableBuilder<String?>(

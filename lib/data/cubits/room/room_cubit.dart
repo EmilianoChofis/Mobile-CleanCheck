@@ -9,12 +9,23 @@ class RoomCubit extends Cubit<RoomState> {
   RoomCubit({required this.roomRepository}) : super(RoomInitial());
 
   Future<void> getRooms(BuildingModel building) async {
+    if (state is RoomLoading) return;
     emit(RoomLoading());
-    loadRooms(building.id!);
+    getRoomByBuildingId(building.id!);
   }
 
-  Future<void> loadRooms(String buildingId) async {
+  Future<void> getRoomByBuildingId(String buildingId) async {
     final response = await roomRepository.getRoomsByBuildingId(buildingId);
+
+    if (response.error) {
+      emit(RoomError(message: response.message));
+    } else {
+      emit(RoomLoaded(rooms: response.data!));
+    }
+  }
+
+  Future<void> getCleanedRooms() async {
+    final response = await roomRepository.getCleanedRooms();
 
     if (response.error) {
       emit(RoomError(message: response.message));
@@ -26,6 +37,50 @@ class RoomCubit extends Cubit<RoomState> {
   Future<void> createListRooms(List<RoomModel> rooms) async {
     emit(RoomLoading());
     final response = await roomRepository.createListRooms(rooms);
+
+    if (response.error) {
+      emit(RoomError(message: response.message));
+    } else {
+      emit(RoomSuccess(message: response.message));
+    }
+  }
+
+  Future<void> changeClean(String roomId) async {
+    emit(RoomLoading());
+    final response = await roomRepository.changeClean(roomId);
+
+    if (response.error) {
+      emit(RoomError(message: response.message));
+    } else {
+      emit(RoomSuccess(message: response.message));
+    }
+  }
+
+  Future<void> changeCheckIn(String roomId) async {
+    emit(RoomLoading());
+    final response = await roomRepository.changeCheckIn(roomId);
+
+    if (response.error) {
+      emit(RoomError(message: response.message));
+    } else {
+      emit(RoomSuccess(message: response.message));
+    }
+  }
+
+  Future<void> changeCheckOut(String roomId) async {
+    emit(RoomLoading());
+    final response = await roomRepository.changeCheckOut(roomId);
+
+    if (response.error) {
+      emit(RoomError(message: response.message));
+    } else {
+      emit(RoomSuccess(message: response.message));
+    }
+  }
+
+  Future<void> changeChecked(String roomId) async {
+    emit(RoomLoading());
+    final response = await roomRepository.changeChecked(roomId);
 
     if (response.error) {
       emit(RoomError(message: response.message));

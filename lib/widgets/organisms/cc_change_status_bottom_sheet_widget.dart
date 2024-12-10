@@ -11,7 +11,7 @@ class CcChangeStatusBottomSheetWidget {
     required IconType cardType,
     required IconData cardIcon,
     required Widget content,
-    required void Function(String id) onDelete,
+    required void Function(String id) onConfirm,
   }) {
     showModalBottomSheet(
       context: context,
@@ -33,7 +33,7 @@ class CcChangeStatusBottomSheetWidget {
                 cardType,
                 cardIcon,
               ),
-              actions: _buildActions(context, title, item.id!, onDelete),
+              actions: _buildActions(context, title, item.id!, onConfirm),
             );
           },
         );
@@ -58,15 +58,15 @@ class CcChangeStatusBottomSheetWidget {
     );
   }
 
-  static Widget _buildActions(
-      BuildContext context, String title, String id, void Function(String id) onDelete) {
+  static Widget _buildActions(BuildContext context, String title, String id,
+      void Function(String id) onConfirm) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CcButtonWidget(
           buttonType: ButtonType.elevated,
           onPressed: () {
-            onDelete(id);
+            onConfirm(id);
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             }

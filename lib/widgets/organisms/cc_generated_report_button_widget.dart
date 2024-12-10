@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_clean_check/data/cubits/report/report_cubit.dart';
+import 'package:mobile_clean_check/data/models/report_model.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcGeneratedReportButtonWidget extends StatefulWidget {
+  final String userId;
   final String room;
   final VoidCallback? onClosePreviousBottomSheet;
 
   const CcGeneratedReportButtonWidget({
+    required this.userId,
     required this.room,
     this.onClosePreviousBottomSheet,
     super.key,
@@ -20,18 +25,28 @@ class _CcGeneratedReportButtonWidgetState
     extends State<CcGeneratedReportButtonWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _descriptionController = TextEditingController();
-  bool _hasImages = false;
+  List<String> _base64Images = [];
 
-  void _updateImageStatus(bool hasImages) {
-    setState(() => _hasImages = hasImages);
-  }
+  void _updateImageStatus(bool hasImages) {}
 
   void _onSave() {
-    if (_formKey.currentState!.validate() && _hasImages) {
+    if (_formKey.currentState!.validate() && _base64Images.isNotEmpty) {
       widget.onClosePreviousBottomSheet?.call();
+
+      final reportCubit = context.read<ReportCubit>();
+
+      final newReport = ReportModel(
+        userId: widget.userId,
+        roomId: widget.room,
+        description: _descriptionController.text,
+        files: _base64Images,
+      );
+
+      reportCubit.createReport(newReport);
+
       Navigator.pop(context);
     } else {
-      if (!_hasImages) {
+      if (_base64Images.isEmpty) {
         CcSnackBarWidget.show(
           context,
           message: "Adjunta al menos 1 foto de evidencia.",
@@ -65,6 +80,10 @@ class _CcGeneratedReportButtonWidgetState
                 formKey: _formKey,
                 descriptionController: _descriptionController,
                 onImagesChanged: _updateImageStatus,
+                base64Images: _base64Images,
+                onImagesUpdated: (images) => setState(() {
+                  _base64Images = images;
+                }),
               ),
               actions: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

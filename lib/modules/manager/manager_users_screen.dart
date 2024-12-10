@@ -139,7 +139,7 @@ class _ManagerUsersScreenState extends State<ManagerUsersScreen> {
       cardType: iconType,
       cardIcon: user.status! ? Icons.person_outline : Icons.person_off_outlined,
       content: const Text('¿Estás seguro de cambiar el estado del usuario?'),
-      onDelete: (id) => context.read<UserCubit>().deleteUser(id),
+      onConfirm: (id) => context.read<UserCubit>().deleteUser(id),
     );
   }
 }

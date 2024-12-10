@@ -57,6 +57,7 @@ class _MaidHomeScreenState extends State<MaidHomeScreen> {
               ? const Center(child: Text('No hay edificios registrados.'))
               : CcListItemsWidget(
                   items: buildings,
+                  icon: Icons.apartment_outlined,
                   onTap: (item) {
                     final selectedBuilding = item['building'];
                     Navigator.of(context).push(

@@ -66,17 +66,25 @@ class CcRoomBottomSheetWidget {
 
       late FloorModel floor;
 
+      final navigator = Navigator.of(context);
+
       if (building == null) {
         final buildingId = _buildingsController.text;
         final rb = await buildingCubit.getBuildingById(buildingId);
 
-        floor = rb!.floors!.firstWhere((floor) {
-          return floor.id == _floorsController.text;
-        });
+        if (rb == null) {
+          return;
+        }
+
+        floor = rb.floors!.firstWhere(
+          (floor) => floor.id == _floorsController.text,
+          orElse: () => throw Exception('Floor not found'),
+        );
       } else {
-        floor = building.floors!.firstWhere((floor) {
-          return floor.id == _floorsController.text;
-        });
+        floor = building.floors!.firstWhere(
+          (floor) => floor.id == _floorsController.text,
+          orElse: () => throw Exception('Floor not found'),
+        );
       }
 
       final rooms = await roomService.generateRooms(
@@ -87,10 +95,13 @@ class CcRoomBottomSheetWidget {
         roomsControllerText: _roomsController.text,
       );
 
-      roomCubit.createListRooms(rooms);
-      buildingCubit.getBuildings();
+      await roomCubit.createListRooms(rooms);
+      await buildingCubit.getBuildings();
 
-      _onCancel;
+      navigator.pop();
+      _buildingsController.clear();
+      _floorsController.clear();
+      _roomsController.clear();
     }
   }
 

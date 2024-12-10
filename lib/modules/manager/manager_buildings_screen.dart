@@ -151,7 +151,7 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
       cardType: iconType,
       cardIcon: Icons.domain_outlined,
       content: const Text('¿Estás seguro de deshabilitar este edificio?'),
-      onDelete: (id) => context.read<BuildingCubit>().deleteBuilding(id),
+      onConfirm: (id) => context.read<BuildingCubit>().deleteBuilding(id),
     );
   }
 }

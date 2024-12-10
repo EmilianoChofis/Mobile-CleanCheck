@@ -1,32 +1,107 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_clean_check/data/cubits/cubits.dart';
+import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class IncidenceDetailScreen extends StatelessWidget {
-  final Map<String, String> room;
-  const IncidenceDetailScreen({required this.room, super.key});
+class IncidenceDetailScreen extends StatefulWidget {
+  final ReportModel report;
+
+  const IncidenceDetailScreen({required this.report, super.key});
+
+  @override
+  State<IncidenceDetailScreen> createState() => _IncidenceDetailScreenState();
+}
+
+class _IncidenceDetailScreenState extends State<IncidenceDetailScreen> {
+  String _userRole = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserRole();
+  }
+
+  Future<void> _loadUserRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userRole = prefs.getString('role');
+    setState(() => _userRole = userRole!);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final iconType = parseIconType(room['status']!);
+    final iconType = parseIconType(widget.report.status);
     return Scaffold(
       appBar: const CcAppBarWidget(title: 'Reporte de incidencia'),
       body: CcHeaderTemplate(
         header: _buildHeader(iconType),
         content: _buildContent(iconType),
       ),
+      bottomNavigationBar: _userRole == 'Manager'
+          ? BottomAppBar(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: CcButtonWidget(
+                      label: 'Finalizar reporte',
+                      onPressed: () {},
+                      isLoading: false,
+                      buttonType: widget.report.status == 'PENDING'
+                          ? ButtonType.outlined
+                          : ButtonType.elevated,
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  if (widget.report.status == 'PENDING')
+                    Expanded(
+                      child: CcButtonWidget(
+                        label: 'Proceder reporte',
+                        onPressed: () {
+                          _showChangeStatusBottomSheet(context, widget.report);
+                        },
+                        isLoading: false,
+                        buttonType: ButtonType.elevated,
+                      ),
+                    ),
+                ],
+              ),
+            )
+          : null,
     );
   }
 
-  IconType parseIconType(String status) {
+  void _showChangeStatusBottomSheet(BuildContext context, ReportModel item) {
+    final it = item.status == 'PENDING' ? IconType.reported : IconType.enabled;
+    CcChangeStatusBottomSheetWidget.show(
+      context,
+      item: item,
+      title: 'Proceder reporte',
+      cardIcon: Icons.bed_outlined,
+      cardTitle: 'Habitación ${item.room!.identifier}',
+      cardSubtitle: item.room!.floor!.building!.name,
+      cardType: it,
+      content: const Text(
+        '¿Estás seguro de proceder con el reporte?',
+      ),
+      onConfirm: (id) {
+        context.read<ReportCubit>().changeStatusIn(id);
+        context.read<ReportCubit>().getReports();
+      },
+    );
+  }
+
+  IconType parseIconType(String? status) {
     switch (status) {
-      case 'IconType.disabled':
-        return IconType.disabled;
-      case 'IconType.reported':
+      case 'PENDING':
         return IconType.reported;
-      case 'IconType.enabled':
+      case 'FINISHED':
         return IconType.enabled;
+      case 'IN_PROGRESS':
+        return IconType.disabled;
       default:
-        throw ArgumentError('Invalid IconType: $status');
+        return IconType.displayed;
     }
   }
 
@@ -35,11 +110,11 @@ class IncidenceDetailScreen extends StatelessWidget {
       case IconType.displayed:
         return '';
       case IconType.enabled:
-        return 'Disponible';
+        return 'Finalizado';
       case IconType.reported:
-        return 'En proceso';
+        return 'Pendiente';
       case IconType.disabled:
-        return 'Deshabilitada';
+        return 'En progreso';
     }
   }
 
@@ -102,21 +177,22 @@ class IncidenceDetailScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: CcItemListWidget(
-        iconType: parseIconType(room['status']!),
+        iconType: iconType,
         onTap: () {},
         icon: Icons.bed_outlined,
-        title: 'Habitación ${room['room']!}',
+        title: 'Habitación ${widget.report.room?.identifier}',
         content: CcItemIncidencesContentWidget(
           status: interpretStatus(iconType),
-          buildingName: room['building']!,
-          date: room['date']!,
+          buildingName: widget.report.room!.floor!.building!.name,
+          date: widget.report.createdAt!,
+          personal: widget.report.user?.name,
           isDetail: true,
         ),
       ),
     );
   }
 
-  Widget _buildContent(iconType) {
+  Widget _buildContent(IconType iconType) {
     return CcTitleContentTemplate(
       title: 'Detalle de incidencia',
       content: Column(
@@ -134,21 +210,15 @@ class IncidenceDetailScreen extends StatelessWidget {
             keyboardType: TextInputType.multiline,
             maxLines: null,
             controller: TextEditingController(
-              text:
-                  'La televisión está rota y el cristal de las ventanas se encuentran estrellados.',
+              text: widget.report.description,
             ),
             readOnly: true,
           ),
           const SizedBox(height: 32.0),
-          const CcImagesDisplayWidget(
+          CcImagesDisplayWidget(
             title: 'Evidencias adjuntas',
-            images: [
-              'https://placehold.co/100x130/png',
-              'https://placehold.co/100x130/png',
-              'https://placehold.co/100x130/png',
-              'https://placehold.co/100x130/png',
-              'https://placehold.co/100x130/png',
-            ],
+            images:
+                widget.report.images?.map((image) => image.url).toList() ?? [],
           ),
         ],
       ),

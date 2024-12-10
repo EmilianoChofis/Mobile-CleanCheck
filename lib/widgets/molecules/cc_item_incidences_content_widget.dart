@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_clean_check/core/theme/themes.dart';
+import 'package:intl/intl.dart';
 
 class CcItemIncidencesContentWidget extends StatelessWidget {
   final String status;
   final String buildingName;
   final String? personal;
-  final bool? isDetail;
+  final bool isDetail;
   final String date;
 
   const CcItemIncidencesContentWidget({
@@ -17,14 +17,24 @@ class CcItemIncidencesContentWidget extends StatelessWidget {
     super.key,
   });
 
-  final secondaryColor = ColorSchemes.secondary;
-
   @override
   Widget build(BuildContext context) {
-    return !isDetail! ? _buildListContent() : _buildDetailContent();
+    final secondaryColor = Theme.of(context).colorScheme.secondary;
+    late final String formattedDate;
+
+    try {
+      final dateTime = DateTime.parse(date);
+      formattedDate = DateFormat('dd-MM-yyyy').format(dateTime);
+    } catch (e) {
+      formattedDate = 'Invalid date';
+    }
+
+    return isDetail
+        ? _buildDetailContent(secondaryColor, formattedDate)
+        : _buildListContent(secondaryColor, formattedDate);
   }
 
-  _buildListContent() {
+  Widget _buildListContent(Color secondaryColor, String formattedDate) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -47,12 +57,13 @@ class CcItemIncidencesContentWidget extends StatelessWidget {
             ),
           ],
         ),
-        Text('Fecha de reporte $date', style: TextStyle(color: secondaryColor)),
+        Text('Fecha de reporte: $formattedDate',
+            style: TextStyle(color: secondaryColor)),
       ],
     );
   }
 
-  Widget _buildDetailContent() {
+  Widget _buildDetailContent(Color secondaryColor, String formattedDate) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -76,7 +87,7 @@ class CcItemIncidencesContentWidget extends StatelessWidget {
           ],
         ),
         Text(
-          'Fecha de reporte: $date',
+          'Fecha de reporte: $formattedDate',
           style: TextStyle(color: secondaryColor),
         ),
         Text(

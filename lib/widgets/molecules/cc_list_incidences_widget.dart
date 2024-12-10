@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:mobile_clean_check/modules/modules.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcListIncidencesWidget extends StatelessWidget {
-  final List<Map<String, String>> content;
+  final List<ReportModel> reports;
 
   const CcListIncidencesWidget({
-    required this.content,
+    required this.reports,
     super.key,
   });
 
-  IconType parseIconType(String status) {
+  IconType parseIconType(String? status) {
     switch (status) {
-      case 'IconType.disabled':
-        return IconType.disabled;
-      case 'IconType.reported':
+      case 'PENDING':
         return IconType.reported;
-      case 'IconType.enabled':
+      case 'CHECKED':
         return IconType.enabled;
+      case 'DISABLED':
+        return IconType.disabled;
       default:
-        throw ArgumentError('Invalid IconType: $status');
+        return IconType.displayed;
     }
   }
 
@@ -39,27 +40,27 @@ class CcListIncidencesWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: content.map((item) {
-        final iconType = parseIconType(item['status']!);
+      children: reports.map((item) {
+        final iconType = parseIconType(item.status);
 
         return Column(
           children: [
             CcItemListWidget(
-              iconType: parseIconType(item['status']!),
+              iconType: iconType,
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => IncidenceDetailScreen(room: item),
+                    builder: (context) => IncidenceDetailScreen(report: item),
                   ),
                 );
               },
               icon: Icons.bed_outlined,
-              title: 'Habitación ${item['room']!}',
+              title: 'Habitación ${item.room?.name ?? 'N/A'}',
               content: CcItemIncidencesContentWidget(
                 status: interpretStatus(iconType),
-                buildingName: item['building']!,
-                personal: item['personal']!,
-                date: item['date']!,
+                buildingName: 'N/A',
+                personal: item.user?.name ?? 'N/A',
+                date: item.createdAt ?? 'N/A',
               ),
             ),
             const SizedBox(height: 16.0),

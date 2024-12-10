@@ -17,6 +17,8 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
     super.initState();
     context.read<BuildingCubit>().getBuildings();
     context.read<UserCubit>().getUsers();
+    context.read<ReportCubit>().getReports();
+    context.read<RoomCubit>().getCleanedRooms();
   }
 
   @override
@@ -26,19 +28,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
       body: SingleChildScrollView(
         child: CcHeaderTemplate(
           header: _buildHeader(),
-          content: Column(
-            children: [
-              CcTitleContentTemplate(
-                title: "Edificios",
-                content: _buildBuildingsContent(),
-              ),
-              const SizedBox(height: 16.0),
-              CcTitleContentTemplate(
-                title: "Usuarios",
-                content: _buildUsersContent(),
-              ),
-            ],
-          ),
+          content: _buildContent(),
         ),
       ),
     );
@@ -61,14 +51,37 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
     return CcWelcomeHomeTemplate(
       actions: Column(
         children: [
-          CcWorkingZoneTemplate(
-            title: "Incidencias",
-            actions: CcBannerWidget(
-              icon: Icons.warning_amber,
-              text: "3 incidencias pendientes",
-              trailing: Icons.chevron_right,
-              onTap: () => {},
-            ),
+          BlocBuilder<ReportCubit, ReportState>(
+            builder: (context, state) {
+              if (state is ReportsLoaded) {
+                final pendingReports = state.reports
+                    .where((report) => report.status == 'PENDING')
+                    .toList();
+                final rc = pendingReports.length;
+                if (rc > 0) {
+                  return CcWorkingZoneTemplate(
+                    title: "Incidencias",
+                    actions: CcBannerWidget(
+                      icon: Icons.warning_amber,
+                      text:
+                          "$rc ${rc == 1 ? 'incidencia pendiente' : 'incidencias pendientes'}",
+                    ),
+                  );
+                } else {
+                  return const CcWorkingZoneTemplate(
+                    title: "Incidencias",
+                    actions: CcBannerWidget(
+                      icon: Icons.warning_amber,
+                      text: "No hay incidencias pendientes",
+                    ),
+                  );
+                }
+              }
+              return const CcWorkingZoneTemplate(
+                title: "Incidencias",
+                actions: CcBannerWidget(text: "Cargando..."),
+              );
+            },
           ),
           const SizedBox(height: 16.0),
           CcWorkingZoneTemplate(
@@ -84,73 +97,123 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
     );
   }
 
-  Widget _buildBuildingsContent() {
-    return BlocBuilder<BuildingCubit, BuildingState>(
-      builder: (context, state) {
-        if (state is BuildingLoaded) {
-          final buildings = state.buildings.take(3).map((building) {
-            final f = building.floors?.length ?? 0;
-            final ft = f != 1 ? '$f pisos' : '$f piso';
-            return {'name': building.name, 'rooms': ft};
-          }).toList();
+  Widget _buildContent() {
+    return CcTitleContentTemplate(
+      title: "Registro de limpieza",
+      content: BlocBuilder<RoomCubit, RoomState>(
+        builder: (context, state) {
+          if (state is RoomLoaded) {
+            final groupedRooms = groupRoomsByBuildingAndFloor(state.rooms);
 
-          return Column(
-            children: [
-              if (buildings.isEmpty)
-                const CcBannerWidget(
-                  icon: Icons.apartment_outlined,
-                  text: 'Aquí se mostrarán los edificios registrados',
-                  trailing: Icons.chevron_right,
-                )
-              else ...[
-                CcListItemsWidget(items: buildings, onTap: (item) {}),
-                CcButtonWidget(
-                  buttonType: ButtonType.text,
-                  label: "Ver más",
-                  suffixIcon: const Icon(Icons.chevron_right),
-                  onPressed: () {},
-                  isLoading: false,
-                ),
-              ],
-            ],
+            if (groupedRooms.isEmpty || state.rooms.isEmpty) {
+              return const CcBannerWidget(
+                icon: Icons.bed_outlined,
+                text: 'Aquí se mostrarán las limpiezas registradas',
+                trailing: Icons.chevron_right,
+              );
+            }
+
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: groupedRooms.keys.length,
+              itemBuilder: (context, buildingIndex) {
+                final buildingName = groupedRooms.keys.elementAt(buildingIndex);
+                final floors = groupedRooms[buildingName]!;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildStickyHeader(buildingName, isBuilding: true),
+                    ...floors.keys.map((floorName) {
+                      final rooms = floors[floorName]!;
+
+                      final roomItems = rooms
+                          .map((room) => {
+                                'name': room.name,
+                                'rooms': 'Estado: ${room.status ?? "N/A"}',
+                              })
+                          .toList();
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildStickyHeader(floorName),
+                          CcListItemsWidget(
+                            items: roomItems,
+                            icon: Icons.bed_outlined,
+                            onTap: (item) {
+                              _showChangeStatusBottomSheet(
+                                  context,
+                                  rooms.firstWhere(
+                                    (room) => room.name == item['name'],
+                                  ));
+                            },
+                          ),
+                        ],
+                      );
+                    }),
+                  ],
+                );
+              },
+            );
+          }
+          return const CcBannerWidget(
+            icon: Icons.person_outline,
+            text: 'Aquí se mostrarán las limpiezas registradas',
+            trailing: Icons.chevron_right,
           );
-        }
-        return const Center(child: CircularProgressIndicator());
+        },
+      ),
+    );
+  }
+
+  void _showChangeStatusBottomSheet(BuildContext context, RoomModel item) {
+    CcChangeStatusBottomSheetWidget.show(
+      context,
+      item: item,
+      title: 'Marcar como limpia',
+      cardIcon: Icons.bed_outlined,
+      cardTitle: item.name,
+      cardSubtitle: item.status ?? 'N/A',
+      cardType: IconType.enabled,
+      content: const Text(
+        '¿Estás seguro de marcar la habitación como limpia?',
+      ),
+      onConfirm: (id) {
+        context.read<RoomCubit>().changeChecked(id);
+        context.read<RoomCubit>().getCleanedRooms();
       },
     );
   }
 
-  Widget _buildUsersContent() {
-    return BlocBuilder<UserCubit, UserState>(
-      builder: (context, state) {
-        if (state is UsersLoaded) {
-          final users = state.users.take(3).map((user) {
-            return {'name': user.name, 'rooms': user.email};
-          }).toList();
-
-          return Column(
-            children: [
-              if (users.isEmpty)
-                const CcBannerWidget(
-                  icon: Icons.person_outline,
-                  text: 'Aquí se mostrarán los usuarios registrados',
-                  trailing: Icons.chevron_right,
-                )
-              else ...[
-                CcListItemsWidget(items: users, onTap: (item) {}),
-                CcButtonWidget(
-                  buttonType: ButtonType.text,
-                  label: "Ver más",
-                  suffixIcon: const Icon(Icons.chevron_right),
-                  onPressed: () => {},
-                  isLoading: false,
-                ),
-              ],
-            ],
-          );
-        }
-        return const Center(child: CircularProgressIndicator());
-      },
+  Widget _buildStickyHeader(String title, {bool isBuilding = false}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: isBuilding ? 18 : 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
+  }
+
+  Map<String, Map<String, List<RoomModel>>> groupRoomsByBuildingAndFloor(
+      List<RoomModel> rooms) {
+    final grouped = <String, Map<String, List<RoomModel>>>{};
+
+    for (var room in rooms) {
+      final buildingName = room.floor!.building?.name;
+      final floorName = room.floor?.name;
+
+      grouped.putIfAbsent(buildingName!, () => {});
+      grouped[buildingName]!.putIfAbsent(floorName!, () => []);
+      grouped[buildingName]![floorName]!.add(room);
+    }
+
+    return grouped;
   }
 }

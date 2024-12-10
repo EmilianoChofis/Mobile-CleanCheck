@@ -1,21 +1,22 @@
-import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mobile_clean_check/core/theme/color_schemes.dart';
-import 'package:mobile_clean_check/core/theme/text_themes.dart';
-import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcImagePickerWidget extends StatefulWidget {
   final String label;
   final String hint;
   final IconData icon;
   final Function(bool) onImagesChanged;
+  final List<String> base64Images;
+  final Function(List<String>) onImagesUpdated;
 
   const CcImagePickerWidget({
     required this.label,
     required this.hint,
     required this.icon,
     required this.onImagesChanged,
+    required this.base64Images,
+    required this.onImagesUpdated,
     super.key,
   });
 
@@ -24,41 +25,36 @@ class CcImagePickerWidget extends StatefulWidget {
 }
 
 class _CcImagePickerWidgetState extends State<CcImagePickerWidget> {
-  final secondaryColor = ColorSchemes.secondary;
   final ImagePicker _picker = ImagePicker();
-  final List<XFile> _images = [];
 
   Future<void> _pickImage() async {
-    if (_images.length < 5) {
-      final XFile? pickedImage =
-          await _picker.pickImage(source: ImageSource.camera);
+    final XFile? pickedImage =
+        await _picker.pickImage(source: ImageSource.camera);
 
-      if (pickedImage != null) {
-        setState(() {
-          _images.add(pickedImage);
-        });
-        widget.onImagesChanged(_images.isNotEmpty);
-      }
-    } else {
-      CcSnackBarWidget.show(
-        context,
-        message: 'Solo puedes adjuntar 5 imágenes',
-        snackBarType: SnackBarType.error,
-      );
+    if (pickedImage != null) {
+      final bytes = await pickedImage.readAsBytes();
+      final base64String = base64Encode(bytes);
+
+      final base64WithHeader = 'data:image/jpeg;base64,$base64String';
+
+      setState(() => widget.base64Images.add(base64WithHeader));
+
+      widget.onImagesUpdated(widget.base64Images);
+      widget.onImagesChanged(widget.base64Images.isNotEmpty);
     }
   }
 
-  void _showImageDialog(XFile image) {
+  void _showImageDialog(String base64Image) {
+    final bytes = base64Decode(base64Image);
+    final image = Image.memory(bytes);
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
           child: GestureDetector(
             onTap: () => Navigator.of(context).pop(),
-            child: Image.file(
-              File(image.path),
-              fit: BoxFit.contain,
-            ),
+            child: image,
           ),
         );
       },
@@ -70,12 +66,7 @@ class _CcImagePickerWidgetState extends State<CcImagePickerWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.label,
-          style: TextThemes.lightTextTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        Text(widget.label),
         const SizedBox(height: 8.0),
         GestureDetector(
           onTap: _pickImage,
@@ -83,59 +74,43 @@ class _CcImagePickerWidgetState extends State<CcImagePickerWidget> {
             width: double.infinity,
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              border: Border.all(color: secondaryColor),
+              border: Border.all(color: Colors.blue),
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Row(
               children: [
-                Icon(widget.icon, color: secondaryColor),
+                Icon(widget.icon),
                 const SizedBox(width: 8.0),
-                Text(widget.hint, style: TextStyle(color: secondaryColor)),
+                Text(widget.hint),
               ],
             ),
           ),
         ),
-        if (_images.isNotEmpty) ...[
+        if (widget.base64Images.isNotEmpty) ...[
           const SizedBox(height: 32.0),
           SizedBox(
             height: 130.0,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: _images.length,
+              itemCount: widget.base64Images.length,
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8.0),
-                  child: Stack(
-                    children: [
-                      GestureDetector(
-                        onTap: () => _showImageDialog(_images[index]),
-                        child: Image.file(
-                          File(_images[index].path),
-                          fit: BoxFit.cover,
-                          width: 100.0,
-                          height: 130.0,
-                        ),
-                      ),
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: IconButton(
-                          icon: const Icon(Icons.remove_circle,
-                              color: Colors.red),
-                          onPressed: () {
-                            setState(() => _images.removeAt(index));
-                            widget.onImagesChanged(_images.isNotEmpty);
-                          },
-                        ),
-                      ),
-                    ],
+                  child: GestureDetector(
+                    onTap: () => _showImageDialog(widget.base64Images[index]),
+                    child: Image.memory(
+                      base64Decode(widget.base64Images[index]
+                          .replaceFirst('data:image/jpeg;base64,', '')),
+                      fit: BoxFit.cover,
+                      width: 120.0,
+                      height: 120.0,
+                    ),
                   ),
                 );
               },
             ),
-          )
+          ),
         ],
-        const SizedBox(height: 16.0),
       ],
     );
   }

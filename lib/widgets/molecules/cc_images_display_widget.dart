@@ -57,6 +57,18 @@ class _CcImagesDisplayWidgetState extends State<CcImagesDisplayWidget> {
                     fit: BoxFit.cover,
                     width: 100.0,
                     height: 130.0,
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) {
+                        return child;
+                      } else {
+                        return Container(
+                          width: 100.0,
+                          height: 130.0,
+                          color: Colors.grey,
+                        );
+                      }
+                    },
                   ),
                 ),
               );

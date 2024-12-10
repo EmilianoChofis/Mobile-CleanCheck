@@ -7,3 +7,5 @@ export 'user_model.dart';
 export 'building_model.dart';
 export 'floor_model.dart';
 export 'room_model.dart';
+export 'report_model.dart';
+export 'image_model.dart';

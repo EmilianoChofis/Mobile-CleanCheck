@@ -10,9 +10,22 @@ class RoleResolver extends StatelessWidget {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('role');
   }
-=======
-Future<String?> getRole() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('role');
-  // return 'Maid';
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String?>(
+      future: _getRole(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else if (snapshot.hasData && snapshot.data != null) {
+          return BottomNavigation(role: snapshot.data!);
+        } else {
+          return const LoginScreen();
+        }
+      },
+    );
+  }
 }

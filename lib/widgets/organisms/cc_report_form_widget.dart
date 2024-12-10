@@ -6,12 +6,16 @@ class CcReportFormWidget extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController descriptionController;
   final ValueChanged<bool> onImagesChanged;
+  final List<String> base64Images;
+  final ValueChanged<List<String>> onImagesUpdated;
 
   const CcReportFormWidget({
     required this.room,
     required this.formKey,
     required this.descriptionController,
     required this.onImagesChanged,
+    required this.base64Images,
+    required this.onImagesUpdated,
     super.key,
   });
 
@@ -26,7 +30,7 @@ class _CcReportFormWidgetState extends State<CcReportFormWidget> {
         children: [
           const TextSpan(
             text:
-                "Describe y adjunta fotos de evidencia que ayuden a detallar el problema de la habitación ",
+            "Describe y adjunta fotos de evidencia que ayuden a detallar el problema de la habitación ",
           ),
           TextSpan(
             text: widget.room,
@@ -51,7 +55,7 @@ class _CcReportFormWidgetState extends State<CcReportFormWidget> {
             CcTextFormFieldWidget(
               label: "Descripción del problema",
               hint:
-                  "Proporciona información detallada, incluyendo cualquier daño o situación que deba atenderse.",
+              "Proporciona información detallada, incluyendo cualquier daño o situación que deba atenderse.",
               icon: const Icon(Icons.warning_amber),
               keyboardType: TextInputType.multiline,
               maxLines: 3,
@@ -69,6 +73,8 @@ class _CcReportFormWidgetState extends State<CcReportFormWidget> {
               hint: "Tomar foto...",
               icon: Icons.camera_alt_outlined,
               onImagesChanged: widget.onImagesChanged,
+              base64Images: widget.base64Images,
+              onImagesUpdated: widget.onImagesUpdated,
             ),
           ],
         ),

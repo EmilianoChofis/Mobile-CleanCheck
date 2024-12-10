@@ -14,33 +14,13 @@ class CcRoomWidget extends StatelessWidget {
     super.key,
   });
 
-  static const Map<RoomStatus, Color> _stateColors = {
-    RoomStatus.empty: ColorSchemes.white,
-    RoomStatus.cleaned: ColorSchemes.disabled,
-    RoomStatus.reported: ColorSchemes.warning,
-    RoomStatus.disabled: ColorSchemes.error,
-  };
-
-  Color borderColor() {
-    if (state == RoomStatus.reported || state == RoomStatus.disabled) {
-      return _stateColors[state]!;
-    }
-    return isSelected ? ColorSchemes.primary : ColorSchemes.disabled;
-  }
-
-  Color textColor() {
-    return state == RoomStatus.disabled
-        ? ColorSchemes.white
-        : ColorSchemes.primary;
-  }
-
   @override
   Widget build(BuildContext context) {
     final backgroundColor = _stateColors[state] ?? ColorSchemes.white;
 
     return Container(
-      width: 82,
-      height: 82,
+      width: 88,
+      height: 88,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: backgroundColor,
@@ -59,11 +39,33 @@ class CcRoomWidget extends StatelessWidget {
       ),
     );
   }
+
+  static const Map<RoomStatus, Color> _stateColors = {
+    RoomStatus.checked: ColorSchemes.white,
+    RoomStatus.occupied: ColorSchemes.disabled,
+    RoomStatus.unoccupied: ColorSchemes.secondary,
+    RoomStatus.clean: ColorSchemes.success,
+    RoomStatus.in_maintenance: ColorSchemes.warning,
+  };
+
+  Color borderColor() {
+    if (state == RoomStatus.in_maintenance) {
+      return _stateColors[state]!;
+    }
+    return isSelected ? ColorSchemes.primary : ColorSchemes.disabled;
+  }
+
+  Color textColor() {
+    return state == RoomStatus.clean || state == RoomStatus.unoccupied
+        ? ColorSchemes.white
+        : ColorSchemes.primary;
+  }
 }
 
 enum RoomStatus {
-  empty,
-  cleaned,
-  reported,
-  disabled,
+  checked,
+  occupied,
+  unoccupied,
+  clean,
+  in_maintenance,
 }

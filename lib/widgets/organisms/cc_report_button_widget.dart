@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CcReportButtonWidget extends StatefulWidget {
-  final ValueNotifier<String?> selectedRoomNotifier;
+  final ValueNotifier<Map<String, String>?> selectedRoomNotifier;
 
   const CcReportButtonWidget({required this.selectedRoomNotifier, super.key});
 
@@ -14,6 +15,19 @@ class CcReportButtonWidget extends StatefulWidget {
 class _CcReportButtonWidgetState extends State<CcReportButtonWidget> {
   final redColor = ColorSchemes.error;
   final secondaryColor = ColorSchemes.secondary;
+  late String userId = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserId();
+  }
+
+  Future<void> _getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final idUser = prefs.getString('userId');
+    setState(() => userId = idUser!);
+  }
 
   Widget _buildText() {
     return Text.rich(
@@ -57,7 +71,8 @@ class _CcReportButtonWidgetState extends State<CcReportButtonWidget> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   CcGeneratedReportButtonWidget(
-                    room: widget.selectedRoomNotifier.value!,
+                    userId: userId,
+                    room: widget.selectedRoomNotifier.value!['id']!,
                     onClosePreviousBottomSheet: () => Navigator.pop(context),
                   ),
                   const SizedBox(height: 8.0),

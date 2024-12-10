@@ -51,9 +51,7 @@ class CcBuildingRoomsTemplate extends StatelessWidget {
                   ),
                   filters,
                   Expanded(
-                    child: SingleChildScrollView(
-                      child: content,
-                    ),
+                    child: content,
                   ),
                 ],
               ),

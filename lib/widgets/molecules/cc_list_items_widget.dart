@@ -4,10 +4,12 @@ import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcListItemsWidget extends StatelessWidget {
   final List<Map<String, dynamic>> items;
+  final IconData icon;
   final Function(Map<String, dynamic>) onTap;
 
   const CcListItemsWidget({
     required this.items,
+    required this.icon,
     required this.onTap,
     super.key,
   });
@@ -23,7 +25,7 @@ class CcListItemsWidget extends StatelessWidget {
             CcItemListWidget(
               iconType: IconType.enabled,
               onTap: () => onTap(item),
-              icon: Icons.domain_outlined,
+              icon: icon,
               title: item['name']!,
               content: Text(
                 item['rooms']!,
