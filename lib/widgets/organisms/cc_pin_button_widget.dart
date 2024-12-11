@@ -37,8 +37,7 @@ class _CcPinButtonWidgetState extends State<CcPinButtonWidget> {
         tempPinnedItems = Set<String>.from(savedItems);
       });
     }
-    print(
-        'Pinned Items for ${widget.buildingIdentifier}: $pinnedItems'); // Debugging
+    print('Pinned Items for ${widget.buildingIdentifier}: $pinnedItems');
   }
 
   Future<void> _savePinnedItems() async {

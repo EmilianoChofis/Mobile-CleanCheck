@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_clean_check/core/theme/themes.dart';
 
 class CcImagePickerWidget extends StatefulWidget {
   final String label;
@@ -74,14 +75,17 @@ class _CcImagePickerWidgetState extends State<CcImagePickerWidget> {
             width: double.infinity,
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.blue),
+              border: Border.all(color: ColorSchemes.secondary),
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Row(
               children: [
-                Icon(widget.icon),
+                Icon(widget.icon, color: ColorSchemes.secondary),
                 const SizedBox(width: 8.0),
-                Text(widget.hint),
+                Text(
+                  widget.hint,
+                  style: const TextStyle(color: ColorSchemes.secondary),
+                ),
               ],
             ),
           ),
@@ -96,15 +100,38 @@ class _CcImagePickerWidgetState extends State<CcImagePickerWidget> {
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8.0),
-                  child: GestureDetector(
-                    onTap: () => _showImageDialog(widget.base64Images[index]),
-                    child: Image.memory(
-                      base64Decode(widget.base64Images[index]
-                          .replaceFirst('data:image/jpeg;base64,', '')),
-                      fit: BoxFit.cover,
-                      width: 120.0,
-                      height: 120.0,
-                    ),
+                  child: Stack(
+                    children: [
+                      GestureDetector(
+                        onTap: () =>
+                            _showImageDialog(widget.base64Images[index]),
+                        child: Image.memory(
+                          base64Decode(widget.base64Images[index]
+                              .replaceFirst('data:image/jpeg;base64,', '')),
+                          fit: BoxFit.cover,
+                          width: 120.0,
+                          height: 120.0,
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.remove_circle,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              widget.base64Images.removeAt(index);
+                              widget.onImagesUpdated(widget.base64Images);
+                              widget.onImagesChanged(
+                                  widget.base64Images.isNotEmpty);
+                            });
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },

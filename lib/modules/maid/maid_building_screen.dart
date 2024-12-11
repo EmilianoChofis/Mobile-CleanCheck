@@ -18,15 +18,17 @@ class MaidBuildingScreen extends StatefulWidget {
 class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
   final ValueNotifier<Map<String, String>?> selectedRoomNotifier =
       ValueNotifier<Map<String, String>?>(null);
+  List<RoomModel> rooms = [];
 
-  List<String> _getRoomIdentifiers() {
-    List<String> identifiers = [];
-    for (var floor in widget.building.floors ?? []) {
-      for (var room in floor.rooms ?? []) {
-        identifiers.add(room.identifier);
-      }
-    }
-    return identifiers;
+  @override
+  void initState() {
+    super.initState();
+    _fetchRoomsByBuildingId();
+  }
+
+  Future<void> _fetchRoomsByBuildingId() async {
+    final buildingId = widget.building.id!;
+    context.read<RoomCubit>().getRoomsByBuildingId(buildingId);
   }
 
   @override
@@ -36,7 +38,7 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
         title: 'Registrar limpieza',
         actions: [
           CcPinButtonWidget(
-            roomIdentifiers: _getRoomIdentifiers(),
+            roomIdentifiers: rooms.map((room) => room.identifier).toList(),
             buildingIdentifier: widget.building.id!,
           ),
         ],
@@ -61,14 +63,26 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
             }
           }
         },
-        child: CcBuildingRoomsTemplate(
-          header: _buildHeader(),
-          title: 'Habitaciones',
-          filters: _buildFilters(),
-          content: _buildContent(),
-          actions: _buildActions(),
-        ),
+        child: BlocBuilder<RoomCubit, RoomState>(builder: (context, state) {
+          if (state is RoomLoading) {
+            return const CcLoadingWidget();
+          } else if (state is RoomLoaded) {
+            return _buildList(state.rooms);
+          } else {
+            return _buildList([]);
+          }
+        }),
       ),
+    );
+  }
+
+  Widget _buildList(List<RoomModel> rooms) {
+    return CcBuildingRoomsTemplate(
+      header: _buildHeader(),
+      title: 'Habitaciones',
+      filters: _buildFilters(),
+      content: _buildContent(rooms),
+      actions: _buildActions(),
     );
   }
 
@@ -98,14 +112,14 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
       children: [
         CcFiltersWidget(
           filters: const [
-            'Zona de trabajo',
             'Todas',
-            'Sin limpiar',
-            'Limpias',
+            'En uso',
+            'Disponibles',
+            'Desocupadas',
             'Reportadas',
-            'Deshabilitadas',
+            'Limpias',
           ],
-          onSelected: (filter) {},
+          onSelected: (filter) => _onFilterSelected(filter),
         ),
         const CcSymbologyWidget(
           grayLabel: 'En uso',
@@ -118,29 +132,54 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
     );
   }
 
-  Widget _buildContent() {
-    final floorsWithRooms = widget.building.floors
-            ?.where((floor) => (floor.rooms?.isNotEmpty ?? false))
-            .toList() ??
-        [];
+  void _onFilterSelected(String filter) {
+    switch (filter) {
+      case 'Todas':
+        context.read<RoomCubit>().getRoomsByBuildingId(widget.building.id!);
+        break;
+      case 'En uso':
+        //context.read<RoomCubit>().getOccupiedRoomsByBuildingId(widget.building.id!);
+        break;
+      case 'Disponibles':
+        //context.read<RoomCubit>().getAvailableRoomsByBuildingId(widget.building.id!);
+        break;
+      case 'Desocupadas':
+        //context.read<RoomCubit>().getUnoccupiedRoomsByBuildingId(widget.building.id!);
+        break;
+      case 'Reportadas':
+        //context.read<RoomCubit>().getReportedRoomsByBuildingId(widget.building.id!);
+        break;
+      case 'Limpias':
+        //context.read<RoomCubit>().getCleanRoomsByBuildingId(widget.building.id!);
+        break;
+    }
+  }
 
-    if (floorsWithRooms.isEmpty) {
-      return const Center(child: Text('No hay pisos con habitaciones.'));
+  Widget _buildContent(List<RoomModel> rooms) {
+    final Map<String, List<RoomModel>> floorsWithRooms = {};
+
+    for (var room in rooms) {
+      if (room.floor != null) {
+        if (!floorsWithRooms.containsKey(room.floor!.name)) {
+          floorsWithRooms[room.floor!.name] = [];
+        }
+        floorsWithRooms[room.floor!.name]!.add(room);
+      }
     }
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 64.0),
-      child: RefreshIndicator(
-        onRefresh: () async => context.read<BuildingCubit>().getBuildings(),
+    return RefreshIndicator(
+      onRefresh: _fetchRoomsByBuildingId,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 64.0),
         child: CustomScrollView(
           slivers: [
-            for (var floor in floorsWithRooms) ...[
+            for (var floorName in floorsWithRooms.keys) ...[
               SliverStickyHeader(
                 header: Container(
                   color: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
-                    floor.name,
+                    floorName,
                     style: const TextStyle(
                       color: ColorSchemes.secondary,
                       fontWeight: FontWeight.bold,
@@ -150,11 +189,13 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
+                      final floorRooms = floorsWithRooms[floorName]!;
                       final Set<String> uniqueRooms = {};
+
                       return Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: floor.rooms!
+                        children: floorRooms
                             .where((room) => uniqueRooms.add(room.name))
                             .map((room) {
                           final roomId = room.identifier;
@@ -165,6 +206,7 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
                                 'RoomStatus.${room.status?.toLowerCase()}',
                             orElse: () => RoomStatus.unoccupied,
                           );
+
                           return GestureDetector(
                             onTap: roomState == RoomStatus.unoccupied ||
                                     roomState == RoomStatus.occupied
@@ -219,6 +261,7 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
                   Expanded(
                     child: CcReportButtonWidget(
                       selectedRoomNotifier: selectedRoomNotifier,
+                      buildingId: widget.building.id!,
                     ),
                   ),
                 if (roomState == RoomStatus.unoccupied)

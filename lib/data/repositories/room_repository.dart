@@ -9,11 +9,7 @@ class RoomRepository {
   Future<ApiResponse<List<RoomModel>>> getRoomsByBuildingId(
       String buildingId) async {
     try {
-      final response = await dio.post(
-        '/room/getByBuilding',
-        data: {'buildingId': buildingId},
-      );
-
+      final response = await dio.post('/room/getByBuilding/$buildingId');
       return ApiResponse<List<RoomModel>>.fromJson(
         response.data,
         (json) =>

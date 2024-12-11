@@ -15,22 +15,30 @@ class _MaidHomeScreenState extends State<MaidHomeScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<BuildingCubit>().getBuildings();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    context.read<BuildingCubit>().getBuildingsActives();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CcAppBarWidget(title: "Inicio"),
-      body: SingleChildScrollView(
-        child: CcHeaderTemplate(
-          header: const CcWelcomeHomeTemplate(
-            actions: CcWorkingZoneTemplate(
-                title: "Zonas de trabajo", actions: CcWorkingZoneMaidWidget()),
-          ),
-          content: CcTitleContentTemplate(
-            title: 'Lista de edificios',
-            content: _buildBuildingsContent(),
+      body: RefreshIndicator(
+        onRefresh: _fetchData,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: CcHeaderTemplate(
+            header: const CcWelcomeHomeTemplate(
+              actions: CcWorkingZoneTemplate(
+                  title: "Zonas de trabajo", actions: CcWorkingZoneMaidWidget()),
+            ),
+            content: CcTitleContentTemplate(
+              title: 'Lista de edificios',
+              content: _buildBuildingsContent(),
+            ),
           ),
         ),
       ),
@@ -41,7 +49,7 @@ class _MaidHomeScreenState extends State<MaidHomeScreen> {
     return BlocBuilder<BuildingCubit, BuildingState>(
       builder: (context, state) {
         if (state is BuildingLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const CcLoadingWidget();
         } else if (state is BuildingLoaded) {
           final buildings = state.buildings.map((building) {
             final floors = building.floors?.length ?? 0;

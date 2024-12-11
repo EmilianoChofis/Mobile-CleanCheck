@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcWorkingZoneManagerWidget extends StatelessWidget {
-  final VoidCallback onRegisterBuilding;
-  final VoidCallback onRegisterRoom;
-  final VoidCallback onRegisterUser;
-
   const CcWorkingZoneManagerWidget({
-    required this.onRegisterBuilding,
-    required this.onRegisterRoom,
-    required this.onRegisterUser,
     super.key,
   });
 
@@ -19,17 +13,17 @@ class CcWorkingZoneManagerWidget extends StatelessWidget {
       {
         'icon': Icons.apartment_outlined,
         'title': 'Registrar edificio',
-        'onTap': onRegisterBuilding,
+        'onTap': () => _showBuildingBottomSheet(context),
       },
       {
         'icon': Icons.bed_outlined,
         'title': 'Registrar habitación',
-        'onTap': onRegisterRoom,
+        'onTap': () => _showRoomBottomSheet(context),
       },
       {
         'icon': Icons.person_outline,
         'title': 'Registrar usuario',
-        'onTap': onRegisterUser,
+        'onTap': () => _showUserBottomSheet(context),
       },
     ];
 
@@ -45,5 +39,18 @@ class CcWorkingZoneManagerWidget extends StatelessWidget {
         },
       ).toList(),
     );
+  }
+
+  void _showBuildingBottomSheet(BuildContext context,
+      {BuildingModel? building}) {
+    CcBuildingBottomSheetWidget.show(context, building: building);
+  }
+
+  void _showRoomBottomSheet(BuildContext context) {
+    CcRoomBottomSheetWidget.show(context, quickAccess: true);
+  }
+
+  void _showUserBottomSheet(BuildContext context) {
+    CcUserBottomSheetWidget.show(context);
   }
 }

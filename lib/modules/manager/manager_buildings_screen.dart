@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:mobile_clean_check/modules/modules.dart';
@@ -52,7 +53,7 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
         child: BlocBuilder<BuildingCubit, BuildingState>(
           builder: (context, state) {
             if (state is BuildingLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const CcLoadingWidget();
             } else if (state is BuildingLoaded) {
               return _buildList(state.buildings);
             } else {
@@ -78,21 +79,29 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: CcFiltersWidget(
-        filters: const ['Todos', 'Activos', 'Deshabilitados'],
+        filters: const ['Todos', 'Activos', 'Deshabilitado'],
         onSelected: (filter) => _onFilterSelected(filter),
       ),
     );
   }
 
   void _onFilterSelected(String filter) {
-    print('Filtro seleccionado: $filter');
+    switch (filter) {
+      case 'Todos':
+        context.read<BuildingCubit>().loadBuildings();
+        break;
+      case 'Activos':
+        context.read<BuildingCubit>().loadBuildingsActives();
+        break;
+      case 'Deshabilitado':
+        context.read<BuildingCubit>().loadBuildingsInactives();
+        break;
+    }
   }
 
   Widget _buildSymbology() {
     return const CcSymbologyWidget(
-      grayLabel: 'Activo',
-      redLabel: 'Deshabilitado',
-    );
+        grayLabel: 'Activo', redLabel: 'Deshabilitado');
   }
 
   Widget _buildContent(List<BuildingModel> buildings) {
@@ -129,7 +138,10 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
                   },
                   icon: Icons.domain_outlined,
                   title: b.name,
-                  content: Text(floorText),
+                  content: Text(
+                    floorText,
+                    style: const TextStyle(color: ColorSchemes.secondary),
+                  ),
                 );
               },
             ),
@@ -151,7 +163,10 @@ class _ManagerBuildingsScreenState extends State<ManagerBuildingsScreen> {
       cardType: iconType,
       cardIcon: Icons.domain_outlined,
       content: const Text('¿Estás seguro de deshabilitar este edificio?'),
-      onConfirm: (id) => context.read<BuildingCubit>().deleteBuilding(id),
+      onConfirm: (id) {
+        context.read<BuildingCubit>().deleteBuilding(id);
+        context.read<BuildingCubit>().getBuildings();
+      },
     );
   }
 }

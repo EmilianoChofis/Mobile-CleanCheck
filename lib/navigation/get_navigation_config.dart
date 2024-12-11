@@ -30,7 +30,7 @@ final Map<String, Map<String, dynamic>> roleConfigurations = {
         activeIcon: CcBnbActiveIconWidget(icon: Icon(Icons.group_outlined)),
       ),
       const BottomNavigationBarItem(
-        label: 'Incidencias',
+        label: 'Reportes',
         icon: Icon(Icons.warning_amber),
         activeIcon: CcBnbActiveIconWidget(icon: Icon(Icons.warning_amber)),
       ),
@@ -55,7 +55,7 @@ final Map<String, Map<String, dynamic>> roleConfigurations = {
         activeIcon: CcBnbActiveIconWidget(icon: Icon(Icons.home_outlined)),
       ),
       const BottomNavigationBarItem(
-        label: 'Incidencias',
+        label: 'Reportes',
         icon: Icon(Icons.warning_amber),
         activeIcon: CcBnbActiveIconWidget(icon: Icon(Icons.warning_amber)),
       ),
@@ -80,7 +80,7 @@ final Map<String, Map<String, dynamic>> roleConfigurations = {
         activeIcon: CcBnbActiveIconWidget(icon: Icon(Icons.home_outlined)),
       ),
       const BottomNavigationBarItem(
-        label: 'Incidencias',
+        label: 'Reportes',
         icon: Icon(Icons.warning_amber),
         activeIcon: CcBnbActiveIconWidget(icon: Icon(Icons.warning_amber)),
       ),

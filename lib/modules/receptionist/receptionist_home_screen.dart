@@ -15,23 +15,24 @@ class _ReceptionistHomeScreenState extends State<ReceptionistHomeScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<BuildingCubit>().getBuildings();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    context.read<BuildingCubit>().getBuildingsActives();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CcAppBarWidget(title: "Inicio"),
-      body: SingleChildScrollView(
-        child: CcHeaderTemplate(
-          header: _buildHeader(),
-          content: Column(
-            children: [
-              CcTitleContentTemplate(
-                title: "Lista de Edificios",
-                content: _buildBuildingsContent(),
-              ),
-            ],
+      body: RefreshIndicator(
+        onRefresh: _fetchData,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: CcHeaderTemplate(
+            header: _buildHeader(),
+            content: _buildContent(),
           ),
         ),
       ),
@@ -51,43 +52,48 @@ class _ReceptionistHomeScreenState extends State<ReceptionistHomeScreen> {
     );
   }
 
-  Widget _buildBuildingsContent() {
-    return BlocBuilder<BuildingCubit, BuildingState>(
-      builder: (context, state) {
-        if (state is BuildingLoading) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is BuildingLoaded) {
-          final buildings = state.buildings.map((building) {
-            final floors = building.floors?.length ?? 0;
-            final floorLabel = floors != 1 ? "$floors pisos" : "$floors piso";
-            return {
-              'name': building.name,
-              'rooms': floorLabel,
-              'building': building
-            };
-          }).toList();
+  Widget _buildContent() {
+    return CcTitleContentTemplate(
+      title: 'Lista de edificios',
+      content: BlocBuilder<BuildingCubit, BuildingState>(
+        builder: (context, state) {
+          if (state is BuildingLoading) {
+            return const CcLoadingWidget();
+          } else if (state is BuildingLoaded) {
+            final buildings = state.buildings.map((building) {
+              final floors = building.floors?.length ?? 0;
+              final floorLabel = floors != 1 ? "$floors pisos" : "$floors piso";
 
-          return buildings.isEmpty
-              ? const Center(child: Text('No hay edificios registrados.'))
-              : CcListItemsWidget(
-                  items: buildings,
-                  icon: Icons.apartment_outlined,
-                  onTap: (item) {
-                    final selectedBuilding = item['building'];
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ReceptionistBuildingScreen(
-                          building: selectedBuilding,
-                        ),
-                      ),
-                    );
-                  },
+              return {
+                'name': building.name,
+                'rooms': floorLabel,
+                'building': building
+              };
+            }).toList();
+
+            return CcListItemsWidget(
+              items: buildings,
+              icon: Icons.apartment_outlined,
+              onTap: (item) {
+                final selectedBuilding = item['building'];
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ReceptionistBuildingScreen(
+                      building: selectedBuilding,
+                    ),
+                  ),
                 );
-        }
-        return const Center(
-          child: Text("Ocurrió un error al cargar los edificios."),
-        );
-      },
+              },
+            );
+          }
+          return Center(
+            child: CcLoadedErrorWidget(
+              title: "Ha ocurrido un error al cargar los edificios",
+              onRetry: () => context.read<BuildingCubit>().getBuildings(),
+            ),
+          );
+        },
+      ),
     );
   }
 }

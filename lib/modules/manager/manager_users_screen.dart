@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/data/cubits/user/user_cubit.dart';
 import 'package:mobile_clean_check/data/cubits/user/user_state.dart';
 import 'package:mobile_clean_check/data/models/models.dart';
@@ -52,7 +53,7 @@ class _ManagerUsersScreenState extends State<ManagerUsersScreen> {
         child: BlocBuilder<UserCubit, UserState>(
           builder: (context, state) {
             if (state is UserLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const CcLoadingWidget();
             } else if (state is UsersLoaded) {
               return _buildList(state.users);
             } else {
@@ -85,42 +86,53 @@ class _ManagerUsersScreenState extends State<ManagerUsersScreen> {
   }
 
   void _onFilterSelected(String filter) {
-    print('Filtro seleccionado: $filter');
+    switch (filter) {
+      case 'Todos':
+        context.read<UserCubit>().loadUsers();
+        break;
+      case 'Activos':
+        context.read<UserCubit>().getActiveUsers();
+        break;
+      case 'Deshabilitados':
+        context.read<UserCubit>().getInactiveUsers();
+        break;
+    }
   }
 
   Widget _buildSymbology() {
     return const CcSymbologyWidget(
       grayLabel: 'Activo',
-      redLabel: 'Deshabilitado',
+      redLabel: 'Deshabilitados',
     );
   }
 
   Widget _buildContent(List<UserModel> users) {
     return RefreshIndicator(
       onRefresh: () async => context.read<UserCubit>().getUsers(),
-      child: users.isEmpty
-          ? const Center(child: Text('No hay usuarios registrados'))
-          : CcListSlidableWidget<UserModel>(
-              items: users,
-              onEdit: (context, {item}) => _showUserBottomSheet(context, item),
-              onDelete: (context, {item}) {
-                _showChangeStatusBottomSheet(
-                  context,
-                  item!,
-                  item.status! ? IconType.enabled : IconType.disabled,
-                );
-              },
-              buildItem: (context, u) {
-                final it = u.status! ? IconType.enabled : IconType.disabled;
-                return CcItemListWidget(
-                  iconType: it,
-                  onTap: () => _showUserBottomSheet(context, u),
-                  icon: Icons.person_outline,
-                  title: u.name,
-                  content: Text(u.email),
-                );
-              },
+      child: CcListSlidableWidget<UserModel>(
+        items: users,
+        onEdit: (context, {item}) => _showUserBottomSheet(context, item),
+        onDelete: (context, {item}) {
+          _showChangeStatusBottomSheet(
+            context,
+            item!,
+            item.status! ? IconType.enabled : IconType.disabled,
+          );
+        },
+        buildItem: (context, u) {
+          final it = u.status! ? IconType.enabled : IconType.disabled;
+          return CcItemListWidget(
+            iconType: it,
+            onTap: () => _showUserBottomSheet(context, u),
+            icon: Icons.person_outline,
+            title: u.name,
+            content: Text(
+              u.email,
+              style: const TextStyle(color: ColorSchemes.secondary),
             ),
+          );
+        },
+      ),
     );
   }
 

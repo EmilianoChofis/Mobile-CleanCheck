@@ -14,8 +14,34 @@ class BuildingCubit extends Cubit<BuildingState> {
     loadBuildings();
   }
 
+  Future<void> getBuildingsActives() async {
+    if (state is BuildingLoading) return;
+    emit(BuildingLoading());
+    loadBuildingsActives();
+  }
+
   Future<void> loadBuildings() async {
     final response = await buildingRepository.getBuildings();
+
+    if (response.error) {
+      emit(BuildingError(message: response.message));
+    } else {
+      emit(BuildingLoaded(buildings: response.data!));
+    }
+  }
+
+  Future<void> loadBuildingsActives() async {
+    final response = await buildingRepository.getBuildingsActives();
+
+    if (response.error) {
+      emit(BuildingError(message: response.message));
+    } else {
+      emit(BuildingLoaded(buildings: response.data!));
+    }
+  }
+
+  Future<void> loadBuildingsInactives() async {
+    final response = await buildingRepository.getBuildingsInactives();
 
     if (response.error) {
       emit(BuildingError(message: response.message));

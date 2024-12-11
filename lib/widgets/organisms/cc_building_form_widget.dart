@@ -107,7 +107,7 @@ class _CcBuildingFormWidgetState extends State<CcBuildingFormWidget> {
               controller: widget.numberFloorsController,
               validator: (value) {
                 final parsedValue = int.tryParse(value!);
-                if (value.isEmpty || parsedValue! < 1) {
+                if (value.isEmpty || parsedValue != null && parsedValue < 1) {
                   return 'Ingresa el número de pisos.';
                 }
                 return null;

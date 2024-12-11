@@ -135,7 +135,7 @@ class _CcCheckButtonWidgetState extends State<CcCheckButtonWidget> {
       context.read<RoomCubit>().changeCheckOut(roomId!);
     }
 
-    context.read<BuildingCubit>().loadBuildings();
+    context.read<BuildingCubit>().loadBuildingsActives();
     Navigator.pop(context);
   }
 

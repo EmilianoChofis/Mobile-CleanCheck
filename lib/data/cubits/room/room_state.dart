@@ -28,6 +28,15 @@ class RoomSuccess extends RoomState {
   List<Object?> get props => [message];
 }
 
+class RoomClean extends RoomState {
+  final List<RoomModel> rooms;
+
+  RoomClean({required this.rooms});
+
+  @override
+  List<Object?> get props => [rooms];
+}
+
 class RoomError extends RoomState {
   final String message;
 

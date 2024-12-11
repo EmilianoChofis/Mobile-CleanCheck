@@ -26,7 +26,7 @@ class _IncidencesScreenState extends State<IncidencesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CcAppBarWidget(title: 'Incidencias'),
+      appBar: const CcAppBarWidget(title: 'Reportes'),
       body: BlocListener<ReportCubit, ReportState>(
         listener: (context, state) {
           if (state is ReportError) {
@@ -60,7 +60,7 @@ class _IncidencesScreenState extends State<IncidencesScreen> {
 
   Widget _buildList(List<ReportModel> reports) {
     return CcListScreenTemplate(
-      title: 'Lista de incidencias',
+      title: 'Lista de reportes',
       search: _buildSearchBar(),
       filters: _buildFilters(),
       symbology: _buildSymbology(),
@@ -77,21 +77,38 @@ class _IncidencesScreenState extends State<IncidencesScreen> {
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: CcFiltersWidget(
         filters: const [
-          'Todas',
-          'En proceso',
-          'Deshabilitadas',
-          'Disponibles',
+          'Todos',
+          'Finalizados',
+          'Pendientes',
+          'En progreso',
         ],
-        onSelected: (filter) => print(filter),
+        onSelected: _onFilterSelected,
       ),
     );
   }
 
+  void _onFilterSelected(String filter) {
+    switch (filter) {
+      case 'Todos':
+        context.read<ReportCubit>().loadReports();
+        break;
+      case 'Finalizados':
+        context.read<ReportCubit>().loadAllFinished();
+        break;
+      case 'Pendientes':
+        context.read<ReportCubit>().loadAllPending();
+        break;
+      case 'En progreso':
+        context.read<ReportCubit>().loadAllInProgress();
+        break;
+    }
+  }
+
   Widget _buildSymbology() {
     return const CcSymbologyWidget(
-      grayLabel: 'Disponible',
-      yellowLabel: 'En proceso',
-      redLabel: 'Deshabilitada',
+      grayLabel: 'Finalizado',
+      yellowLabel: 'Pendiente',
+      redLabel: 'En progreso',
     );
   }
 

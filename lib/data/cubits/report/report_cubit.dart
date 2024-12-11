@@ -24,6 +24,35 @@ class ReportCubit extends Cubit<ReportState> {
     }
   }
 
+  Future<void> loadAllPending() async {
+    final response = await reportRepository.loadAllPending();
+
+    if (response.error) {
+      emit(ReportError(message: response.message));
+    } else {
+      emit(ReportsLoaded(reports: response.data!));
+    }
+  }
+  Future<void> loadAllInProgress() async {
+    final response = await reportRepository.loadAllInProgress();
+
+    if (response.error) {
+      emit(ReportError(message: response.message));
+    } else {
+      emit(ReportsLoaded(reports: response.data!));
+    }
+  }
+
+  Future<void> loadAllFinished() async {
+    final response = await reportRepository.loadAllFinished();
+
+    if (response.error) {
+      emit(ReportError(message: response.message));
+    } else {
+      emit(ReportsLoaded(reports: response.data!));
+    }
+  }
+
   Future<void> createReport(ReportModel report) async {
     final response = await reportRepository.createReport(report);
 

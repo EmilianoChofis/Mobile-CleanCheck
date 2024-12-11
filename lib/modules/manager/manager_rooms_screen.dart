@@ -16,11 +16,19 @@ class ManagerRoomsScreen extends StatefulWidget {
 
 class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
   final _searchController = SearchController();
+  final ValueNotifier<Map<String, String>?> selectedRoomNotifier =
+      ValueNotifier<Map<String, String>?>(null);
+  List<RoomModel> rooms = [];
 
   @override
   void initState() {
     super.initState();
-    context.read<FloorCubit>().getFloorsByBuildingId(widget.building.id!);
+    _fetchRoomsByBuildingId();
+  }
+
+  Future<void> _fetchRoomsByBuildingId() async {
+    final buildingId = widget.building.id!;
+    context.read<RoomCubit>().getRoomsByBuildingId(buildingId);
   }
 
   @override
@@ -46,7 +54,6 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
               message: state.message,
               snackBarType: SnackBarType.success,
             );
-
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             }
@@ -55,99 +62,15 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
         child: BlocBuilder<RoomCubit, RoomState>(
           builder: (context, state) {
             if (state is RoomLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const CcLoadingWidget();
             } else if (state is RoomLoaded) {
-              return _buildList();
+              return _buildList(state.rooms);
             } else {
-              return _buildList();
+              return _buildList([]);
             }
           },
         ),
       ),
-    );
-  }
-
-  Widget _buildList() {
-    return CcListScreenTemplate(
-      title: 'Lista de habitaciones',
-      search: CcSearchBarWidget(controller: _searchController),
-      filters: _buildFilters(),
-      symbology: _buildSymbology(),
-      content: _buildContent(),
-    );
-  }
-
-  Widget _buildFilters() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: CcFiltersWidget(
-        filters: const ['Todas', 'Disponibles', 'Reportadas', 'Deshabilitadas'],
-        onSelected: (filter) => _onFilterSelected(filter),
-      ),
-    );
-  }
-
-  void _onFilterSelected(String filter) {
-    print('Filtro seleccionado: $filter');
-  }
-
-  Widget _buildSymbology() {
-    return const CcSymbologyWidget(
-      grayLabel: 'Disponible',
-      yellowLabel: 'Reportada',
-      redLabel: 'Deshabilitada',
-    );
-  }
-
-  Widget _buildContent() {
-    final floorsWithRooms = widget.building.floors
-            ?.where((floor) => (floor.rooms?.isNotEmpty ?? false))
-            .toList() ??
-        [];
-
-    if (floorsWithRooms.isEmpty) {
-      return const Center(child: Text('No hay pisos con habitaciones.'));
-    }
-
-    return CustomScrollView(
-      slivers: [
-        for (var floor in floorsWithRooms) ...[
-          SliverStickyHeader(
-            header: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                floor.name,
-                style: const TextStyle(
-                  color: ColorSchemes.secondary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final room = floor.rooms![index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: CcItemListWidget(
-                      iconType: IconType.enabled,
-                      onTap: () {},
-                      icon: Icons.domain_outlined,
-                      title: room.name,
-                      content: Text(
-                        room.status ?? 'Estado desconocido',
-                        style: const TextStyle(color: ColorSchemes.secondary),
-                      ),
-                    ),
-                  );
-                },
-                childCount: floor.rooms?.length ?? 0,
-              ),
-            ),
-          ),
-        ],
-      ],
     );
   }
 
@@ -160,6 +83,140 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
       context,
       building: widget.building,
       room: room,
+    );
+  }
+
+  Widget _buildList(List<RoomModel> rooms) {
+    return CcListScreenTemplate(
+      title: 'Habitaciones',
+      search: CcSearchBarWidget(controller: _searchController),
+      filters: _buildFilters(),
+      symbology: _buildSymbology(),
+      content: _buildContent(rooms),
+    );
+  }
+
+  Widget _buildFilters() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: CcFiltersWidget(
+        filters: const [
+          'Todas',
+          'En uso',
+          'Disponibles',
+          'Desocupadas',
+          'Reportadas',
+          'Limpias'
+        ],
+        onSelected: (filter) => _onFilterSelected(filter),
+      ),
+    );
+  }
+
+  Widget _buildSymbology() {
+    return const CcSymbologyWidget(
+      grayLabel: 'En uso',
+      whiteLabel: 'Disponible',
+      greenLabel: 'Limpia',
+      secondaryLabel: 'Desocupada',
+      yellowLabel: 'Reportada',
+    );
+  }
+
+  void _onFilterSelected(String filter) {
+    switch (filter) {
+      case 'Todas':
+        context.read<RoomCubit>().getRoomsByBuildingId(widget.building.id!);
+        break;
+      case 'En uso':
+        //context.read<RoomCubit>().getOccupiedRoomsByBuildingId(widget.building.id!);
+        break;
+      case 'Disponibles':
+        //context.read<RoomCubit>().getAvailableRoomsByBuildingId(widget.building.id!);
+        break;
+      case 'Desocupadas':
+        //context.read<RoomCubit>().getUnoccupiedRoomsByBuildingId(widget.building.id!);
+        break;
+      case 'Reportadas':
+        //context.read<RoomCubit>().getReportedRoomsByBuildingId(widget.building.id!);
+        break;
+      case 'Limpias':
+        //context.read<RoomCubit>().getCleanRoomsByBuildingId(widget.building.id!);
+        break;
+    }
+  }
+
+  Widget _buildContent(List<RoomModel> rooms) {
+    final Map<String, List<RoomModel>> floorsWithRooms = {};
+
+    for (var room in rooms) {
+      if (room.floor != null) {
+        if (!floorsWithRooms.containsKey(room.floor!.name)) {
+          floorsWithRooms[room.floor!.name] = [];
+        }
+        floorsWithRooms[room.floor!.name]!.add(room);
+      }
+    }
+
+    return RefreshIndicator(
+      onRefresh: _fetchRoomsByBuildingId,
+      child: CustomScrollView(
+        slivers: [
+          for (var floorName in floorsWithRooms.keys) ...[
+            SliverStickyHeader(
+              header: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
+                  floorName,
+                  style: const TextStyle(
+                    color: ColorSchemes.secondary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final floorRooms = floorsWithRooms[floorName]!;
+                    final Set<String> uniqueRooms = {};
+
+                    return Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: floorRooms
+                          .where((room) => uniqueRooms.add(room.name))
+                          .map((room) {
+                        final roomId = room.identifier;
+                        final roomName = room.name;
+                        final roomState = RoomStatus.values.firstWhere(
+                          (e) =>
+                              e.toString() ==
+                              'RoomStatus.${room.status?.toLowerCase()}',
+                          orElse: () => RoomStatus.unoccupied,
+                        );
+
+                        return ValueListenableBuilder<Map<String, String>?>(
+                          valueListenable: selectedRoomNotifier,
+                          builder: (context, selectedRoom, _) {
+                            return CcRoomWidget(
+                              name: roomName,
+                              state: roomState,
+                              isSelected: selectedRoom != null &&
+                                  selectedRoom['identifier'] == roomId,
+                            );
+                          },
+                        );
+                      }).toList(),
+                    );
+                  },
+                  childCount: 1,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

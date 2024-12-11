@@ -24,6 +24,63 @@ class ReportRepository {
     }
   }
 
+  Future<ApiResponse<List<ReportModel>>> loadAllPending() async {
+    try {
+      final response = await dio.get('/report/getAllPending');
+      return ApiResponse<List<ReportModel>>.fromJson(
+        response.data,
+        (json) =>
+            (json as List).map((json) => ReportModel.fromJson(json)).toList(),
+      );
+    } on DioException catch (e) {
+      return ApiResponse<List<ReportModel>>(
+        data: null,
+        error: true,
+        statusCode: e.response?.statusCode ?? 500,
+        message: e.response?.data['message'] ??
+            'Ha ocurrido un error. Inténtalo de nuevo.',
+      );
+    }
+  }
+
+  Future<ApiResponse<List<ReportModel>>> loadAllInProgress() async {
+    try {
+      final response = await dio.get('/report/getAllInProgress');
+      return ApiResponse<List<ReportModel>>.fromJson(
+        response.data,
+        (json) =>
+            (json as List).map((json) => ReportModel.fromJson(json)).toList(),
+      );
+    } on DioException catch (e) {
+      return ApiResponse<List<ReportModel>>(
+        data: null,
+        error: true,
+        statusCode: e.response?.statusCode ?? 500,
+        message: e.response?.data['message'] ??
+            'Ha ocurrido un error. Inténtalo de nuevo.',
+      );
+    }
+  }
+
+  Future<ApiResponse<List<ReportModel>>> loadAllFinished() async {
+    try {
+      final response = await dio.get('/report/getAllFinished');
+      return ApiResponse<List<ReportModel>>.fromJson(
+        response.data,
+        (json) =>
+            (json as List).map((json) => ReportModel.fromJson(json)).toList(),
+      );
+    } on DioException catch (e) {
+      return ApiResponse<List<ReportModel>>(
+        data: null,
+        error: true,
+        statusCode: e.response?.statusCode ?? 500,
+        message: e.response?.data['message'] ??
+            'Ha ocurrido un error. Inténtalo de nuevo.',
+      );
+    }
+  }
+
   Future<ApiResponse<ReportModel>> createReport(ReportModel report) async {
     try {
       final response = await dio.post(

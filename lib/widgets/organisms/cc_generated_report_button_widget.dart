@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_clean_check/data/cubits/report/report_cubit.dart';
+import 'package:mobile_clean_check/data/cubits/cubits.dart';
 import 'package:mobile_clean_check/data/models/report_model.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcGeneratedReportButtonWidget extends StatefulWidget {
   final String userId;
-  final String room;
+  final String buildingId;
+  final Map<String, String> room;
   final VoidCallback? onClosePreviousBottomSheet;
 
   const CcGeneratedReportButtonWidget({
     required this.userId,
+    required this.buildingId,
     required this.room,
     this.onClosePreviousBottomSheet,
     super.key,
@@ -34,16 +36,17 @@ class _CcGeneratedReportButtonWidgetState
       widget.onClosePreviousBottomSheet?.call();
 
       final reportCubit = context.read<ReportCubit>();
+      final RoomCubit roomCubit = context.read<RoomCubit>();
 
       final newReport = ReportModel(
         userId: widget.userId,
-        roomId: widget.room,
+        roomId: widget.room['id']!,
         description: _descriptionController.text,
         files: _base64Images,
       );
 
       reportCubit.createReport(newReport);
-
+      roomCubit.getRoomsByBuildingId(widget.buildingId);
       Navigator.pop(context);
     } else {
       if (_base64Images.isEmpty) {
@@ -76,7 +79,7 @@ class _CcGeneratedReportButtonWidgetState
             return CcBottomSheetTemplate(
               title: "Reportar incidencia",
               content: CcReportFormWidget(
-                room: widget.room,
+                room: widget.room['identifier']!,
                 formKey: _formKey,
                 descriptionController: _descriptionController,
                 onImagesChanged: _updateImageStatus,

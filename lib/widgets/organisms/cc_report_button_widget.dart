@@ -5,8 +5,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CcReportButtonWidget extends StatefulWidget {
   final ValueNotifier<Map<String, String>?> selectedRoomNotifier;
+  final String buildingId;
 
-  const CcReportButtonWidget({required this.selectedRoomNotifier, super.key});
+  const CcReportButtonWidget({
+    required this.selectedRoomNotifier,
+    required this.buildingId,
+    super.key,
+  });
 
   @override
   State<CcReportButtonWidget> createState() => _CcReportButtonWidgetState();
@@ -72,7 +77,8 @@ class _CcReportButtonWidgetState extends State<CcReportButtonWidget> {
                 children: [
                   CcGeneratedReportButtonWidget(
                     userId: userId,
-                    room: widget.selectedRoomNotifier.value!['id']!,
+                    buildingId: widget.buildingId,
+                    room: widget.selectedRoomNotifier.value!,
                     onClosePreviousBottomSheet: () => Navigator.pop(context),
                   ),
                   const SizedBox(height: 8.0),

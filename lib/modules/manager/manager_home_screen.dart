@@ -12,12 +12,15 @@ class ManagerHomeScreen extends StatefulWidget {
 }
 
 class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
+
+
   @override
   void initState() {
     super.initState();
-    context.read<BuildingCubit>().getBuildings();
-    context.read<UserCubit>().getUsers();
-    context.read<ReportCubit>().getReports();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
     context.read<RoomCubit>().getCleanedRooms();
   }
 
@@ -25,26 +28,17 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CcAppBarWidget(title: "Inicio"),
-      body: SingleChildScrollView(
-        child: CcHeaderTemplate(
-          header: _buildHeader(),
-          content: _buildContent(),
+      body: RefreshIndicator(
+        onRefresh: _fetchData,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: CcHeaderTemplate(
+            header: _buildHeader(),
+            content: _buildContent(),
+          ),
         ),
       ),
     );
-  }
-
-  void _showBuildingBottomSheet(BuildContext context,
-      {BuildingModel? building}) {
-    CcBuildingBottomSheetWidget.show(context, building: building);
-  }
-
-  void _showRoomBottomSheet() {
-    CcRoomBottomSheetWidget.show(context, quickAccess: true);
-  }
-
-  void _showUserBottomSheet() {
-    CcUserBottomSheetWidget.show(context);
   }
 
   Widget _buildHeader() {
@@ -67,30 +61,18 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                           "$rc ${rc == 1 ? 'incidencia pendiente' : 'incidencias pendientes'}",
                     ),
                   );
-                } else {
-                  return const CcWorkingZoneTemplate(
-                    title: "Incidencias",
-                    actions: CcBannerWidget(
-                      icon: Icons.warning_amber,
-                      text: "No hay incidencias pendientes",
-                    ),
-                  );
                 }
               }
               return const CcWorkingZoneTemplate(
                 title: "Incidencias",
-                actions: CcBannerWidget(text: "Cargando..."),
+                actions: CcBannerWidget(text: "No hay incidencias pendientes"),
               );
             },
           ),
           const SizedBox(height: 16.0),
-          CcWorkingZoneTemplate(
+          const CcWorkingZoneTemplate(
             title: "Accesos directos",
-            actions: CcWorkingZoneManagerWidget(
-              onRegisterBuilding: () => _showBuildingBottomSheet(context),
-              onRegisterRoom: _showRoomBottomSheet,
-              onRegisterUser: _showUserBottomSheet,
-            ),
+            actions: CcWorkingZoneManagerWidget(),
           ),
         ],
       ),
@@ -102,17 +84,8 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
       title: "Registro de limpieza",
       content: BlocBuilder<RoomCubit, RoomState>(
         builder: (context, state) {
-          if (state is RoomLoaded) {
+          if (state is RoomClean) {
             final groupedRooms = groupRoomsByBuildingAndFloor(state.rooms);
-
-            if (groupedRooms.isEmpty || state.rooms.isEmpty) {
-              return const CcBannerWidget(
-                icon: Icons.bed_outlined,
-                text: 'Aquí se mostrarán las limpiezas registradas',
-                trailing: Icons.chevron_right,
-              );
-            }
-
             return ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -131,7 +104,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                       final roomItems = rooms
                           .map((room) => {
                                 'name': room.name,
-                                'rooms': 'Estado: ${room.status ?? "N/A"}',
+                                'rooms': 'Pendiente de confirmar limpieza',
                               })
                           .toList();
 
@@ -158,10 +131,11 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
               },
             );
           }
-          return const CcBannerWidget(
-            icon: Icons.person_outline,
-            text: 'Aquí se mostrarán las limpiezas registradas',
+          return CcBannerWidget(
+            icon: Icons.bed_outlined,
+            text: 'Ver registros de limpieza',
             trailing: Icons.chevron_right,
+            onTap: () => context.read<RoomCubit>().getCleanedRooms(),
           );
         },
       ),
@@ -175,7 +149,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
       title: 'Marcar como limpia',
       cardIcon: Icons.bed_outlined,
       cardTitle: item.name,
-      cardSubtitle: item.status ?? 'N/A',
+      cardSubtitle: 'Pendiende de confirmar limpieza',
       cardType: IconType.enabled,
       content: const Text(
         '¿Estás seguro de marcar la habitación como limpia?',

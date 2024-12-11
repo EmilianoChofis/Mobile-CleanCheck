@@ -8,13 +8,8 @@ class RoomCubit extends Cubit<RoomState> {
 
   RoomCubit({required this.roomRepository}) : super(RoomInitial());
 
-  Future<void> getRooms(BuildingModel building) async {
-    if (state is RoomLoading) return;
+  Future<void> getRoomsByBuildingId(String buildingId) async {
     emit(RoomLoading());
-    getRoomByBuildingId(building.id!);
-  }
-
-  Future<void> getRoomByBuildingId(String buildingId) async {
     final response = await roomRepository.getRoomsByBuildingId(buildingId);
 
     if (response.error) {
@@ -30,7 +25,7 @@ class RoomCubit extends Cubit<RoomState> {
     if (response.error) {
       emit(RoomError(message: response.message));
     } else {
-      emit(RoomLoaded(rooms: response.data!));
+      emit(RoomClean(rooms: response.data!));
     }
   }
 

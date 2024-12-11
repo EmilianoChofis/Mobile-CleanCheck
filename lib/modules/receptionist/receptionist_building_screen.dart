@@ -116,7 +116,9 @@ class _ReceptionistBuildingScreenState
     return Padding(
       padding: const EdgeInsets.only(bottom: 64.0),
       child: RefreshIndicator(
-        onRefresh: () async => context.read<BuildingCubit>().getBuildings(),
+        onRefresh: () async {
+          return context.read<BuildingCubit>().loadBuildingsActives();
+        },
         child: CustomScrollView(
           slivers: [
             for (var floor in floorsWithRooms) ...[

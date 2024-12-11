@@ -57,18 +57,30 @@ class CcBuildingBottomSheetWidget {
   static void _onSave(BuildContext context, BuildingModel? building) {
     if (_formKey.currentState!.validate()) {
       final newBuilding = BuildingModel(name: _nameBuildingController.text);
-      final newFloors = int.parse(_numberFloorsController.text);
+
+      int newFloors = 0;
+      if (_numberFloorsController.text !=
+          'Pisos actuales: ${building?.floors?.length}') {
+        newFloors = int.parse(_numberFloorsController.text);
+      }
 
       if (building == null) {
         context
             .read<BuildingCubit>()
             .createBuildingWithFloors(newBuilding, newFloors);
       } else {
-        context.read<BuildingCubit>().updateBuilding(
-              building.copyWith(name: newBuilding.name),
-              newFloors,
-            );
+        if (newFloors > 0) {
+          context.read<BuildingCubit>().updateBuilding(
+                building.copyWith(name: newBuilding.name),
+                newFloors,
+              );
+        } else {
+          context
+              .read<BuildingCubit>()
+              .updateBuilding(building.copyWith(name: newBuilding.name), 0);
+        }
       }
+      context.read<BuildingCubit>().getBuildings();
       _onCancel(context);
     }
   }

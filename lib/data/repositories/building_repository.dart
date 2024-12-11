@@ -25,6 +25,44 @@ class BuildingRepository {
     }
   }
 
+  Future<ApiResponse<List<BuildingModel>>> getBuildingsActives() async {
+    try {
+      final response = await dio.get('/building/getAllActive');
+      return ApiResponse<List<BuildingModel>>.fromJson(
+        response.data,
+        (json) =>
+            (json as List).map((json) => BuildingModel.fromJson(json)).toList(),
+      );
+    } on DioException catch (e) {
+      return ApiResponse<List<BuildingModel>>(
+        data: [],
+        error: true,
+        statusCode: e.response?.statusCode ?? 500,
+        message: e.response?.data['message'] ??
+            'Ha ocurrido un error. Inténtalo de nuevo.',
+      );
+    }
+  }
+
+  Future<ApiResponse<List<BuildingModel>>> getBuildingsInactives() async {
+    try {
+      final response = await dio.get('/building/getAllInactive');
+      return ApiResponse<List<BuildingModel>>.fromJson(
+        response.data,
+        (json) =>
+            (json as List).map((json) => BuildingModel.fromJson(json)).toList(),
+      );
+    } on DioException catch (e) {
+      return ApiResponse<List<BuildingModel>>(
+        data: [],
+        error: true,
+        statusCode: e.response?.statusCode ?? 500,
+        message: e.response?.data['message'] ??
+            'Ha ocurrido un error. Inténtalo de nuevo.',
+      );
+    }
+  }
+
   Future<ApiResponse<BuildingModel>> getBuildingById(String buildingId) async {
     try {
       final response = await dio.get('/building/getById/$buildingId');

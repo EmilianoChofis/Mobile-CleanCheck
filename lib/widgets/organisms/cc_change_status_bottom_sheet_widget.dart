@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_clean_check/core/theme/themes.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcChangeStatusBottomSheetWidget {
@@ -51,7 +52,10 @@ class CcChangeStatusBottomSheetWidget {
     return CcItemListWidget(
       isDisplay: true,
       title: cardTitle,
-      content: Text(cardSubtitle),
+      content: Text(
+        cardSubtitle,
+        style: const TextStyle(color: ColorSchemes.secondary),
+      ),
       iconType: cardType,
       icon: cardIcon,
       onTap: () {},

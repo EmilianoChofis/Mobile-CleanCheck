@@ -24,6 +24,44 @@ class UserRepository {
     }
   }
 
+  Future<ApiResponse<List<UserModel>>> getActiveUsers() async {
+    try {
+      final response = await dio.get('/user/getActiveUsers');
+      return ApiResponse<List<UserModel>>.fromJson(
+        response.data,
+        (json) =>
+            (json as List).map((json) => UserModel.fromJson(json)).toList(),
+      );
+    } on DioException catch (e) {
+      return ApiResponse<List<UserModel>>(
+        data: null,
+        error: true,
+        statusCode: e.response?.statusCode ?? 500,
+        message: e.response?.data['message'] ??
+            'Ha ocurrido un error. Inténtalo de nuevo.',
+      );
+    }
+  }
+
+  Future<ApiResponse<List<UserModel>>> getInactiveUsers() async {
+    try {
+      final response = await dio.get('/user/getInactiveUsers');
+      return ApiResponse<List<UserModel>>.fromJson(
+        response.data,
+            (json) =>
+            (json as List).map((json) => UserModel.fromJson(json)).toList(),
+      );
+    } on DioException catch (e) {
+      return ApiResponse<List<UserModel>>(
+        data: null,
+        error: true,
+        statusCode: e.response?.statusCode ?? 500,
+        message: e.response?.data['message'] ??
+            'Ha ocurrido un error. Inténtalo de nuevo.',
+      );
+    }
+  }
+
   Future<ApiResponse<UserModel>> createUser(UserModel user, String role) async {
     try {
       final response =
