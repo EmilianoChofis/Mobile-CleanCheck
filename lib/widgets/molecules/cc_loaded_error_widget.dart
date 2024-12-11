@@ -4,11 +4,11 @@ import 'package:mobile_clean_check/core/theme/themes.dart';
 
 class CcLoadedErrorWidget extends StatelessWidget {
   final String title;
-  final VoidCallback onRetry;
+  final VoidCallback? onRetry;
 
   const CcLoadedErrorWidget({
     required this.title,
-    required this.onRetry,
+    this.onRetry,
     super.key,
   });
 
@@ -29,6 +29,7 @@ class CcLoadedErrorWidget extends StatelessWidget {
             const SizedBox(height: 8.0),
             Text(title),
             const SizedBox(height: 8.0),
+            if (onRetry != null)
             CcButtonWidget(
               label: "Reintentar",
               onPressed: onRetry,

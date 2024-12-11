@@ -160,63 +160,68 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
 
     return RefreshIndicator(
       onRefresh: _fetchRoomsByBuildingId,
-      child: CustomScrollView(
-        slivers: [
-          for (var floorName in floorsWithRooms.keys) ...[
-            SliverStickyHeader(
-              header: Container(
-                color: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Text(
-                  floorName,
-                  style: const TextStyle(
-                    color: ColorSchemes.secondary,
-                    fontWeight: FontWeight.bold,
+      child: rooms.isEmpty
+          ? const CcLoadedErrorWidget(
+              title: 'No hay pisos con habitaciones registradas',
+            )
+          : CustomScrollView(
+              slivers: [
+                for (var floorName in floorsWithRooms.keys) ...[
+                  SliverStickyHeader(
+                    header: Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text(
+                        floorName,
+                        style: const TextStyle(
+                          color: ColorSchemes.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final floorRooms = floorsWithRooms[floorName]!;
+                          final Set<String> uniqueRooms = {};
+
+                          return Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: floorRooms
+                                .where((room) => uniqueRooms.add(room.name))
+                                .map((room) {
+                              final roomId = room.identifier;
+                              final roomName = room.name;
+                              final roomState = RoomStatus.values.firstWhere(
+                                (e) =>
+                                    e.toString() ==
+                                    'RoomStatus.${room.status?.toLowerCase()}',
+                                orElse: () => RoomStatus.unoccupied,
+                              );
+
+                              return ValueListenableBuilder<
+                                  Map<String, String>?>(
+                                valueListenable: selectedRoomNotifier,
+                                builder: (context, selectedRoom, _) {
+                                  return CcRoomWidget(
+                                    name: roomName,
+                                    state: roomState,
+                                    isSelected: selectedRoom != null &&
+                                        selectedRoom['identifier'] == roomId,
+                                  );
+                                },
+                              );
+                            }).toList(),
+                          );
+                        },
+                        childCount: 1,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final floorRooms = floorsWithRooms[floorName]!;
-                    final Set<String> uniqueRooms = {};
-
-                    return Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: floorRooms
-                          .where((room) => uniqueRooms.add(room.name))
-                          .map((room) {
-                        final roomId = room.identifier;
-                        final roomName = room.name;
-                        final roomState = RoomStatus.values.firstWhere(
-                          (e) =>
-                              e.toString() ==
-                              'RoomStatus.${room.status?.toLowerCase()}',
-                          orElse: () => RoomStatus.unoccupied,
-                        );
-
-                        return ValueListenableBuilder<Map<String, String>?>(
-                          valueListenable: selectedRoomNotifier,
-                          builder: (context, selectedRoom, _) {
-                            return CcRoomWidget(
-                              name: roomName,
-                              state: roomState,
-                              isSelected: selectedRoom != null &&
-                                  selectedRoom['identifier'] == roomId,
-                            );
-                          },
-                        );
-                      }).toList(),
-                    );
-                  },
-                  childCount: 1,
-                ),
-              ),
+                ],
+              ],
             ),
-          ],
-        ],
-      ),
     );
   }
 }
