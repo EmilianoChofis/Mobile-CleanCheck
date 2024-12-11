@@ -119,4 +119,22 @@ class ReportRepository {
       );
     }
   }
+
+  Future<ApiResponse<ReportModel>> changeStatusFinish(String reportId) async {
+    try {
+      final response = await dio.put('/report/updateStatusFinish/$reportId');
+      return ApiResponse<ReportModel>.fromJson(
+        response.data,
+        (json) => ReportModel.fromJson(json),
+      );
+    } on DioException catch (e) {
+      return ApiResponse<ReportModel>(
+        data: null,
+        error: true,
+        statusCode: e.response?.statusCode ?? 500,
+        message: e.response?.data['message'] ??
+            'Ha ocurrido un error. Inténtalo de nuevo.',
+      );
+    }
+  }
 }

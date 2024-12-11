@@ -29,6 +29,7 @@ class _ManagerRoomsScreenState extends State<ManagerRoomsScreen> {
   Future<void> _fetchRoomsByBuildingId() async {
     final buildingId = widget.building.id!;
     context.read<RoomCubit>().getRoomsByBuildingId(buildingId);
+    context.read<FloorCubit>().getFloorsByBuildingId(buildingId);
   }
 
   @override

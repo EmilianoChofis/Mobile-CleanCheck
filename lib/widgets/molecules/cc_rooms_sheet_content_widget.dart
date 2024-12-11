@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_clean_check/core/theme/themes.dart';
+import 'package:mobile_clean_check/data/models/floor_model.dart';
 
 class CcRoomsSheetContentWidget extends StatefulWidget {
-  final List<String> items;
+  final List<FloorModel> floors;
   final Set<String> tempPinnedItems;
   final void Function(String item, bool isPinned) onToggle;
 
   const CcRoomsSheetContentWidget({
-    required this.items,
+    required this.floors,
     required this.tempPinnedItems,
     required this.onToggle,
     super.key,
@@ -26,34 +27,58 @@ class _CcRoomsSheetContentWidgetState extends State<CcRoomsSheetContentWidget> {
   Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: widget.items.length * 2 - 1,
+      itemCount: widget.floors.length,
       itemBuilder: (context, index) {
-        if (index.isOdd) {
-          return const Divider();
-        } else {
-          final itemIndex = index ~/ 2;
-          final item = widget.items[itemIndex];
-          final isPinned = widget.tempPinnedItems.contains(item);
+        final floor = widget.floors[index];
 
-          return ListTile(
-            title: Text(
-              item,
-              style:
-                  TextStyle(color: primaryColor, fontWeight: FontWeight.w500),
-            ),
-            trailing: IconButton(
-              icon: Icon(
-                isPinned ? Icons.push_pin : Icons.push_pin_outlined,
-                color: secondaryColor,
+        if (floor.rooms!.isEmpty) {
+          return Container();
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                floor.name,
+                style: TextStyle(
+                  color: primaryColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              onPressed: () {
-                setState(() {
-                  widget.onToggle(item, isPinned);
-                });
+            ),
+            // Rooms list for this floor
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: floor.rooms!.length,
+              itemBuilder: (context, roomIndex) {
+                final room = floor.rooms![roomIndex];
+                final isPinned =
+                    widget.tempPinnedItems.contains(room.identifier);
+
+                return ListTile(
+                  title: Text(
+                    room.identifier,
+                    style: TextStyle(
+                        color: primaryColor, fontWeight: FontWeight.w500),
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(
+                      isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+                      color: secondaryColor,
+                    ),
+                    onPressed: () {
+                      setState(() => widget.onToggle(room.identifier, isPinned));
+                    },
+                  ),
+                );
               },
             ),
-          );
-        }
+          ],
+        );
       },
     );
   }

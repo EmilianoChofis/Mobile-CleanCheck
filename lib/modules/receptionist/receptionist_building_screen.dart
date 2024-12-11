@@ -8,10 +8,8 @@ import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class ReceptionistBuildingScreen extends StatefulWidget {
   final BuildingModel building;
-  const ReceptionistBuildingScreen({
-    required this.building,
-    super.key,
-  });
+
+  const ReceptionistBuildingScreen({required this.building, super.key});
 
   @override
   State<ReceptionistBuildingScreen> createState() =>
@@ -22,6 +20,18 @@ class _ReceptionistBuildingScreenState
     extends State<ReceptionistBuildingScreen> {
   final ValueNotifier<Map<String, String>?> selectedRoomNotifier =
       ValueNotifier<Map<String, String>?>(null);
+  List<RoomModel> rooms = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchRoomsByBuildingId();
+  }
+
+  Future<void> _fetchRoomsByBuildingId() async {
+    final buildingId = widget.building.id!;
+    context.read<RoomCubit>().getRoomsByBuildingId(buildingId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,14 +57,28 @@ class _ReceptionistBuildingScreenState
             }
           }
         },
-        child: CcBuildingRoomsTemplate(
-          header: _buildHeader(),
-          title: 'Habitaciones',
-          filters: _buildFilters(),
-          content: _buildContent(),
-          actions: _buildActions(),
+        child: BlocBuilder<RoomCubit, RoomState>(
+          builder: (context, state) {
+            if (state is RoomLoading) {
+              return const CcLoadingWidget();
+            } else if (state is RoomLoaded) {
+              return _buildList(state.rooms);
+            } else {
+              return _buildList([]);
+            }
+          },
         ),
       ),
+    );
+  }
+
+  Widget _buildList(List<RoomModel> rooms) {
+    return CcBuildingRoomsTemplate(
+      header: _buildHeader(),
+      title: 'Habitaciones',
+      filters: _buildFilters(),
+      content: _buildContent(rooms),
+      actions: _buildActions(),
     );
   }
 
@@ -103,87 +127,96 @@ class _ReceptionistBuildingScreenState
     );
   }
 
-  Widget _buildContent() {
-    final floorsWithRooms = widget.building.floors
-            ?.where((floor) => (floor.rooms?.isNotEmpty ?? false))
-            .toList() ??
-        [];
+  Widget _buildContent(List<RoomModel> rooms) {
+    final Map<String, List<RoomModel>> floorsWithRooms = {};
 
-    if (floorsWithRooms.isEmpty) {
-      return const Center(child: Text('No hay pisos con habitaciones.'));
+    for (var room in rooms) {
+      if (room.floor != null) {
+        if (!floorsWithRooms.containsKey(room.floor!.name)) {
+          floorsWithRooms[room.floor!.name] = [];
+        }
+        floorsWithRooms[room.floor!.name]!.add(room);
+      }
     }
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 64.0),
-      child: RefreshIndicator(
-        onRefresh: () async {
-          return context.read<BuildingCubit>().loadBuildingsActives();
-        },
-        child: CustomScrollView(
-          slivers: [
-            for (var floor in floorsWithRooms) ...[
-              SliverStickyHeader(
-                header: Container(
-                  color: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text(
-                    floor.name,
-                    style: const TextStyle(
-                      color: ColorSchemes.secondary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final Set<String> uniqueRooms = {};
-                      return Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: floor.rooms!
-                            .where((room) => uniqueRooms.add(room.name))
-                            .map((room) {
-                          final roomId = room.identifier;
-                          final roomName = room.name;
-                          final roomState = RoomStatus.values.firstWhere((e) =>
-                              e.toString() ==
-                              'RoomStatus.${room.status?.toLowerCase()}');
+    return RefreshIndicator(
+      onRefresh: _fetchRoomsByBuildingId,
+      child: rooms.isEmpty
+          ? const CcLoadedErrorWidget(
+              title: 'No hay pisos con habitaciones registradas',
+            )
+          : Padding(
+              padding: const EdgeInsets.only(bottom: 64.0),
+              child: CustomScrollView(
+                slivers: [
+                  for (var floorName in floorsWithRooms.keys) ...[
+                    SliverStickyHeader(
+                      header: Container(
+                        color: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Text(
+                          floorName,
+                          style: const TextStyle(
+                            color: ColorSchemes.secondary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final floorRooms = floorsWithRooms[floorName]!;
+                            final Set<String> uniqueRooms = {};
 
-                          final isSelectable =
-                              roomState == RoomStatus.checked ||
-                                  roomState == RoomStatus.occupied;
+                            return Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: floorRooms
+                                  .where((room) => uniqueRooms.add(room.name))
+                                  .map((room) {
+                                final roomId = room.identifier;
+                                final roomName = room.name;
+                                final roomState = RoomStatus.values.firstWhere(
+                                    (e) =>
+                                        e.toString() ==
+                                        'RoomStatus.${room.status?.toLowerCase()}');
 
-                          return GestureDetector(
-                            onTap: isSelectable
-                                ? () => selectedRoomNotifier.value = {
-                                      'identifier': room.identifier,
-                                      'id': room.id!,
-                                    }
-                                : null,
-                            child: ValueListenableBuilder<Map<String, String>?>(
-                              valueListenable: selectedRoomNotifier,
-                              builder: (context, selectedRoom, _) {
-                                return CcRoomWidget(
-                                  name: roomName,
-                                  state: roomState,
-                                  isSelected: selectedRoom != null &&
-                                      selectedRoom['identifier'] == roomId,
+                                final isSelectable =
+                                    roomState == RoomStatus.checked ||
+                                        roomState == RoomStatus.occupied;
+
+                                return GestureDetector(
+                                  onTap: isSelectable
+                                      ? () => selectedRoomNotifier.value = {
+                                            'identifier': room.identifier,
+                                            'id': room.id!,
+                                          }
+                                      : null,
+                                  child: ValueListenableBuilder<
+                                      Map<String, String>?>(
+                                    valueListenable: selectedRoomNotifier,
+                                    builder: (context, selectedRoom, _) {
+                                      return CcRoomWidget(
+                                        name: roomName,
+                                        state: roomState,
+                                        isSelected: selectedRoom != null &&
+                                            selectedRoom['identifier'] ==
+                                                roomId,
+                                      );
+                                    },
+                                  ),
                                 );
-                              },
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    },
-                    childCount: 1,
-                  ),
-                ),
+                              }).toList(),
+                            );
+                          },
+                          childCount: 1,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
-            ],
-          ],
-        ),
-      ),
+            ),
     );
   }
 
@@ -210,7 +243,7 @@ class _ReceptionistBuildingScreenState
 
                   return CcCheckButtonWidget(
                     selectedRoomState: selectedRoomState,
-                    room: widget.building,
+                    building: widget.building,
                     selectedRoomNotifier: selectedRoomNotifier,
                   );
                 },

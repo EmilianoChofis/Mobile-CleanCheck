@@ -1,15 +1,15 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:mobile_clean_check/data/models/models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcPinButtonWidget extends StatefulWidget {
-  final List<String> roomIdentifiers;
-  final String buildingIdentifier;
+  final BuildingModel building;
 
   const CcPinButtonWidget({
+    required this.building,
     super.key,
-    required this.roomIdentifiers,
-    required this.buildingIdentifier,
   });
 
   @override
@@ -28,24 +28,31 @@ class _CcPinButtonWidgetState extends State<CcPinButtonWidget> {
 
   Future<void> _loadPinnedItems() async {
     final prefs = await SharedPreferences.getInstance();
-    final String key = 'pinnedItems_${widget.buildingIdentifier}';
-
-    final List<String>? savedItems = prefs.getStringList(key);
-    if (savedItems != null) {
+    final userId = prefs.getString('userId');
+    const String key = 'pinnedItems';
+    final String? savedData = prefs.getString('${key}_$userId');
+    if (savedData != null) {
+      final Map<String, dynamic> decodedData = jsonDecode(savedData);
+      final List<dynamic> rooms = decodedData[widget.building.name] ?? [];
       setState(() {
-        pinnedItems = Set<String>.from(savedItems);
-        tempPinnedItems = Set<String>.from(savedItems);
+        pinnedItems = Set<String>.from(rooms.map((room) => jsonEncode(room)));
+        tempPinnedItems =
+            Set<String>.from(rooms.map((room) => jsonEncode(room)));
       });
     }
-    print('Pinned Items for ${widget.buildingIdentifier}: $pinnedItems');
   }
 
-  Future<void> _savePinnedItems() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String key = 'pinnedItems_${widget.buildingIdentifier}';
 
-    await prefs.setStringList(key, pinnedItems.toList());
-    print('Pinned Items saved for ${widget.buildingIdentifier}: $pinnedItems');
+  Future<Map<String, dynamic>> _loadDataFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    const String key = 'pinnedItems';
+
+    final String? savedData = prefs.getString(key);
+    if (savedData != null) {
+      return Map<String, dynamic>.from(jsonDecode(savedData));
+    } else {
+      return {};
+    }
   }
 
   void _showBottomSheet(BuildContext context) {
@@ -65,7 +72,7 @@ class _CcPinButtonWidgetState extends State<CcPinButtonWidget> {
               subtitle:
                   "Puedes establecer las habitaciones de este edificio como zona de trabajo para tener acceso directo.",
               content: CcRoomsSheetContentWidget(
-                items: widget.roomIdentifiers,
+                floors: widget.building.floors!,
                 tempPinnedItems: tempPinnedItems,
                 onToggle: (item, isPinned) {
                   setModalState(() {
@@ -102,13 +109,43 @@ class _CcPinButtonWidgetState extends State<CcPinButtonWidget> {
     );
   }
 
-  void _onSave() {
+  void _onSave() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId');
+    final existingData = await _loadDataFromPrefs();
+
+    final existingRooms = existingData[widget.building.name] ?? [];
+
+    final newRooms = tempPinnedItems.map((item) {
+      final room = widget.building.floors!
+          .expand((floor) => floor.rooms!)
+          .firstWhere((r) => r.identifier == item);
+      return {
+        'buildingName': widget.building.name,
+        'id': room.id,
+        'identifier': room.identifier,
+        'name': room.name,
+      };
+    }).toList();
+
+    final combinedRooms = <dynamic>{
+      ...existingRooms,
+      ...newRooms,
+    }.toList(); // Evitar duplicados
+
+    // Actualizar pinnedItems localmente
     setState(() {
-      pinnedItems = Set<String>.from(tempPinnedItems);
+      pinnedItems = Set<String>.from(combinedRooms.map((room) => jsonEncode(room)));
     });
-    _savePinnedItems();
+
+    // Guardar en SharedPreferences
+    existingData[widget.building.name] = combinedRooms;
+    final jsonData = jsonEncode(existingData);
+    await prefs.setString('pinnedItems_$userId', jsonData);
+
     Navigator.pop(context);
   }
+
 
   void _onCancel() => Navigator.pop(context);
 

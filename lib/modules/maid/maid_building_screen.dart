@@ -37,9 +37,15 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
       appBar: CcAppBarWidget(
         title: 'Registrar limpieza',
         actions: [
-          CcPinButtonWidget(
-            roomIdentifiers: rooms.map((room) => room.identifier).toList(),
-            buildingIdentifier: widget.building.id!,
+          BlocBuilder<RoomCubit, RoomState>(
+            builder: (context, state) {
+              if (state is RoomLoaded) {
+                return CcPinButtonWidget(
+                  building: widget.building
+                );
+              }
+              return const SizedBox.shrink();
+            },
           ),
         ],
       ),
@@ -211,9 +217,12 @@ class _MaidBuildingScreenState extends State<MaidBuildingScreen> {
                                   orElse: () => RoomStatus.unoccupied,
                                 );
 
+                                final isSelectable =
+                                    roomState == RoomStatus.unoccupied ||
+                                        roomState == RoomStatus.occupied;
+
                                 return GestureDetector(
-                                  onTap: roomState == RoomStatus.unoccupied ||
-                                          roomState == RoomStatus.occupied
+                                  onTap: isSelectable
                                       ? () => selectedRoomNotifier.value = {
                                             'identifier': room.identifier,
                                             'id': room.id!,

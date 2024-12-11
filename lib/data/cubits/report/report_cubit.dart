@@ -74,4 +74,15 @@ class ReportCubit extends Cubit<ReportState> {
     }
     loadReports();
   }
+
+  Future<void> changeStatusFinish(String reportId) async {
+    final response = await reportRepository.changeStatusFinish(reportId);
+
+    if (response.error) {
+      emit(ReportError(message: response.message));
+    } else {
+      emit(ReportSuccess(message: response.message));
+    }
+    loadReports();
+  }
 }

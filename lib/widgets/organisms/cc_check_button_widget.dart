@@ -7,12 +7,12 @@ import 'package:mobile_clean_check/widgets/widgets.dart';
 
 class CcCheckButtonWidget extends StatefulWidget {
   final String selectedRoomState;
-  final BuildingModel room;
+  final BuildingModel building;
   final ValueNotifier<Map<String, String>?> selectedRoomNotifier;
 
   const CcCheckButtonWidget({
     required this.selectedRoomState,
-    required this.room,
+    required this.building,
     required this.selectedRoomNotifier,
     super.key,
   });
@@ -90,7 +90,7 @@ class _CcCheckButtonWidgetState extends State<CcCheckButtonWidget> {
     return CcItemListWidget(
       iconType: IconType.enabled,
       icon: Icons.apartment,
-      title: widget.room.name,
+      title: widget.building.name,
       content: Text.rich(
         style: TextStyle(color: primaryColor),
         TextSpan(
@@ -134,9 +134,7 @@ class _CcCheckButtonWidgetState extends State<CcCheckButtonWidget> {
     } else {
       context.read<RoomCubit>().changeCheckOut(roomId!);
     }
-
-    context.read<BuildingCubit>().loadBuildingsActives();
-    Navigator.pop(context);
+    context.read<RoomCubit>().getRoomsByBuildingId(widget.building.id!);
   }
 
   void _onCancel() => Navigator.pop(context);

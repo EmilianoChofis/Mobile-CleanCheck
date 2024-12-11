@@ -121,8 +121,7 @@ class _CcCleanButtonWidgetState extends State<CcCleanButtonWidget> {
   void _onSave() {
     final roomId = widget.selectedRoomNotifier.value?['id'];
     context.read<RoomCubit>().changeClean(roomId!);
-    context.read<BuildingCubit>().loadBuildings();
-    Navigator.pop(context);
+    context.read<RoomCubit>().getRoomsByBuildingId(widget.building.id!);
   }
 
   void _onCancel() => Navigator.pop(context);

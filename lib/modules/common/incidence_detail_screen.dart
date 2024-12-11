@@ -46,7 +46,10 @@ class _IncidenceDetailScreenState extends State<IncidenceDetailScreen> {
                   Expanded(
                     child: CcButtonWidget(
                       label: 'Finalizar reporte',
-                      onPressed: () {},
+                      onPressed: () {
+                        _showChangeStatusBottomSheet(
+                            context, widget.report, true);
+                      },
                       isLoading: false,
                       buttonType: widget.report.status == 'PENDING'
                           ? ButtonType.outlined
@@ -59,7 +62,8 @@ class _IncidenceDetailScreenState extends State<IncidenceDetailScreen> {
                       child: CcButtonWidget(
                         label: 'Proceder reporte',
                         onPressed: () {
-                          _showChangeStatusBottomSheet(context, widget.report);
+                          _showChangeStatusBottomSheet(
+                              context, widget.report, false);
                         },
                         isLoading: false,
                         buttonType: ButtonType.elevated,
@@ -72,8 +76,30 @@ class _IncidenceDetailScreenState extends State<IncidenceDetailScreen> {
     );
   }
 
-  void _showChangeStatusBottomSheet(BuildContext context, ReportModel item) {
-    final it = item.status == 'PENDING' ? IconType.reported : IconType.enabled;
+  void _showChangeStatusBottomSheet(
+      BuildContext context, ReportModel item, bool isFinish) {
+    final IconType it;
+    if (item.status == 'PENDING') {
+      it = IconType.reported;
+    } else if (item.status == 'IN_PROGRESS') {
+      it = IconType.disabled;
+    } else {
+      it = IconType.enabled;
+    }
+
+    final VoidCallback onConfirm;
+    if (!isFinish) {
+      onConfirm = () {
+        context.read<ReportCubit>().changeStatusIn(item.id!);
+        context.read<ReportCubit>().getReports();
+      };
+    } else {
+      onConfirm = () {
+        context.read<ReportCubit>().changeStatusFinish(item.id!);
+        context.read<ReportCubit>().getReports();
+      };
+    }
+
     CcChangeStatusBottomSheetWidget.show(
       context,
       item: item,
@@ -85,10 +111,7 @@ class _IncidenceDetailScreenState extends State<IncidenceDetailScreen> {
       content: const Text(
         '¿Estás seguro de proceder con el reporte?',
       ),
-      onConfirm: (id) {
-        context.read<ReportCubit>().changeStatusIn(id);
-        context.read<ReportCubit>().getReports();
-      },
+      onConfirm: (id) => onConfirm(),
     );
   }
 
@@ -127,13 +150,13 @@ class _IncidenceDetailScreenState extends State<IncidenceDetailScreen> {
           style: TextStyle(fontSize: 16.0),
           TextSpan(
             children: [
-              TextSpan(text: 'El gerente marcó la habitación como '),
+              TextSpan(text: 'El gerente marcó el reporte como '),
               TextSpan(
-                text: 'disponible',
+                text: 'finalizado',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               TextSpan(
-                text: ' para ser rentada nuevamente.',
+                text: '. La habitación para ser rentada nuevamente.',
               ),
             ],
           ),
@@ -143,9 +166,9 @@ class _IncidenceDetailScreenState extends State<IncidenceDetailScreen> {
           style: TextStyle(fontSize: 16.0),
           TextSpan(
             children: [
-              TextSpan(text: 'La habitación estará marcada como '),
+              TextSpan(text: 'El reporte estará marcado como '),
               TextSpan(
-                text: 'reportada',
+                text: 'pendiente',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               TextSpan(
@@ -159,13 +182,13 @@ class _IncidenceDetailScreenState extends State<IncidenceDetailScreen> {
           style: TextStyle(fontSize: 16.0),
           TextSpan(
             children: [
-              TextSpan(text: 'El gerente marcó la habitación como '),
+              TextSpan(text: 'El reporte se encuentra '),
               TextSpan(
-                text: 'deshabilitada',
+                text: 'en progreso',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               TextSpan(
-                text: ' hasta completar las restauraciones necesarias.',
+                text: ' teniendo sus devidas soluciones.',
               )
             ],
           ),

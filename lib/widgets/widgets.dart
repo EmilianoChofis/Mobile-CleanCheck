@@ -66,3 +66,4 @@ export 'package:mobile_clean_check/widgets/templates/cc_list_screen_template.dar
 export 'package:mobile_clean_check/widgets/templates/cc_title_content_template.dart';
 export 'package:mobile_clean_check/widgets/templates/cc_welcome_home_template.dart';
 export 'package:mobile_clean_check/widgets/templates/cc_working_zone_template.dart';
+export 'package:mobile_clean_check/widgets/templates/cc_rooms_wrap_template.dart';
